@@ -18,7 +18,9 @@ class NodeTest(TestCase):
             'lft',
             'rght',
             'tree_id',
-            'children'
+
+            # Incoming foreign keys
+            'children',  # FK from self. The other end of "parent".
         )
         fields = models.Node._meta.get_all_field_names()
         self.assertCountEqual(fields, expected)
