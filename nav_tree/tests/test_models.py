@@ -8,6 +8,7 @@ class NodeTest(TestCase):
     def test_fields(self):
         expected = (
             'id',
+            'handler',
             'parent',
             'parent_id',
             'slug',

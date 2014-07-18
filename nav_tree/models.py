@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.managers import TreeManager
@@ -32,6 +33,7 @@ class NodeManager(TreeManager):
 
 class Node(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    handler = models.CharField(max_length=255, choices=settings.NAV_NODE_HANDLERS)
     slug = models.SlugField(max_length=255, default='')
     # Cached location in tree. Reflects parent and slug on self and ancestors.
     url = models.TextField(db_index=True, editable=False)
