@@ -28,6 +28,7 @@ class Node(MPTTModel):
         """
         has_parent = bool(self.parent_id)
         has_slug = bool(self.slug)
+
         # Must have both or neither
         if has_parent != has_slug:
             raise ValueError('Node can be a root, or have a slug, not both.')
