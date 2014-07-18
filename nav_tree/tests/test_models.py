@@ -89,6 +89,18 @@ class NodeCachesURLOnRenameTest(TestCase):
         leaf = models.Node.objects.get(pk=leaf.pk)
         self.assertEqual(leaf.url, '/bar/leaf/')
 
+    def test_rename_trunk(self):
+        """Changing a trunk slug should update the grandchild url."""
+        trunk = factories.NodeFactory.create(slug='foo', parent=self.root)
+        branch = factories.NodeFactory.create(slug='branch', parent=trunk)
+        leaf = factories.NodeFactory.create(slug='leaf', parent=branch)
+
+        trunk.slug = 'bar'
+        trunk.save()
+
+        leaf = models.Node.objects.get(pk=leaf.pk)
+        self.assertEqual(leaf.url, '/bar/branch/leaf/')
+
 
 class NodeCachesURLOnMoveTest(TestCase):
     def setUp(self):
