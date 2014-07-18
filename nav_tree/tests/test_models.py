@@ -70,7 +70,7 @@ class NodeCachesURLOnRenameTest(TestCase):
         self.root = factories.NodeFactory.create(slug='', parent=None)
 
     def test_rename_leaf(self):
-        """Moving a leaf on the root should update the cached url."""
+        """Changing slug on a leaf should update the cached url."""
         leaf = factories.NodeFactory.create(slug='foo', parent=self.root)
 
         leaf.slug = 'bar'
