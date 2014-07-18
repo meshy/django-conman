@@ -10,13 +10,17 @@ class Node(MPTTModel):
 
 
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reset_originals()
+
+    def reset_originals(self):
         """
         Cache a copy of the loaded `url` value.
 
         This is so we can determine if it has been changed on save.
         """
-        super().__init__(*args, **kwargs)
-        self._original_url = self.url
+        self._original_parent_id = self.parent_id
+        self._original_slug = self.slug
 
     def save(self, *args, **kwargs):
         """
@@ -36,15 +40,23 @@ class Node(MPTTModel):
         def make_url(root, slug):
             return '{}{}/'.format(root, slug)
 
-        self.url = make_url(self.parent.url, self.slug) if has_parent else '/'
+        parent_changed = self._original_parent_id != self.parent_id
+        slug_changed = self._original_slug != self.slug
+
+        if parent_changed or slug_changed or not self.url:
+            url_changed = True
+            self.url = make_url(self.parent.url, self.slug) if has_parent else '/'
+        else:
+            url_changed = False
 
         super().save(*args, **kwargs)
+        self.reset_originals()
 
         # If our cached URL changed we need to update all descendants to
         # reflect the changes. Since this is a very expensive operation
         # on large sites we'll check whether our `url` actually changed
         # or if the updates weren't navigation related:
-        if self.url == self._original_url:
+        if not url_changed:
             return
 
         nodes = self.get_descendants().order_by('lft')
