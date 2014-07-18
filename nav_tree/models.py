@@ -42,12 +42,10 @@ class Node(MPTTModel):
 
         parent_changed = self._original_parent_id != self.parent_id
         slug_changed = self._original_slug != self.slug
+        url_changed = parent_changed or slug_changed or not self.url
 
-        if parent_changed or slug_changed or not self.url:
-            url_changed = True
+        if url_changed:
             self.url = make_url(self.parent.url, self.slug) if has_parent else '/'
-        else:
-            url_changed = False
 
         super().save(*args, **kwargs)
         self.reset_originals()
