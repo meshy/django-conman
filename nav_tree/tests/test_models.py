@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from .. import handlers
 from ..models import Node
 from .factories import NodeFactory
 
@@ -258,3 +259,11 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
             node = Node.objects.best_match_for_path('/branch/absent-leaf/')
 
         self.assertEqual(node, branch)
+
+
+class NodeGetHandlerClassTest(TestCase):
+    def test_get_handler_class(self):
+        handler = handlers.BaseHandler
+        node = NodeFactory.build(handler=handler.path())
+
+        self.assertEqual(node.get_handler_class(), handler)

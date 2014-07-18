@@ -1,3 +1,5 @@
+import importlib
+
 from django.conf import settings
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
@@ -39,6 +41,12 @@ class Node(MPTTModel):
     url = models.TextField(db_index=True, editable=False)
 
     objects = NodeManager()
+
+    def get_handler_class(self):
+        """Imports a class from the python path string in `self.handler`."""
+        module_name, class_name = self.handler.rsplit('.', 1)
+        module = importlib.import_module(module_name)
+        return getattr(module, class_name)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
