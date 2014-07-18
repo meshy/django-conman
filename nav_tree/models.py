@@ -37,8 +37,8 @@ class Node(MPTTModel):
         if has_parent != has_slug:
             raise ValueError('Node can be a root, or have a slug, not both.')
 
-        def make_url(root, slug):
-            return '{}{}/'.format(root, slug)
+        def make_url(parent_url, slug):
+            return '{}{}/'.format(parent_url, slug)
 
         parent_changed = self._original_parent_id != self.parent_id
         slug_changed = self._original_slug != self.slug
