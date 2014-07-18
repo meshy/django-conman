@@ -43,6 +43,34 @@ class NodeValidateOnSave(TestCase):
             leaf.save()
 
 
+class NodeSkipUpdateWithoutChange(TestCase):
+    def setUp(self):
+        self.root = factories.NodeFactory.create(slug='', parent=None)
+
+    def test_no_update_without_changes(self):
+        """Saving unchanged Node shouldn't query parent to rebuild the url."""
+        branch = factories.NodeFactory.create(slug='branch', parent=self.root)
+        branch = models.Node.objects.get(pk=branch.pk)
+        # Prove that no attempt is made to update descendants.
+        with self.assertNumQueries(1):
+            # One query:
+            # * Update the root.
+            branch.save()
+
+    def test_no_update_on_resave(self):
+        """Resaving changed Node should only update descendants once."""
+        branch = factories.NodeFactory.create(slug='branch', parent=self.root)
+        factories.NodeFactory.create(slug='leaf', parent=branch)
+        branch.slug = 'new_slug'
+        branch.save()
+
+        # Prove that no attempt is made to update descendants.
+        with self.assertNumQueries(1):
+            # One query:
+            # * Update the root.
+            branch.save()
+
+
 class NodeCachesURLOnCreateTest(TestCase):
     def setUp(self):
         self.root = factories.NodeFactory.create(slug='', parent=None)
