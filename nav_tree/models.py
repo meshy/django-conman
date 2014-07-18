@@ -50,7 +50,7 @@ class Node(MPTTModel):
         super().save(*args, **kwargs)
         self.reset_originals()
 
-        # If our cached URL changed we need to update all descendants to
+        # If the URL changed we need to update all descendants to
         # reflect the changes. Since this is a very expensive operation
         # on large sites we'll check whether our `url` actually changed
         # or if the updates weren't navigation related:
