@@ -33,10 +33,10 @@ class Node(MPTTModel):
         if has_parent != has_slug:
             raise ValueError('Node can be a root, or have a slug, not both.')
 
-        if not has_parent:
-            self.url = '/'
-        else:
-            self.url = '{}{}/'.format(self.parent.url, self.slug)
+        def make_url(root, slug):
+            return '{}{}/'.format(root, slug)
+
+        self.url = make_url(self.parent.url, self.slug) if has_parent else '/'
 
         super().save(*args, **kwargs)
 
@@ -51,8 +51,8 @@ class Node(MPTTModel):
 
         cached_urls = {self.id: self.url}
         for node in nodes:
-            node.url = '{}{}/'.format(cached_urls[node.parent_id], node.slug)
-            cached_urls[node.id] = node.url
+            parent_path = cached_urls[node.parent_id]
+            node.url = cached_urls[node.id] = make_url(parent_path, node.slug)
 
             # Skip this logic on save so we do not recurse.
             super(Node, node).save()
