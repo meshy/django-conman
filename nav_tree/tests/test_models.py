@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.test import TestCase
 
 from .. import handlers
@@ -267,3 +269,15 @@ class NodeGetHandlerClassTest(TestCase):
         node = NodeFactory.build(handler=handler.path())
 
         self.assertEqual(node.get_handler_class(), handler)
+
+
+class NodeHandleTest(TestCase):
+    def test_handle(self):
+        node = NodeFactory.build(url='/branch/')
+        node.get_handler_class = mock.MagicMock()
+        request = mock.Mock()
+
+        result = node.handle(request, '/branch/leaf/')
+
+        expected = node.get_handler_class()(node).handle(request, '/leaf/')
+        self.assertEqual(result, expected)

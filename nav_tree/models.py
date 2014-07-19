@@ -52,6 +52,14 @@ class Node(MPTTModel):
         module = importlib.import_module(module_name)
         return getattr(module, class_name)
 
+    def handle(self, request, path):
+        handler_class = self.get_handler_class()
+        handler = handler_class(self)
+        # Strip the node url from the rest of the path
+        path = path[len(self.url) - 1:]
+        # Deal with the request
+        return handler.handle(request, path)
+
     def reset_originals(self):
         """
         Cache a copy of the loaded `url` value.
