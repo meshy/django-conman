@@ -42,15 +42,15 @@ class Node(MPTTModel):
 
     objects = NodeManager()
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reset_originals()
+
     def get_handler_class(self):
         """Imports a class from the python path string in `self.handler`."""
         module_name, class_name = self.handler.rsplit('.', 1)
         module = importlib.import_module(module_name)
         return getattr(module, class_name)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.reset_originals()
 
     def reset_originals(self):
         """
