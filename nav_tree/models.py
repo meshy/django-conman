@@ -1,5 +1,33 @@
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
+from mptt.managers import TreeManager
+
+from .utils import split_path
+
+
+class NodeManager(TreeManager):
+    def best_match_for_path(self, path):
+        """
+        Return the best match for a path. If the path as given is unavailable,
+        continues to search by chopping path components off the end.
+
+        Tries hard to avoid unnecessary database lookups by comparing all
+        possible matching URL prefixes and choosing the longest match.
+
+        Node.objects.best_match_for_path('/photos/album/2008/09') might return
+        the Node with url '/photos/album/'.
+
+        Adapted from feincms/module/page/models.py:71 in FeinCMS v1.9.5.
+        """
+        paths = split_path(path)
+
+        extra = {'length': 'LENGTH(url)'}
+        qs = self.filter(url__in=paths).extra(select=extra).order_by('-length')
+        try:
+            return qs[0]
+        except IndexError:
+            msg = 'No matching Node for URL. (Have you made a root Node?)'
+            raise self.model.DoesNotExist(msg)
 
 
 class Node(MPTTModel):
@@ -8,6 +36,7 @@ class Node(MPTTModel):
     # Cached location in tree. Reflects parent and slug on self and ancestors.
     url = models.TextField(db_index=True, editable=False)
 
+    objects = NodeManager()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

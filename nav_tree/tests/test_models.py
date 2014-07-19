@@ -157,3 +157,93 @@ class NodeCachesURLOnMoveTest(TestCase):
 
         leaf = Node.objects.get(pk=leaf.pk)
         self.assertEqual(leaf.url, '/bar/branch/leaf/')
+
+
+class NodeManagerBestMatchForPathTest(TestCase):
+    """
+    Test Node.objects.best_match_for_path works with perfect url matches.
+
+    All of these tests assert use of only one query:
+        * Get the best node based on url:
+            SELECT
+                (LENGTH(url)) AS "length",
+                <other fields>
+            FROM "nav_tree_node"
+            WHERE
+                "nav_tree_node"."url" IN (
+                    '/',
+                    '/url/',
+                    '/url/split/',
+                    '/url/split/into/',
+                    '/url/split/into/bits/')
+            ORDER BY "length" DESC
+            LIMIT 1
+    """
+    def test_get_root(self):
+        root = NodeFactory.create(slug='', parent=None)
+        with self.assertNumQueries(1):
+            node = Node.objects.best_match_for_path('/')
+
+        self.assertEqual(node, root)
+
+    def test_get_leaf(self):
+        root = NodeFactory.create(slug='', parent=None)
+        leaf = NodeFactory.create(slug='leaf', parent=root)
+
+        with self.assertNumQueries(1):
+            node = Node.objects.best_match_for_path('/leaf/')
+
+        self.assertEqual(node, leaf)
+
+    def test_get_leaf_on_branch(self):
+        root = NodeFactory.create(slug='', parent=None)
+        branch = NodeFactory.create(slug='branch', parent=root)
+        leaf = NodeFactory.create(slug='leaf', parent=branch)
+
+        with self.assertNumQueries(1):
+            node = Node.objects.best_match_for_path('/branch/leaf/')
+
+        self.assertEqual(node, leaf)
+
+
+class NodeManagerBestMatchForBrokenPathTest(TestCase):
+    """
+    Test Node.objects.best_match_for_path works without a perfect url match.
+
+    All of these tests assert use of only one query:
+        * Get the best node based on url:
+            SELECT
+                (LENGTH(url)) AS "length",
+                <other fields>
+            FROM "nav_tree_node"
+            WHERE
+                "nav_tree_node"."url" IN (
+                    '/',
+                    '/url/',
+                    '/url/split/',
+                    '/url/split/into/',
+                    '/url/split/into/bits/')
+            ORDER BY "length" DESC
+            LIMIT 1
+    """
+    def test_throw_error_without_match(self):
+        with self.assertNumQueries(1):
+            with self.assertRaises(Node.DoesNotExist):
+                Node.objects.best_match_for_path('/')
+
+    def test_fall_back_to_root(self):
+        root = NodeFactory.create(slug='', parent=None)
+
+        with self.assertNumQueries(1):
+            node = Node.objects.best_match_for_path('/absent-branch/')
+
+        self.assertEqual(node, root)
+
+    def test_fall_back_to_branch(self):
+        root = NodeFactory.create(slug='', parent=None)
+        branch = NodeFactory.create(slug='branch', parent=root)
+
+        with self.assertNumQueries(1):
+            node = Node.objects.best_match_for_path('/branch/absent-leaf/')
+
+        self.assertEqual(node, branch)
