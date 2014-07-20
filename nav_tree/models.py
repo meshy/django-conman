@@ -34,8 +34,10 @@ class NodeManager(TreeManager):
 
 
 class Node(MPTTModel):
+    HANDLER_CHOICES = settings.NAV_NODE_HANDLERS
+
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
-    handler = models.CharField(max_length=255, choices=settings.NAV_NODE_HANDLERS)
+    handler = models.CharField(max_length=255, choices=HANDLER_CHOICES)
     slug = models.SlugField(max_length=255, default='')
     # Cached location in tree. Reflects parent and slug on self and ancestors.
     url = models.TextField(db_index=True, editable=False)
