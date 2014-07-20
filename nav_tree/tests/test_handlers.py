@@ -49,7 +49,7 @@ class BaseHandlerHandleTest(TestCase):
     def test_handle_basic(self):
         """Show that url resolving works at the root of the urlconf"""
         with mock.patch(self.view) as view:
-            response = self.handler.handle(self.request,  '/')
+            response = self.handler.handle(self.request, '/')
 
         view.assert_called_with(self.request, node=self.node)
         self.assertEqual(response, view(self.request, node=self.node))
@@ -57,7 +57,7 @@ class BaseHandlerHandleTest(TestCase):
     def test_handle_slug(self):
         """Show that url resolving works with slugs"""
         with mock.patch(self.view) as view:
-            response = self.handler.handle(self.request,  '/slug/')
+            response = self.handler.handle(self.request, '/slug/')
 
         view.assert_called_with(self.request, node=self.node, slug='slug')
 
@@ -68,6 +68,6 @@ class BaseHandlerHandleTest(TestCase):
         """Show that an error is thrown when the url does not match"""
         with self.assertRaises(Resolver404):
             with mock.patch(self.view) as view:
-                self.handler.handle(self.request,  '/no/match/')
+                self.handler.handle(self.request, '/no/match/')
 
         self.assertFalse(view.called)
