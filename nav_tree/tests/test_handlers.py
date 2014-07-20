@@ -6,11 +6,14 @@ from django.test import TestCase
 from ..handlers import BaseHandler
 
 
-class BaseHandlerTest(TestCase):
+class BaseHandlerPathTest(TestCase):
+    """Test BaseHandler.path()"""
     def test_path(self):
+        """Test directly on base class"""
         self.assertEqual(BaseHandler.path(), 'nav_tree.handlers.BaseHandler')
 
     def test_path_on_subclass(self):
+        """Test on subclass"""
         class TestHandler(BaseHandler):
             __module__ = 'does_not_exist'
 
@@ -18,7 +21,9 @@ class BaseHandlerTest(TestCase):
 
 
 class BaseHandlerInitTest(TestCase):
+    """Test BaseHandler.__init__()"""
     def test_init(self):
+        """Make sure "node" gets saved on the handler"""
         node = mock.MagicMock()
 
         handler = BaseHandler(node)
@@ -27,6 +32,7 @@ class BaseHandlerInitTest(TestCase):
 
 
 class BaseHandlerHandleTest(TestCase):
+    """Test BaseHandler.handle()"""
     def setUp(self):
         class TestHandler(BaseHandler):
             urlconf = 'nav_tree.tests.urls'
@@ -37,9 +43,11 @@ class BaseHandlerHandleTest(TestCase):
         self.view = 'nav_tree.tests.urls.stupid_view'
 
     def tearDown(self):
+        """Stops the tests leaking into each other through the url cache"""
         clear_url_caches()
 
     def test_handle_basic(self):
+        """Show that url resolving works at the root of the urlconf"""
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request,  '/')
 
@@ -47,6 +55,7 @@ class BaseHandlerHandleTest(TestCase):
         self.assertEqual(response, view(self.request, node=self.node))
 
     def test_handle_slug(self):
+        """Show that url resolving works with slugs"""
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request,  '/slug/')
 
@@ -56,6 +65,7 @@ class BaseHandlerHandleTest(TestCase):
         self.assertEqual(response, expected)
 
     def test_handle_no_url_match(self):
+        """Show that an error is thrown when the url does not match"""
         with self.assertRaises(Resolver404):
             with mock.patch(self.view) as view:
                 self.handler.handle(self.request,  '/no/match/')

@@ -53,6 +53,7 @@ class Node(MPTTModel):
         return getattr(module, class_name)
 
     def handle(self, request, path):
+        """Pass request and the remainder of the url through to the handler"""
         handler_class = self.get_handler_class()
         handler = handler_class(self)
         # Strip the node url from the rest of the path
