@@ -1,3 +1,6 @@
+from django.core.urlresolvers import resolve
+
+
 class BaseHandler:
     @classmethod
     def path(cls):
@@ -6,3 +9,7 @@ class BaseHandler:
 
     def __init__(self, node):
         self.node = node
+
+    def handle(self, request, path):
+        view, args, kwargs = resolve(path, urlconf=self.urlconf)
+        return view(request, *args, node=self.node, **kwargs)
