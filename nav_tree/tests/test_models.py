@@ -205,6 +205,16 @@ class NodeManagerBestMatchForPathTest(TestCase):
 
         self.assertEqual(node, leaf)
 
+    def test_get_branch_with_leaf(self):
+        root = NodeFactory.create(slug='', parent=None)
+        branch = NodeFactory.create(slug='branch', parent=root)
+        NodeFactory.create(slug='leaf', parent=branch)
+
+        with self.assertNumQueries(1):
+            node = Node.objects.best_match_for_path('/branch/')
+
+        self.assertEqual(node, branch)
+
 
 class NodeManagerBestMatchForBrokenPathTest(TestCase):
     """
