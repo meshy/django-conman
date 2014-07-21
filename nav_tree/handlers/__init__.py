@@ -13,3 +13,7 @@ class BaseHandler:
     def handle(self, request, path):
         view, args, kwargs = resolve(path, urlconf=self.urlconf)
         return view(request, *args, handler=self, **kwargs)
+
+
+class SimpleHandler(BaseHandler):
+    urlconf = 'nav_tree.handlers.simple.urls'

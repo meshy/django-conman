@@ -3,7 +3,7 @@ from unittest import mock
 from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.test import TestCase
 
-from ..handlers import BaseHandler
+from ..handlers import BaseHandler, SimpleHandler
 
 
 class BaseHandlerPathTest(TestCase):
@@ -71,3 +71,40 @@ class BaseHandlerHandleTest(TestCase):
                 self.handler.handle(self.request, '/no/match/')
 
         self.assertFalse(view.called)
+
+
+class SimpleHandlerHandleTest(TestCase):
+    """Test SimpleHandler.handle()"""
+    def setUp(self):
+        class TestHandler(SimpleHandler):
+            view = mock.MagicMock()
+
+        self.node = mock.Mock()
+        self.request = mock.Mock()
+        self.handler = TestHandler(self.node)
+        self.view = TestHandler.view
+
+    def tearDown(self):
+        """Stops the tests leaking into each other through the url cache"""
+        clear_url_caches()
+
+    def test_handle_basic(self):
+        """Show that SimpleHandler.view is used ot process the request"""
+        response = self.handler.handle(self.request, '/')
+
+        self.view.assert_called_with(self.request, handler=self.handler)
+        self.assertEqual(response, self.view(self.request, handler=self.handler))
+
+    def test_handle_slug(self):
+        """Show that slugs are not accepted"""
+        with self.assertRaises(Resolver404):
+            self.handler.handle(self.request, '/slug/')
+
+        self.assertFalse(self.view.called)
+
+    def test_handle_pk(self):
+        """Show that pks are not accepted"""
+        with self.assertRaises(Resolver404):
+            self.handler.handle(self.request, '/42/')
+
+        self.assertFalse(self.view.called)
