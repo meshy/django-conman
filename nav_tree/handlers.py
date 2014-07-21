@@ -12,4 +12,4 @@ class BaseHandler:
 
     def handle(self, request, path):
         view, args, kwargs = resolve(path, urlconf=self.urlconf)
-        return view(request, *args, node=self.node, **kwargs)
+        return view(request, *args, handler=self, **kwargs)
