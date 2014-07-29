@@ -1,11 +1,11 @@
 from django.test import TestCase
 
-from ..utils import split_path
+from .. import utils
 
 
 class TestSplitPath(TestCase):
     def test_split_path(self):
-        paths  = split_path('/a/path/with/many/parts/')
+        paths  = utils.split_path('/a/path/with/many/parts/')
         expected = [
             '/',
             '/a/',
@@ -17,17 +17,17 @@ class TestSplitPath(TestCase):
         self.assertCountEqual(paths, expected)  # Order does not matter
 
     def test_split_empty_path(self):
-        paths  = split_path('')
+        paths  = utils.split_path('')
         expected = ['/']
         self.assertCountEqual(paths, expected)
 
     def test_split_root_path(self):
-        paths  = split_path('/')
+        paths  = utils.split_path('/')
         expected = ['/']
         self.assertCountEqual(paths, expected)
 
     def test_split_path_with_dots(self):
-        paths  = split_path('/path/../')
+        paths  = utils.split_path('/path/../')
         expected = [
             '/',
             '/path/',
