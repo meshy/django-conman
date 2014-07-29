@@ -34,3 +34,22 @@ class TestSplitPath(TestCase):
             '/path/../',
         ]
         self.assertCountEqual(paths, expected)
+
+
+class TestImportFromDottedPath(TestCase):
+    def test_empty(self):
+        with self.assertRaises(ValueError):
+            utils.import_from_dotted_path('')
+
+    def test_too_short(self):
+        with self.assertRaises(ValueError):
+            utils.import_from_dotted_path('antigravity')
+
+    def test_import_module(self):
+        result = utils.import_from_dotted_path('nav_tree.utils')
+        self.assertEqual(result, utils)
+
+    def test_import_class(self):
+        this_test_path = 'nav_tree.tests.test_utils.TestImportFromDottedPath'
+        result = utils.import_from_dotted_path(this_test_path)
+        self.assertEqual(result, self.__class__)

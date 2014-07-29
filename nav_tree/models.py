@@ -1,11 +1,9 @@
-import importlib
-
 from django.conf import settings
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.managers import TreeManager
 
-from .utils import split_path
+from .utils import import_from_dotted_path, split_path
 
 
 class NodeManager(TreeManager):
@@ -50,9 +48,7 @@ class Node(MPTTModel):
 
     def get_handler_class(self):
         """Imports a class from the python path string in `self.handler`."""
-        module_name, class_name = self.handler.rsplit('.', 1)
-        module = importlib.import_module(module_name)
-        return getattr(module, class_name)
+        return import_from_dotted_path(self.handler)
 
     def handle(self, request, path):
         """
