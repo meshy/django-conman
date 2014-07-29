@@ -40,7 +40,7 @@ class BaseHandlerHandleTest(TestCase):
         self.node = mock.Mock()
         self.request = mock.Mock()
         self.handler = TestHandler(self.node)
-        self.view = 'nav_tree.tests.urls.stupid_view'
+        self.view = 'nav_tree.tests.urls.dummy_view'
 
     def tearDown(self):
         """Stops the tests leaking into each other through the url cache"""
