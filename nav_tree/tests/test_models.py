@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django.core import checks
 from django.test import TestCase
 
 from .. import handlers
@@ -281,3 +282,47 @@ class NodeHandleTest(TestCase):
 
         expected = node.get_handler_class()(node).handle(request, '/leaf/')
         self.assertEqual(result, expected)
+
+
+class NodeHandlerCheckTest(TestCase):
+    """Test the `check` method on Node.
+
+    This method has been written to check that the NAV_NODE_HANDLERS setting
+    is valid.
+
+    NAV_NODE_HANDLERS must comply with the format of choices for a CharField,
+    but that is already checked by passing it as choices for `Node.handler`.
+    """
+    def test_no_choices(self):
+        """Having no choices should not (yet!) return any errors"""
+        with self.settings(NAV_NODE_HANDLERS=[]):
+            errors = Node.check()
+
+        self.assertEqual(errors, [])
+
+    def test_good_choices(self):
+        """Having ok choices should not return any errors"""
+        handlers = [('nav_tree.handlers.BaseHandler', 'Base handler')]
+
+        with self.settings(NAV_NODE_HANDLERS=handlers):
+            errors = Node.check()
+
+        self.assertEqual(errors, [])
+
+    def test_wrong_choice_class(self):
+        """Having choices that are not classes should return an error"""
+        with self.settings(NAV_NODE_HANDLERS=[('nav_tree.tests', 'A module')]):
+            errors = Node.check()
+
+        self.assertEqual(len(errors), 1)
+        expected = 'Expected nav_tree.tests from NAV_NODE_HANDLERS to be a class'
+        self.assertEqual(errors[0].msg, expected)
+
+    def test_bad_path(self):
+        """Having a choice that cannot be imported should return an error"""
+        with self.settings(NAV_NODE_HANDLERS=[('broken', 'Invalid path')]):
+            errors = Node.check()
+
+        self.assertEqual(len(errors), 1)
+        expected = 'Error importing broken from NAV_NODE_HANDLERS'
+        self.assertEqual(errors[0].msg, expected)

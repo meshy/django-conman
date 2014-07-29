@@ -1,4 +1,7 @@
+import inspect
+
 from django.conf import settings
+from django.core import checks
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.managers import TreeManager
@@ -119,3 +122,29 @@ class Node(MPTTModel):
             # Skip this logic on save so we do not recurse.
             super(Node, node).save()
     save.alters_data = True
+
+    @classmethod
+    def check(cls, **kwargs):
+        errors = super().check(**kwargs)
+        for path, name in settings.NAV_NODE_HANDLERS:
+            try:
+                imported = import_from_dotted_path(path)
+            except (ImportError, ValueError):
+                msg = 'Error importing {} from NAV_NODE_HANDLERS'
+                errors.append(checks.Error(
+                    msg.format(path),
+                    hint='This setting must be a dotted python path',
+                    obj=cls,
+                ))
+                continue
+
+            if not inspect.isclass(imported):
+                msg = 'Expected {} from NAV_NODE_HANDLERS to be a class'
+                hint = 'This setting must reference a class, not a {}'
+                errors.append(checks.Error(
+                    msg.format(path),
+                    hint=hint.format(type(imported)),
+                    obj=cls,
+                ))
+
+        return errors
