@@ -15,9 +15,11 @@ def split_path(path):
 
 
 def import_from_dotted_path(path):
-    """Imports a class from a python path string.
+    """
+    Imports an object (class/module/etc) from a python path string.
 
-    Must have at least one dot."""
-    module_name, class_name = path.rsplit('.', 1)
-    module = importlib.import_module(module_name)
-    return getattr(module, class_name)
+    The path must have at least one dot.
+    """
+    module_path, attr = path.rsplit('.', 1)
+    module = importlib.import_module(module_path)
+    return getattr(module, attr)
