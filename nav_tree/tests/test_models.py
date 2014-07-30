@@ -315,7 +315,7 @@ class NodeHandlerCheckTest(TestCase):
             errors = Node.check()
 
         self.assertEqual(len(errors), 1)
-        expected = 'Expected nav_tree.tests from NAV_NODE_HANDLERS to be a class'
+        expected = "Expected 'nav_tree.tests' from NAV_NODE_HANDLERS to be a class"
         self.assertEqual(errors[0].msg, expected)
 
     def test_bad_path(self):
@@ -324,5 +324,5 @@ class NodeHandlerCheckTest(TestCase):
             errors = Node.check()
 
         self.assertEqual(len(errors), 1)
-        expected = 'Error importing broken from NAV_NODE_HANDLERS'
+        expected = "Error importing 'broken' from NAV_NODE_HANDLERS"
         self.assertEqual(errors[0].msg, expected)

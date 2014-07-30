@@ -130,7 +130,7 @@ class Node(MPTTModel):
             try:
                 imported = import_from_dotted_path(path)
             except (ImportError, ValueError):
-                msg = 'Error importing {} from NAV_NODE_HANDLERS'
+                msg = "Error importing '{}' from NAV_NODE_HANDLERS"
                 errors.append(checks.Error(
                     msg.format(path),
                     hint='This setting must be a dotted python path',
@@ -139,7 +139,7 @@ class Node(MPTTModel):
                 continue
 
             if not inspect.isclass(imported):
-                msg = 'Expected {} from NAV_NODE_HANDLERS to be a class'
+                msg = "Expected '{}' from NAV_NODE_HANDLERS to be a class"
                 hint = 'This setting must reference a class, not a {}'
                 errors.append(checks.Error(
                     msg.format(path),
