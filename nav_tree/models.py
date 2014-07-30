@@ -125,6 +125,17 @@ class Node(MPTTModel):
 
     @classmethod
     def check(cls, **kwargs):
+        """
+        Check that the requirements for this class are correctly set up.
+
+        In particular, this checks that each path in NAV_NODE_HANDLERS can be
+        imported, and that the resultant object is a class.
+
+        I decided against checking that the classes were subclasses of
+        `BaseHandler` to allow for ducktyping, but perhaps in future this could
+        check that the class has a "handle" method, and can take a Node
+        instance as an arg on instantiation.
+        """
         errors = super().check(**kwargs)
         for path, name in settings.NAV_NODE_HANDLERS:
             try:
