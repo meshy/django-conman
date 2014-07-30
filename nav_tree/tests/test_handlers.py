@@ -10,7 +10,8 @@ class BaseHandlerPathTest(TestCase):
     """Test BaseHandler.path()"""
     def test_path(self):
         """Test directly on base class"""
-        self.assertEqual(BaseHandler.path(), 'nav_tree.handlers.BaseHandler')
+        base_handler_path = 'nav_tree.handlers.base.BaseHandler'
+        self.assertEqual(BaseHandler.path(), base_handler_path)
 
     def test_path_on_subclass(self):
         """Test on subclass"""

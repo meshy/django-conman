@@ -1,42 +1,5 @@
-from django.core.urlresolvers import resolve
+from .base import BaseHandler
+from .simple import SimpleHandler
 
 
-class BaseHandler:
-    """
-    Abstract base class for `Node` handlers.
-
-    Subclasses should define a `urlconf` property as a dotted path. This will
-    be used to resolve a view when handling requests.
-
-    Views referenced in the `urlconf` will recieve `handler` as a kwarg, as
-    well as the other args and kwargs they would expect given their urlpattern.
-    """
-    @classmethod
-    def path(cls):
-        """Get dotted-path of this class"""
-        return '.'.join((cls.__module__, cls.__name__))
-
-    def __init__(self, node):
-        """Store the Node we're handling so subclasses can use it."""
-        self.node = node
-
-    def handle(self, request, path):
-        """
-        Resolve `path` to a view, and get it to handle the `request`.
-
-        Returns the `HttpResponse` returned by the view.
-
-        Raises `django.core.urlresolvers.Resolver404` if `path` isn't found.
-        """
-        view, args, kwargs = resolve(path, urlconf=self.urlconf)
-        return view(request, *args, handler=self, **kwargs)
-
-
-class SimpleHandler(BaseHandler):
-    """
-    Abstract handler for Nodes that have one url: `/` relative to the Node.
-
-    Subclasses should define a view on the class as `view`. This will be
-    called if the `path` passed to `handle` is `/`.
-    """
-    urlconf = 'nav_tree.handlers.simple.urls'
+__all__ = [BaseHandler, SimpleHandler]
