@@ -2,6 +2,11 @@ from ..base import BaseHandler
 
 
 class UnboundViewMeta(type):
+    """
+    Metaclass that wraps the `view` attribute with `staticmethod`.
+
+    This ensures that the method does not bind to the class unintentionally.
+    """
     def __new__(cls, name, bases, attrs):
         view = attrs.get('view')
         if view:
