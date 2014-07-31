@@ -2,6 +2,7 @@ from unittest import mock
 
 from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.test import TestCase
+from django.views.generic import View
 
 from ..handlers import BaseHandler, SimpleHandler
 
@@ -109,3 +110,34 @@ class SimpleHandlerHandleTest(TestCase):
             self.handler.handle(self.request, '/42/')
 
         self.assertFalse(self.view.called)
+
+
+class SimpleHandlerViewBindingTest(TestCase):
+    """Views should not unexpectedly "bind" to SimpleHandler subclasses"""
+    def test_unbound_function(self):
+        """Make sure that the handler is not bound to self on the view"""
+        def unbound_function(request, **kwargs):
+            return request
+
+        class TestHandler(SimpleHandler):
+            view = unbound_function
+
+        handler = TestHandler(None)  # First arg here not used
+        request = mock.Mock()
+        response = handler.view(request)
+        self.assertIs(response, request)
+
+    def test_bound_function(self):
+        """Make sure that class based views get the expected args"""
+        class TestView(View):
+            def dispatch(self, request, handler=None):
+                return self, request
+
+        class TestHandler(SimpleHandler):
+            view = TestView.as_view()
+
+        handler = TestHandler(None)  # First arg here not used
+        request = mock.Mock()
+        self_arg, request_arg = handler.view(request)
+        self.assertIsInstance(self_arg, TestView)
+        self.assertIs(request_arg, request)

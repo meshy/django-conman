@@ -1,7 +1,15 @@
 from ..base import BaseHandler
 
 
-class SimpleHandler(BaseHandler):
+class UnboundViewMeta(type):
+    def __new__(cls, name, bases, attrs):
+        view = attrs.get('view')
+        if view:
+            attrs['view'] = staticmethod(view)
+        return super().__new__(cls, name, bases, attrs)
+
+
+class SimpleHandler(BaseHandler, metaclass=UnboundViewMeta):
     """
     Abstract handler for Nodes that have one url: `/` relative to the Node.
 
