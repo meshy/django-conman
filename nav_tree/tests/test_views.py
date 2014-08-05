@@ -38,10 +38,9 @@ class RouterIntegrationTest(TestCase):
         url = '/'
         factories.NodeFactory.create()
         handle_path = 'nav_tree.models.Node.handle'
-        with self.settings(ROOT_URLCONF='nav_tree.urls'):
-            with mock.patch(handle_path) as handle:
-                handle.return_value = HttpResponse()
-                response = self.client.get(url)
+        with mock.patch(handle_path) as handle:
+            handle.return_value = HttpResponse()
+            response = self.client.get(url)
 
         handle.assert_called_with(response.wsgi_request, url)
 
@@ -49,9 +48,8 @@ class RouterIntegrationTest(TestCase):
         url = '/slug/42/foo/bar/'
         factories.NodeFactory.create()
         handle_path = 'nav_tree.models.Node.handle'
-        with self.settings(ROOT_URLCONF='nav_tree.urls'):
-            with mock.patch(handle_path) as handle:
-                handle.return_value = HttpResponse()
-                response = self.client.get(url)
+        with mock.patch(handle_path) as handle:
+            handle.return_value = HttpResponse()
+            response = self.client.get(url)
 
         handle.assert_called_with(response.wsgi_request, url)

@@ -5,10 +5,8 @@ from .. import views
 
 
 class TestNavTreeURLRouter(TestCase):
-    urlconf = 'nav_tree.urls'
-
     def assert_url_uses_router(self, url):
-        resolved_view = resolve(url, urlconf=self.urlconf)
+        resolved_view = resolve(url)
         expected_view = views.node_router
         self.assertEqual(resolved_view.func, expected_view)
 
