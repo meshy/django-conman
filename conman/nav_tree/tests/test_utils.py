@@ -46,10 +46,10 @@ class TestImportFromDottedPath(TestCase):
             utils.import_from_dotted_path('antigravity')
 
     def test_import_module(self):
-        result = utils.import_from_dotted_path('nav_tree.utils')
+        result = utils.import_from_dotted_path('conman.nav_tree.utils')
         self.assertEqual(result, utils)
 
     def test_import_class(self):
-        this_test_path = 'nav_tree.tests.test_utils.TestImportFromDottedPath'
+        this_test_path = 'conman.nav_tree.tests.test_utils.TestImportFromDottedPath'
         result = utils.import_from_dotted_path(this_test_path)
         self.assertEqual(result, self.__class__)

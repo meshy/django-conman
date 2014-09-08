@@ -13,7 +13,7 @@ class RouterTest(TestCase):
         url = ''
         factories.NodeFactory.create()
         request = mock.MagicMock()
-        handle_path = 'nav_tree.models.Node.handle'
+        handle_path = 'conman.nav_tree.models.Node.handle'
         with mock.patch(handle_path) as handle:
             response = views.node_router(request, url)
 
@@ -24,7 +24,7 @@ class RouterTest(TestCase):
         url = 'slug/42/foo/bar/'
         factories.NodeFactory.create()
         request = mock.MagicMock()
-        handle_path = 'nav_tree.models.Node.handle'
+        handle_path = 'conman.nav_tree.models.Node.handle'
         with mock.patch(handle_path) as handle:
             response = views.node_router(request, url)
 
@@ -37,7 +37,7 @@ class RouterIntegrationTest(TestCase):
     def test_root_url(self):
         url = '/'
         factories.NodeFactory.create()
-        handle_path = 'nav_tree.models.Node.handle'
+        handle_path = 'conman.nav_tree.models.Node.handle'
         with mock.patch(handle_path) as handle:
             handle.return_value = HttpResponse()
             response = self.client.get(url)
@@ -47,7 +47,7 @@ class RouterIntegrationTest(TestCase):
     def test_complex_url(self):
         url = '/slug/42/foo/bar/'
         factories.NodeFactory.create()
-        handle_path = 'nav_tree.models.Node.handle'
+        handle_path = 'conman.nav_tree.models.Node.handle'
         with mock.patch(handle_path) as handle:
             handle.return_value = HttpResponse()
             response = self.client.get(url)

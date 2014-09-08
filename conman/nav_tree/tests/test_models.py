@@ -302,7 +302,7 @@ class NodeHandlerCheckTest(TestCase):
 
     def test_good_choices(self):
         """Having ok choices should not return any errors"""
-        handlers = [('nav_tree.handlers.BaseHandler', 'Base handler')]
+        handlers = [('conman.nav_tree.handlers.BaseHandler', 'Base handler')]
 
         with self.settings(NAV_NODE_HANDLERS=handlers):
             errors = Node.check()
@@ -311,11 +311,13 @@ class NodeHandlerCheckTest(TestCase):
 
     def test_wrong_choice_class(self):
         """Having choices that are not classes should return an error"""
-        with self.settings(NAV_NODE_HANDLERS=[('nav_tree.tests', 'A module')]):
+        handlers = [('conman.nav_tree.tests', 'A module')]
+
+        with self.settings(NAV_NODE_HANDLERS=handlers):
             errors = Node.check()
 
         self.assertEqual(len(errors), 1)
-        expected = "Expected 'nav_tree.tests' from NAV_NODE_HANDLERS to be a class"
+        expected = "Expected 'conman.nav_tree.tests' from NAV_NODE_HANDLERS to be a class"
         self.assertEqual(errors[0].msg, expected)
 
     def test_bad_path(self):
