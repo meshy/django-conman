@@ -41,7 +41,7 @@ class Node(MPTTModel):
     handler = models.CharField(max_length=255, choices=HANDLER_CHOICES)
     slug = models.SlugField(max_length=255, default='')
     # Cached location in tree. Reflects parent and slug on self and ancestors.
-    url = models.TextField(db_index=True, editable=False)
+    url = models.TextField(db_index=True, editable=False, unique=True)
 
     objects = NodeManager()
 

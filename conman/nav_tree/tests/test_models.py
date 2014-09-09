@@ -58,6 +58,12 @@ class NodeUniqueness(TestCase):
         with self.assertRaises(IntegrityError):
             NodeFactory.create(slug=slug, parent=root_node)
 
+    def test_unique_root_url(self):
+        root_node = RootNodeFactory.create()
+
+        with self.assertRaises(IntegrityError):
+            RootNodeFactory.create()
+
 class NodeSkipUpdateWithoutChange(TestCase):
     def setUp(self):
         self.root = RootNodeFactory.create()
