@@ -9,7 +9,6 @@ from django.conf import settings
 from django.test.runner import DiscoverRunner
 
 
-
 settings.configure(
     DATABASES={
         'default': dj_database_url.config(default='postgres://localhost/conman'),
@@ -31,7 +30,6 @@ settings.configure(
     MIDDLEWARE_CLASSES=(),
     NAV_NODE_HANDLERS=(),
 )
-
 
 django.setup()
 
