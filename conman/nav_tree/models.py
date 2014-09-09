@@ -45,6 +45,9 @@ class Node(MPTTModel):
 
     objects = NodeManager()
 
+    class Meta:
+        unique_together = ('parent', 'slug')
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.reset_originals()

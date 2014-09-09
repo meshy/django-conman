@@ -1,6 +1,7 @@
 from unittest import mock
 
 from django.core import checks
+from django.db.utils import IntegrityError
 from django.test import TestCase
 
 from .. import handlers
@@ -47,6 +48,15 @@ class NodeValidateOnSave(TestCase):
         with self.assertRaises(ValueError):
             leaf.save()
 
+
+class NodeUniqueness(TestCase):
+    def test_unique_slug_per_parent(self):
+        slug = 'slug'
+        root_node = RootNodeFactory.create()
+        NodeFactory.create(slug=slug, parent=root_node)
+
+        with self.assertRaises(IntegrityError):
+            NodeFactory.create(slug=slug, parent=root_node)
 
 class NodeSkipUpdateWithoutChange(TestCase):
     def setUp(self):
