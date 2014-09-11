@@ -18,7 +18,7 @@ class TestNavTreeURLRouter(TestCase):
         with self.assertRaises(Resolver404):
             self.assert_url_uses_router('')
 
-    def test_blank_url(self):
+    def test_double_slash_url(self):
         """Trailing slashes should trail something."""
         with self.assertRaises(Resolver404):
             self.assert_url_uses_router('//')
