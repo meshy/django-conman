@@ -1,6 +1,5 @@
 from unittest import mock
 
-from django.core import checks
 from django.test import TestCase
 
 from .. import handlers
