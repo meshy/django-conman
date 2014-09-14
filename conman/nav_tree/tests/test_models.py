@@ -1,10 +1,11 @@
 from unittest import mock
 
+from django.db.utils import IntegrityError
 from django.test import TestCase
 
 from .. import handlers
 from ..models import Node
-from .factories import NodeFactory
+from .factories import NodeFactory, RootNodeFactory
 
 
 class NodeTest(TestCase):
@@ -40,16 +41,31 @@ class NodeValidateOnSave(TestCase):
 
     def test_create_leaf_without_slug(self):
         """Leaf nodes must have a slug"""
-        root_node = NodeFactory.create(slug='', parent=None)
+        root_node = RootNodeFactory.create()
         leaf = NodeFactory.build(slug='', parent=root_node)
 
         with self.assertRaises(ValueError):
             leaf.save()
 
 
+class NodeUniqueness(TestCase):
+    def test_unique_slug_per_parent(self):
+        slug = 'slug'
+        root_node = RootNodeFactory.create()
+        NodeFactory.create(slug=slug, parent=root_node)
+
+        with self.assertRaises(IntegrityError):
+            NodeFactory.create(slug=slug, parent=root_node)
+
+    def test_unique_root_url(self):
+        root_node = RootNodeFactory.create()
+
+        with self.assertRaises(IntegrityError):
+            RootNodeFactory.create()
+
 class NodeSkipUpdateWithoutChange(TestCase):
     def setUp(self):
-        self.root = NodeFactory.create(slug='', parent=None)
+        self.root = RootNodeFactory.create()
 
     def test_no_update_without_changes(self):
         """Saving unchanged Node shouldn't query parent to rebuild the url."""
@@ -77,7 +93,7 @@ class NodeSkipUpdateWithoutChange(TestCase):
 
 class NodeCachesURLOnCreateTest(TestCase):
     def setUp(self):
-        self.root = NodeFactory.create(slug='', parent=None)
+        self.root = RootNodeFactory.create()
 
     def test_create_root(self):
         """Root node should be at the root url."""
@@ -99,7 +115,7 @@ class NodeCachesURLOnCreateTest(TestCase):
 
 class NodeCachesURLOnRenameTest(TestCase):
     def setUp(self):
-        self.root = NodeFactory.create(slug='', parent=None)
+        self.root = RootNodeFactory.create()
 
     def test_rename_leaf(self):
         """Changing slug on a leaf should update the cached url."""
@@ -136,7 +152,7 @@ class NodeCachesURLOnRenameTest(TestCase):
 
 class NodeCachesURLOnMoveTest(TestCase):
     def setUp(self):
-        self.root = NodeFactory.create(slug='', parent=None)
+        self.root = RootNodeFactory.create()
 
     def test_move_leaf(self):
         """Moving a leaf onto a new branch should update the cached url."""
@@ -184,14 +200,14 @@ class NodeManagerBestMatchForPathTest(TestCase):
             LIMIT 1
     """
     def test_get_root(self):
-        root = NodeFactory.create(slug='', parent=None)
+        root = RootNodeFactory.create()
         with self.assertNumQueries(1):
             node = Node.objects.best_match_for_path('/')
 
         self.assertEqual(node, root)
 
     def test_get_leaf(self):
-        root = NodeFactory.create(slug='', parent=None)
+        root = RootNodeFactory.create()
         leaf = NodeFactory.create(slug='leaf', parent=root)
 
         with self.assertNumQueries(1):
@@ -200,7 +216,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
         self.assertEqual(node, leaf)
 
     def test_get_leaf_on_branch(self):
-        root = NodeFactory.create(slug='', parent=None)
+        root = RootNodeFactory.create()
         branch = NodeFactory.create(slug='branch', parent=root)
         leaf = NodeFactory.create(slug='leaf', parent=branch)
 
@@ -210,7 +226,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
         self.assertEqual(node, leaf)
 
     def test_get_branch_with_leaf(self):
-        root = NodeFactory.create(slug='', parent=None)
+        root = RootNodeFactory.create()
         branch = NodeFactory.create(slug='branch', parent=root)
         NodeFactory.create(slug='leaf', parent=branch)
 
@@ -246,7 +262,7 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
                 Node.objects.best_match_for_path('/')
 
     def test_fall_back_to_root(self):
-        root = NodeFactory.create(slug='', parent=None)
+        root = RootNodeFactory.create()
 
         with self.assertNumQueries(1):
             node = Node.objects.best_match_for_path('/absent-branch/')
@@ -254,7 +270,7 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
         self.assertEqual(node, root)
 
     def test_fall_back_to_branch(self):
-        root = NodeFactory.create(slug='', parent=None)
+        root = RootNodeFactory.create()
         branch = NodeFactory.create(slug='branch', parent=root)
 
         with self.assertNumQueries(1):
