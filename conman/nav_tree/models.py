@@ -39,7 +39,11 @@ class Node(MPTTModel):
 
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
     handler = models.CharField(max_length=255, choices=HANDLER_CHOICES)
-    slug = models.SlugField(max_length=255, default='')
+    slug = models.SlugField(max_length=255, default='', help_text='''
+        Used to create the location of the Node. The Root Node needs
+        "slug" to be blank; all other Nodes need a value unique to the parent.
+        It can only contain letters, numbers, underscores, or hyphens.
+    ''')
     # Cached location in tree. Reflects parent and slug on self and ancestors.
     url = models.TextField(db_index=True, editable=False, unique=True)
 
