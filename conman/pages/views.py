@@ -1,16 +1,13 @@
-from django.views.generic import TemplateView
+from django.views.generic import DetailView
 
 from . import models
 
 
-class PageDetail(TemplateView):
-    template_name = 'conman/pages/page_detail.html'
+class PageDetail(DetailView):
+    def get_object(self):
+        self.handler = self.kwargs['handler']
+        return models.Page.objects.get(node=self.handler.node)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        handler = self.kwargs['handler']
-        node = handler.node
-        context['handler'] = handler
-        context['node'] = node
-        context['page'] = models.Page.objects.get(node=node)
-        return context
+        kwargs['handler'] = self.handler
+        return super().get_context_data(**kwargs)

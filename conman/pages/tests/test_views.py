@@ -12,12 +12,12 @@ class TestPageDetail(RequestTestCase):
         node = page.node
         handler = node.get_handler_class()(page.node)
 
-        view = self.view(request=request, kwargs={'handler': handler})
+        view = self.view(request=request, object=page, handler=handler)
         context = view.get_context_data()
 
         expected = {
+            'object': page,
             'page': page,
-            'node': node,
             'handler': handler,
             'view': view,
         }
