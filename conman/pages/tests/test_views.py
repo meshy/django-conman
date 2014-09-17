@@ -10,7 +10,7 @@ class TestPageDetail(RequestTestCase):
         request = self.create_request()
         page = factories.PageFactory.create()
         node = page.node
-        handler = node.get_handler_class()(page.node)
+        handler = node.get_handler()
 
         view = self.view(request=request, object=page, handler=handler)
         context = view.get_context_data()
@@ -30,6 +30,6 @@ class TestPageDetailIntegration(IntegrationTestCase):
     def test_get(self):
         page = factories.PageFactory.create(content='This is a test')
         node = page.node
-        handler = node.get_handler_class()(page.node)
+        handler = node.get_handler()
         response = self.access_view_and_render_response(handler=handler)
         self.assert_count(page.content, response, 1)
