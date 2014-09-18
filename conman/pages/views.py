@@ -4,6 +4,13 @@ from . import models
 
 
 class PageDetail(DetailView):
+    """
+    Show a Page in all its glory!
+
+    Requires `handler` in the kwargs in order to:
+      - add it to the `context`, and
+      - get the Page instance.
+    """
     def get_object(self):
         self.handler = self.kwargs['handler']
         return models.Page.objects.get(node=self.handler.node)
