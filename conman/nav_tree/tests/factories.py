@@ -11,3 +11,8 @@ class NodeFactory(factory.DjangoModelFactory):
 class RootNodeFactory(NodeFactory):
     slug = ''
     parent = None
+
+
+class ChildNodeFactory(NodeFactory):
+    parent = factory.SubFactory(RootNodeFactory)
+    slug = factory.Sequence('slug{}'.format)
