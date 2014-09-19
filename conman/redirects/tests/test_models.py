@@ -1,7 +1,6 @@
 from django.test import TestCase
 
 from ..models import NodeRedirect
-from .factories import NodeRedirectFactory
 
 
 class NodeRedirectTest(TestCase):
