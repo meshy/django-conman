@@ -1,6 +1,6 @@
 from .. import handlers, views
 from .factories import NodeRedirectFactory
-from conman.tests.utils import IntegrationTestCase, RequestTestCase
+from conman.tests.utils import RequestTestCase
 from conman.nav_tree.tests.factories import ChildNodeFactory, RootNodeFactory
 
 
