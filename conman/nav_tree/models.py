@@ -60,6 +60,10 @@ class Node(MPTTModel):
         """Imports a class from the python path string in `self.handler`."""
         return import_from_dotted_path(self.handler)
 
+    def get_handler(self):
+        handler_class = self.get_handler_class()
+        return handler_class(self)
+
     def handle(self, request, path):
         """
         Delegate handling the request to the handler.
@@ -68,8 +72,7 @@ class Node(MPTTModel):
         needing to deal with it. If it really needs it, it will be able to
         derive it from the node (self) that is passed to it on instantiation.
         """
-        handler_class = self.get_handler_class()
-        handler = handler_class(self)
+        handler = self.get_handler()
         # Strip the node url from the rest of the path
         path = path[len(self.url) - 1:]
         # Deal with the request
