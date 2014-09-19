@@ -1,4 +1,6 @@
-# django-conman <br><small>A CONtent MANagement system for django (get it?).</small>
+# django-conman
+
+A CONtent MANagement system for django. (Get it?)
 
 ## Requirements
 
