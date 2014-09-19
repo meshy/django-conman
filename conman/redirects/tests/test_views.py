@@ -18,4 +18,4 @@ class TestNodeRedirectView(RequestTestCase):
         response = self.view.as_view()(request, handler=handler)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response._headers['location'][1], target.url)
+        self.assertEqual(response['Location'], target.url)
