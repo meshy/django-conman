@@ -9,3 +9,4 @@ class NodeRedirect(models.Model):
     """
     node = models.OneToOneField('nav_tree.Node', related_name='+')
     target = models.ForeignKey('nav_tree.Node', related_name='+')
+    permanent = models.BooleanField(default=False, blank=True)

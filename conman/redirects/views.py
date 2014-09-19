@@ -8,5 +8,6 @@ class NodeRedirectView(RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        node = kwargs['handler'].node
-        return NodeRedirect.objects.get(node=node).target.url
+        redirect = NodeRedirect.objects.get(node=kwargs['handler'].node)
+        self.permanent = redirect.permanent
+        return redirect.target.url

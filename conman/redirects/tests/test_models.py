@@ -11,6 +11,7 @@ class NodeRedirectTest(TestCase):
             'node_id',
             'target',
             'target_id',
+            'permanent',
         )
         fields = NodeRedirect._meta.get_all_field_names()
         self.assertCountEqual(fields, expected)
