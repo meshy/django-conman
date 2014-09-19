@@ -23,6 +23,7 @@ settings.configure(
         'django.contrib.sessions',
         'django.contrib.admin',
         'conman.nav_tree',
+        'conman.pages',
         'conman.redirects',
     ),
     PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',),

@@ -287,6 +287,15 @@ class NodeGetHandlerClassTest(TestCase):
         self.assertEqual(node.get_handler_class(), handler)
 
 
+class NodeGetHandlerTest(TestCase):
+    def test_get_handler(self):
+        handler_class = handlers.BaseHandler
+        node = NodeFactory.build(handler=handler_class.path())
+
+        handler = node.get_handler()
+        self.assertIsInstance(handler, handler_class)
+        self.assertEqual(handler.node, node)
+
 class NodeHandleTest(TestCase):
     def test_handle(self):
         node = NodeFactory.build(url='/branch/')

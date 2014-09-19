@@ -12,5 +12,8 @@ setup(
     author='Incuna',
     author_email='admin@incuna.com',
     url='https://github.com/incuna/django-conman/',
-    install_requires=['django-mptt>=0.6.1,<=0.7'],
+    install_requires=[
+        'django-mptt>=0.6.1,<=0.7',
+        'django-sirtrevor==0.2.3',
+    ],
 )
