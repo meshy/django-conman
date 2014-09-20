@@ -9,20 +9,20 @@ from .factories import NodeFactory, RootNodeFactory
 
 
 NODE_BASE_FIELDS = (
-        'handler',
-        'parent',
-        'parent_id',
-        'slug',
-        'url',
+    'handler',
+    'parent',
+    'parent_id',
+    'slug',
+    'url',
 
-        # MPTT fields
-        'level',
-        'lft',
-        'rght',
-        'tree_id',
+    # MPTT fields
+    'level',
+    'lft',
+    'rght',
+    'tree_id',
 
-        # Incoming foreign keys
-        'children',  # FK from self. The other end of "parent".
+    # Incoming foreign keys
+    'children',  # FK from self. The other end of "parent".
 )
 
 
