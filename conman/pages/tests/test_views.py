@@ -4,24 +4,15 @@ from conman.tests.utils import IntegrationTestCase, RequestTestCase
 
 
 class TestPageDetail(RequestTestCase):
-    view = views.PageDetail
-
-    def test_get_context_data(self):
+    def test_get_object(self):
         request = self.create_request()
         page = factories.PageFactory.create()
-        node = page.node
-        handler = node.get_handler()
+        handler = page.node_ptr.get_handler()
 
-        view = self.view(request=request, object=page, handler=handler)
-        context = view.get_context_data()
+        view = views.PageDetail(request=request, kwargs={'handler': handler})
+        obj = view.get_object()
 
-        expected = {
-            'object': page,
-            'page': page,
-            'handler': handler,
-            'view': view,
-        }
-        self.assertEqual(context, expected)
+        self.assertEqual(obj, page)
 
 
 class TestPageDetailIntegration(IntegrationTestCase):
@@ -29,7 +20,6 @@ class TestPageDetailIntegration(IntegrationTestCase):
 
     def test_get(self):
         page = factories.PageFactory.create(content='This is a test')
-        node = page.node
-        handler = node.get_handler()
+        handler = page.node_ptr.get_handler()
         response = self.access_view_and_render_response(handler=handler)
         self.assert_count(page.content, response, 1)

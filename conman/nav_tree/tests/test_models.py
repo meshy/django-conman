@@ -8,25 +8,31 @@ from ..models import Node
 from .factories import NodeFactory, RootNodeFactory
 
 
+NODE_BASE_FIELDS = (
+        'handler',
+        'parent',
+        'parent_id',
+        'slug',
+        'url',
+
+        # MPTT fields
+        'level',
+        'lft',
+        'rght',
+        'tree_id',
+
+        # Incoming foreign keys
+        'children',  # FK from self. The other end of "parent".
+)
+
+
 class NodeTest(TestCase):
     def test_fields(self):
         expected = (
             'id',
-            'handler',
-            'parent',
-            'parent_id',
-            'slug',
-            'url',
-
-            # MPTT fields
-            'level',
-            'lft',
-            'rght',
-            'tree_id',
-
-            # Incoming foreign keys
-            'children',  # FK from self. The other end of "parent".
-        )
+            'noderedirect',
+            'page',
+        ) + NODE_BASE_FIELDS
         fields = Node._meta.get_all_field_names()
         self.assertCountEqual(fields, expected)
 
