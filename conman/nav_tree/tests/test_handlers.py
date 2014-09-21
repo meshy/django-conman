@@ -58,12 +58,13 @@ class BaseHandlerHandleTest(TestCase):
 
     def test_handle_slug(self):
         """Show that url resolving works with slugs"""
+        slug = 'slug'
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request, '/slug/')
 
-        view.assert_called_with(self.request, handler=self.handler, slug='slug')
+        view.assert_called_with(self.request, handler=self.handler, slug=slug)
 
-        expected = view(self.request, handler=self.handler, slug='slug')
+        expected = view(self.request, handler=self.handler, slug=slug)
         self.assertEqual(response, expected)
 
     def test_handle_no_url_match(self):
@@ -95,7 +96,8 @@ class SimpleHandlerHandleTest(TestCase):
         response = self.handler.handle(self.request, '/')
 
         self.view.assert_called_with(self.request, handler=self.handler)
-        self.assertEqual(response, self.view(self.request, handler=self.handler))
+        expected = self.view(self.request, handler=self.handler)
+        self.assertEqual(response, expected)
 
     def test_handle_slug(self):
         """Show that slugs are not accepted"""

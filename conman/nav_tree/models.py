@@ -95,11 +95,11 @@ class Node(MPTTModel):
 
         Adapted from feincms/module/page/models.py:248 in FeinCMS v1.9.5.
         """
-        has_parent = bool(self.parent_id)
+        is_root = self.parent_id is None
         has_slug = bool(self.slug)
 
-        # Must have both or neither
-        if has_parent != has_slug:
+        # Must be one or the other
+        if is_root == has_slug:
             raise ValueError('Node can be a root, or have a slug, not both.')
 
         def make_url(parent_url, slug):
@@ -110,7 +110,7 @@ class Node(MPTTModel):
         url_changed = parent_changed or slug_changed or not self.url
 
         if url_changed:
-            self.url = make_url(self.parent.url, self.slug) if has_parent else '/'
+            self.url = '/' if is_root else make_url(self.parent.url, self.slug)
 
         super().save(*args, **kwargs)
         self.reset_originals()
