@@ -21,4 +21,4 @@ class TestPageDetailIntegration(RequestTestCase):
     def test_get(self):
         page = factories.PageFactory.create(content='This is a test')
         response = page.handle(self.create_request(), page.url)
-        self.assertIn(page.content, response)
+        self.assertIn(page.content, response.rendered_content)
