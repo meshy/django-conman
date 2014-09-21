@@ -1,8 +1,8 @@
-from django.db import models
 from sirtrevor.fields import SirTrevorField
 
+from conman.nav_tree.models import Node
 
-class Page(models.Model):
+
+class Page(Node):
     """A basic Page of content provided by Sir Trevor"""
-    node = models.OneToOneField('nav_tree.Node', related_name='+')
     content = SirTrevorField(default='')

@@ -1,38 +1,35 @@
-from .. import handlers, views
-from .factories import NodeRedirectFactory
+from .. import views
+from .factories import ChildNodeRedirectFactory
 from conman.tests.utils import RequestTestCase
-from conman.nav_tree.tests.factories import ChildNodeFactory, RootNodeFactory
+from conman.nav_tree.tests.factories import RootNodeFactory
 
 
 class TestNodeRedirectView(RequestTestCase):
-    view = views.NodeRedirectView
-
     def setUp(self):
-        self.target = RootNodeFactory.create()
-        handler_path = handlers.NodeRedirectHandler.path()
-        self.node = ChildNodeFactory(parent=self.target, handler=handler_path)
-
-        self.handler = self.node.get_handler()
+        self.root = RootNodeFactory.create()
         self.request = self.create_request()
+        self.view = views.NodeRedirectView.as_view()
 
     def test_permanent(self):
-        NodeRedirectFactory.create(
-            target=self.target,
-            node=self.node,
+        node = ChildNodeRedirectFactory.create(
+            parent=self.root,
+            target=self.root,
             permanent=True,
         )
-        response = self.view.as_view()(self.request, handler=self.handler)
+        handler = node.node_ptr.get_handler()
+        response = self.view(self.request, handler=handler)
 
         self.assertEqual(response.status_code, 301)
-        self.assertEqual(response['Location'], self.target.url)
+        self.assertEqual(response['Location'], self.root.url)
 
     def test_temporary(self):
-        NodeRedirectFactory.create(
-            target=self.target,
-            node=self.node,
+        node = ChildNodeRedirectFactory.create(
+            parent=self.root,
+            target=self.root,
             permanent=False,
         )
-        response = self.view.as_view()(self.request, handler=self.handler)
+        handler = node.node_ptr.get_handler()
+        response = self.view(self.request, handler=handler)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['Location'], self.target.url)
+        self.assertEqual(response['Location'], self.root.url)

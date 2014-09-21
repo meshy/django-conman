@@ -1,11 +1,9 @@
 from django.views.generic import RedirectView
 
-from .models import NodeRedirect
-
 
 class NodeRedirectView(RedirectView):
     """Redirect to the target Node."""
     def get_redirect_url(self, *args, **kwargs):
-        redirect = NodeRedirect.objects.get(node=kwargs['handler'].node)
+        redirect = kwargs['handler'].node.noderedirect
         self.permanent = redirect.permanent
         return redirect.target.url
