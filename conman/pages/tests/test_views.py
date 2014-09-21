@@ -15,11 +15,10 @@ class TestPageDetail(RequestTestCase):
         self.assertEqual(obj, page)
 
 
-class TestPageDetailIntegration(IntegrationTestCase):
+class TestPageDetailIntegration(RequestTestCase):
     view = views.PageDetail
 
     def test_get(self):
         page = factories.PageFactory.create(content='This is a test')
-        handler = page.node_ptr.get_handler()
-        response = self.access_view_and_render_response(handler=handler)
-        self.assert_count(page.content, response, 1)
+        response = page.handle(self.create_request(), page.url)
+        self.assertIn(page.content, response)
