@@ -1,11 +1,14 @@
 from django.conf.urls import url
 
 
-def dummy_view(request, node, *args, **kwargs):
+def dummy_view():
     """Always gets mocked."""
 
 
+view_path = 'conman.nav_tree.tests.urls.dummy_view'
+
+
 urlpatterns = [
-    url(r'^$', 'conman.nav_tree.tests.urls.dummy_view'),
-    url(r'^(?P<slug>[a-zA-Z0-9_-]+)/$', 'conman.nav_tree.tests.urls.dummy_view'),
+    url(r'^$', view_path),
+    url(r'^(?P<slug>[a-zA-Z0-9_-]+)/$', view_path),
 ]

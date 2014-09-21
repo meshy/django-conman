@@ -64,10 +64,11 @@ class NodeUniqueness(TestCase):
             NodeFactory.create(slug=slug, parent=root_node)
 
     def test_unique_root_url(self):
-        root_node = RootNodeFactory.create()
+        RootNodeFactory.create()
 
         with self.assertRaises(IntegrityError):
             RootNodeFactory.create()
+
 
 class NodeSkipUpdateWithoutChange(TestCase):
     def setUp(self):
@@ -302,6 +303,7 @@ class NodeGetHandlerTest(TestCase):
         self.assertIsInstance(handler, handler_class)
         self.assertEqual(handler.node, node)
 
+
 class NodeHandleTest(TestCase):
     def test_handle(self):
         node = NodeFactory.build(url='/branch/')
@@ -341,14 +343,15 @@ class NodeHandlerCheckTest(TestCase):
 
     def test_wrong_choice_class(self):
         """Having choices that are not classes should return an error"""
-        handlers = [('conman.nav_tree.tests', 'A module')]
+        path = 'conman.nav_tree.tests'
+        handlers = [(path, 'A module')]
 
         with self.settings(NAV_NODE_HANDLERS=handlers):
             errors = Node.check()
 
         self.assertEqual(len(errors), 1)
-        expected = "Expected 'conman.nav_tree.tests' from NAV_NODE_HANDLERS to be a class"
-        self.assertEqual(errors[0].msg, expected)
+        expected = "Expected '{}' from NAV_NODE_HANDLERS to be a class"
+        self.assertEqual(errors[0].msg, expected.format(path))
 
     def test_bad_path(self):
         """Having a choice that cannot be imported should return an error"""

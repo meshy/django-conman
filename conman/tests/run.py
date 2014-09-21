@@ -10,9 +10,9 @@ from django.test.runner import DiscoverRunner
 
 
 settings.configure(
-    DATABASES={
-        'default': dj_database_url.config(default='postgres://localhost/conman'),
-    },
+    DATABASES={'default': dj_database_url.config(
+        default='postgres://localhost/conman',
+    )},
     DEFAULT_FILE_STORAGE='inmemorystorage.InMemoryStorage',
     INSTALLED_APPS=(
         # Put contenttypes before auth to work around test issue.
