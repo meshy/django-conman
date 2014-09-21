@@ -10,4 +10,8 @@ class TestNodeRedirectHandler(TestCase):
         self.assertTrue(issubclass(NodeRedirectHandler, SimpleHandler))
 
     def test_view(self):
-        self.assertEqual(NodeRedirectHandler.view, NodeRedirectView)
+        view = NodeRedirectHandler.view
+        expected = NodeRedirectView.as_view()
+
+        self.assertEqual(view.__name__, expected.__name__)
+        self.assertEqual(view.__module__, expected.__module__)
