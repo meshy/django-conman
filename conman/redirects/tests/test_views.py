@@ -40,6 +40,7 @@ class TestNodeRedirectView(RequestTestCase):
 class TestNodeRedirectViewIntegration(TestCase):
     def setUp(self):
         self.root = RootNodeFactory.create()
+        self.expected = 'http://testserver' + self.root.url
 
     def test_permanent(self):
         node = ChildNodeRedirectFactory.create(
@@ -50,8 +51,7 @@ class TestNodeRedirectViewIntegration(TestCase):
         response = self.client.get(node.url)
 
         self.assertEqual(response.status_code, 301)
-        expected = 'http://testserver' + self.root.url
-        self.assertEqual(response['Location'], expected)
+        self.assertEqual(response['Location'], self.expected)
 
     def test_temporary(self):
         node = ChildNodeRedirectFactory.create(
@@ -62,5 +62,4 @@ class TestNodeRedirectViewIntegration(TestCase):
         response = self.client.get(node.url)
 
         self.assertEqual(response.status_code, 302)
-        expected = 'http://testserver' + self.root.url
-        self.assertEqual(response['Location'], expected)
+        self.assertEqual(response['Location'], self.expected)
