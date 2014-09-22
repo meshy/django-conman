@@ -85,6 +85,7 @@ class SimpleHandlerHandleTest(TestCase):
         self.node = mock.Mock()
         self.request = mock.Mock()
         self.handler = TestHandler(self.node)
+        self.node.get_handler.return_value = self.handler
         self.view = TestHandler.view
 
     def tearDown(self):
