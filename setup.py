@@ -14,6 +14,7 @@ setup(
     url='https://github.com/incuna/django-conman/',
     install_requires=[
         'django-mptt>=0.6.1,<=0.7',
-        'django-sirtrevor==0.2.3',
+        'django-polymorphic-tree>=1.0b1'
+        'django-sirtrevor>=0.2.3,<0.3',
     ],
 )

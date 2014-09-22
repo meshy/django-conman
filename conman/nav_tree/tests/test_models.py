@@ -21,6 +21,10 @@ NODE_BASE_FIELDS = (
     'rght',
     'tree_id',
 
+    # Polymorphic fields
+    'polymorphic_ctype',
+    'polymorphic_ctype_id',
+
     # Incoming foreign keys
     'children',  # FK from self. The other end of "parent".
 )
