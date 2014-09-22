@@ -352,3 +352,16 @@ class NodeHandlerCheckTest(TestCase):
         self.assertEqual(len(errors), 1)
         expected = "Error importing 'broken' from NAV_NODE_HANDLERS"
         self.assertEqual(errors[0].msg, expected)
+
+
+class NodeUnicodeMethodTest(TestCase):
+    def test_root_str(self):
+        node = RootNodeFactory.create()
+
+        self.assertEqual(str(node), 'Node @ /')
+
+    def test_child_str(self):
+        root = RootNodeFactory.create()
+        leaf = NodeFactory.create(slug='leaf', parent=root)
+
+        self.assertEqual(str(leaf), 'Node @ /leaf/')
