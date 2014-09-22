@@ -67,8 +67,12 @@ class Node(PolymorphicMPTTModel):
         return import_from_dotted_path(self.handler)
 
     def get_handler(self):
-        handler_class = self.get_handler_class()
-        return handler_class(self)
+        try:
+            return self._handler
+        except AttributeError:
+            handler_class = self.get_handler_class()
+            self._handler = handler_class(self)
+            return self._handler
 
     def handle(self, request, path):
         """
