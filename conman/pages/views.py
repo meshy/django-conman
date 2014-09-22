@@ -8,4 +8,4 @@ class PageDetail(DetailView):
     Requires `handler` in the kwargs in order to get the Page instance.
     """
     def get_object(self):
-        return self.kwargs['handler'].node.page
+        return self.kwargs['handler'].node

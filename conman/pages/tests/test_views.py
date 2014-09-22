@@ -9,7 +9,7 @@ class TestPageDetail(RequestTestCase):
     def test_get_object(self):
         request = self.create_request()
         page = factories.PageFactory.create()
-        handler = page.node_ptr.get_handler()
+        handler = page.get_handler()
 
         view = views.PageDetail(request=request, kwargs={'handler': handler})
         obj = view.get_object()

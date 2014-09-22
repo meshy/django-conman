@@ -17,7 +17,7 @@ class TestNodeRedirectView(RequestTestCase):
             target=self.target,
             permanent=True,
         )
-        handler = node.node_ptr.get_handler()
+        handler = node.get_handler()
         response = self.view(self.request, handler=handler)
 
         self.assertEqual(response.status_code, 301)
@@ -28,7 +28,7 @@ class TestNodeRedirectView(RequestTestCase):
             target=self.target,
             permanent=False,
         )
-        handler = node.node_ptr.get_handler()
+        handler = node.get_handler()
         response = self.view(self.request, handler=handler)
 
         self.assertEqual(response.status_code, 302)
