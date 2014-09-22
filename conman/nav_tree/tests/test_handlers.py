@@ -92,7 +92,7 @@ class SimpleHandlerHandleTest(TestCase):
         clear_url_caches()
 
     def test_handle_basic(self):
-        """Show that SimpleHandler.view is used ot process the request"""
+        """Show that SimpleHandler.view is used to process the request"""
         response = self.handler.handle(self.request, '/')
 
         self.view.assert_called_with(self.request, node=self.node)
