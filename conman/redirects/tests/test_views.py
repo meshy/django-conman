@@ -1,3 +1,5 @@
+from django.test import TestCase
+
 from .. import views
 from .factories import ChildNodeRedirectFactory
 from conman.tests.utils import RequestTestCase
@@ -35,10 +37,9 @@ class TestNodeRedirectView(RequestTestCase):
         self.assertEqual(response['Location'], self.root.url)
 
 
-class TestNodeRedirectViewIntegration(RequestTestCase):
+class TestNodeRedirectViewIntegration(TestCase):
     def setUp(self):
         self.root = RootNodeFactory.create()
-        self.request = self.create_request()
 
     def test_permanent(self):
         node = ChildNodeRedirectFactory.create(
@@ -46,10 +47,11 @@ class TestNodeRedirectViewIntegration(RequestTestCase):
             target=self.root,
             permanent=True,
         )
-        response = node.handle(self.request, node.url)
+        response = self.client.get(node.url)
 
         self.assertEqual(response.status_code, 301)
-        self.assertEqual(response['Location'], self.root.url)
+        expected = 'http://testserver' + self.root.url
+        self.assertEqual(response['Location'], expected)
 
     def test_temporary(self):
         node = ChildNodeRedirectFactory.create(
@@ -57,7 +59,8 @@ class TestNodeRedirectViewIntegration(RequestTestCase):
             target=self.root,
             permanent=False,
         )
-        response = node.handle(self.request, node.url)
+        response = self.client.get(node.url)
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['Location'], self.root.url)
+        expected = 'http://testserver' + self.root.url
+        self.assertEqual(response['Location'], expected)

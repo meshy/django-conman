@@ -1,6 +1,8 @@
+from django.test import TestCase
+
 from .. import views
 from . import factories
-from conman.tests.utils import IntegrationTestCase, RequestTestCase
+from conman.tests.utils import RequestTestCase
 
 
 class TestPageDetail(RequestTestCase):
@@ -15,10 +17,10 @@ class TestPageDetail(RequestTestCase):
         self.assertEqual(obj, page)
 
 
-class TestPageDetailIntegration(RequestTestCase):
+class TestPageDetailIntegration(TestCase):
     view = views.PageDetail
 
     def test_get(self):
         page = factories.PageFactory.create(content='This is a test')
-        response = page.handle(self.create_request(), page.url)
+        response = self.client.get(page.url)
         self.assertIn(page.content, response.rendered_content)
