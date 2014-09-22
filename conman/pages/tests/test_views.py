@@ -9,9 +9,8 @@ class TestPageDetail(RequestTestCase):
     def test_get_object(self):
         request = self.create_request()
         page = factories.PageFactory.create()
-        handler = page.get_handler()
 
-        view = views.PageDetail(request=request, kwargs={'handler': handler})
+        view = views.PageDetail(request=request, kwargs={'node': page})
         obj = view.get_object()
 
         self.assertEqual(obj, page)

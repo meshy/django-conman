@@ -8,7 +8,7 @@ class BaseHandler:
     Subclasses should define a `urlconf` property as a dotted path. This will
     be used to resolve a view when handling requests.
 
-    Views referenced in the `urlconf` will recieve `handler` as a kwarg, as
+    Views referenced in the `urlconf` will recieve `node` as a kwarg, as
     well as the other args and kwargs they would expect given their urlpattern.
     """
     @classmethod
@@ -17,7 +17,7 @@ class BaseHandler:
         return '{}.{}'.format(cls.__module__, cls.__name__)
 
     def __init__(self, node):
-        """Store the Node we're handling so subclasses can use it."""
+        """Store the Node so that we know what we're handling."""
         self.node = node
 
     def handle(self, request, path):
@@ -29,4 +29,4 @@ class BaseHandler:
         Raises `django.core.urlresolvers.Resolver404` if `path` isn't found.
         """
         view, args, kwargs = resolve(path, urlconf=self.urlconf)
-        return view(request, *args, handler=self, **kwargs)
+        return view(request, *args, node=self.node, **kwargs)

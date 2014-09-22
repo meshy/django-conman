@@ -53,8 +53,8 @@ class BaseHandlerHandleTest(TestCase):
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request, '/')
 
-        view.assert_called_with(self.request, handler=self.handler)
-        self.assertEqual(response, view(self.request, handler=self.handler))
+        view.assert_called_with(self.request, node=self.node)
+        self.assertEqual(response, view(self.request, node=self.node))
 
     def test_handle_slug(self):
         """Show that url resolving works with slugs"""
@@ -62,9 +62,9 @@ class BaseHandlerHandleTest(TestCase):
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request, '/slug/')
 
-        view.assert_called_with(self.request, handler=self.handler, slug=slug)
+        view.assert_called_with(self.request, node=self.node, slug=slug)
 
-        expected = view(self.request, handler=self.handler, slug=slug)
+        expected = view(self.request, node=self.node, slug=slug)
         self.assertEqual(response, expected)
 
     def test_handle_no_url_match(self):
@@ -95,8 +95,8 @@ class SimpleHandlerHandleTest(TestCase):
         """Show that SimpleHandler.view is used ot process the request"""
         response = self.handler.handle(self.request, '/')
 
-        self.view.assert_called_with(self.request, handler=self.handler)
-        expected = self.view(self.request, handler=self.handler)
+        self.view.assert_called_with(self.request, node=self.node)
+        expected = self.view(self.request, node=self.node)
         self.assertEqual(response, expected)
 
     def test_handle_slug(self):
@@ -132,7 +132,7 @@ class SimpleHandlerViewBindingTest(TestCase):
     def test_bound_function(self):
         """Make sure that class based views get the expected args"""
         class TestView(View):
-            def dispatch(self, request, handler=None):
+            def dispatch(self, request, node=None):
                 return self, request
 
         class TestHandler(SimpleHandler):
