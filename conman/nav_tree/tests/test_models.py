@@ -363,7 +363,7 @@ class NodeHandlerCheckTest(TestCase):
         self.assertEqual(errors[0].msg, expected)
 
 
-class NodeUnicodeMethodTest(TestCase):
+class NodeStrTest(TestCase):
     def test_root_str(self):
         node = RootNodeFactory.create()
 

@@ -8,7 +8,7 @@ class BaseHandler:
     Subclasses should define a `urlconf` property as a dotted path. This will
     be used to resolve a view when handling requests.
 
-    Views referenced in the `urlconf` will recieve `node` as a kwarg, as
+    Views referenced in the `urlconf` will receive `node` as a kwarg, as
     well as the other args and kwargs they would expect given their urlpattern.
     """
     @classmethod
