@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from .. import handlers
 from ..models import Node
-from .factories import NodeFactory, RootNodeFactory
+from .factories import ChildNodeFactory, NodeFactory, RootNodeFactory
 
 
 NODE_BASE_FIELDS = (
@@ -64,19 +64,16 @@ class NodeUniqueness(TestCase):
             NodeFactory.create(slug=slug, parent=root_node)
 
     def test_unique_root_url(self):
-        RootNodeFactory.create()
+        Node.objects.create(slug='')
 
         with self.assertRaises(IntegrityError):
-            RootNodeFactory.create()
+            Node.objects.create(slug='')
 
 
 class NodeSkipUpdateWithoutChange(TestCase):
-    def setUp(self):
-        self.root = RootNodeFactory.create()
-
     def test_no_update_without_changes(self):
         """Saving unchanged Node shouldn't query parent to rebuild the url."""
-        branch = NodeFactory.create(slug='branch', parent=self.root)
+        branch = ChildNodeFactory.create(slug='branch')
         branch = Node.objects.get(pk=branch.pk)
         # Prove that no attempt is made to update descendants.
         with self.assertNumQueries(1):
@@ -86,7 +83,7 @@ class NodeSkipUpdateWithoutChange(TestCase):
 
     def test_no_update_on_resave(self):
         """Resaving changed Node should only update descendants once."""
-        branch = NodeFactory.create(slug='branch', parent=self.root)
+        branch = ChildNodeFactory.create(slug='branch')
         NodeFactory.create(slug='leaf', parent=branch)
         branch.slug = 'new_slug'
         branch.save()
@@ -121,12 +118,9 @@ class NodeCachesURLOnCreateTest(TestCase):
 
 
 class NodeCachesURLOnRenameTest(TestCase):
-    def setUp(self):
-        self.root = RootNodeFactory.create()
-
     def test_rename_leaf(self):
         """Changing slug on a leaf should update the cached url."""
-        leaf = NodeFactory.create(slug='foo', parent=self.root)
+        leaf = ChildNodeFactory.create(slug='foo')
 
         leaf.slug = 'bar'
         leaf.save()
@@ -135,7 +129,7 @@ class NodeCachesURLOnRenameTest(TestCase):
 
     def test_rename_branch(self):
         """Changing a branch slug should update the child url."""
-        branch = NodeFactory.create(slug='foo', parent=self.root)
+        branch = ChildNodeFactory.create(slug='foo')
         leaf = NodeFactory.create(slug='leaf', parent=branch)
 
         branch.slug = 'bar'
@@ -146,7 +140,7 @@ class NodeCachesURLOnRenameTest(TestCase):
 
     def test_rename_trunk(self):
         """Changing a trunk slug should update the grandchild url."""
-        trunk = NodeFactory.create(slug='foo', parent=self.root)
+        trunk = ChildNodeFactory.create(slug='foo')
         branch = NodeFactory.create(slug='branch', parent=trunk)
         leaf = NodeFactory.create(slug='leaf', parent=branch)
 
@@ -158,15 +152,12 @@ class NodeCachesURLOnRenameTest(TestCase):
 
 
 class NodeCachesURLOnMoveTest(TestCase):
-    def setUp(self):
-        self.root = RootNodeFactory.create()
-
     def test_move_leaf(self):
         """Moving a leaf onto a new branch should update the cached url."""
-        branch = NodeFactory.create(slug='foo', parent=self.root)
+        branch = ChildNodeFactory.create(slug='foo')
         leaf = NodeFactory.create(slug='leaf', parent=branch)
 
-        new_branch = NodeFactory.create(slug='bar', parent=self.root)
+        new_branch = ChildNodeFactory.create(slug='bar')
         leaf.parent = new_branch
         leaf.save()
 
@@ -174,11 +165,11 @@ class NodeCachesURLOnMoveTest(TestCase):
 
     def test_move_branch(self):
         """Moving a branch onto a new trunk should update the leaf urls."""
-        trunk = NodeFactory.create(slug='foo', parent=self.root)
+        trunk = ChildNodeFactory.create(slug='foo')
         branch = NodeFactory.create(slug='branch', parent=trunk)
         leaf = NodeFactory.create(slug='leaf', parent=branch)
 
-        new_trunk = NodeFactory.create(slug='bar', parent=self.root)
+        new_trunk = ChildNodeFactory.create(slug='bar')
         branch.parent = new_trunk
         branch.save()
 
@@ -214,8 +205,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
         self.assertEqual(node, root)
 
     def test_get_leaf(self):
-        root = RootNodeFactory.create()
-        leaf = NodeFactory.create(slug='leaf', parent=root)
+        leaf = ChildNodeFactory.create(slug='leaf')
 
         with self.assertNumQueries(1):
             node = Node.objects.best_match_for_path('/leaf/')
@@ -223,8 +213,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
         self.assertEqual(node, leaf)
 
     def test_get_leaf_on_branch(self):
-        root = RootNodeFactory.create()
-        branch = NodeFactory.create(slug='branch', parent=root)
+        branch = ChildNodeFactory.create(slug='branch')
         leaf = NodeFactory.create(slug='leaf', parent=branch)
 
         with self.assertNumQueries(1):
@@ -233,8 +222,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
         self.assertEqual(node, leaf)
 
     def test_get_branch_with_leaf(self):
-        root = RootNodeFactory.create()
-        branch = NodeFactory.create(slug='branch', parent=root)
+        branch = ChildNodeFactory.create(slug='branch')
         NodeFactory.create(slug='leaf', parent=branch)
 
         with self.assertNumQueries(1):
@@ -277,8 +265,7 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
         self.assertEqual(node, root)
 
     def test_fall_back_to_branch(self):
-        root = RootNodeFactory.create()
-        branch = NodeFactory.create(slug='branch', parent=root)
+        branch = ChildNodeFactory.create(slug='branch')
 
         with self.assertNumQueries(1):
             node = Node.objects.best_match_for_path('/branch/absent-leaf/')

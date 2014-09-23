@@ -12,6 +12,9 @@ class RootNodeFactory(NodeFactory):
     slug = ''
     parent = None
 
+    class Meta:
+        django_get_or_create = ['slug']
+
 
 class ChildNodeFactory(NodeFactory):
     parent = factory.SubFactory(RootNodeFactory)
