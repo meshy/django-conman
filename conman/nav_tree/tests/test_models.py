@@ -286,7 +286,9 @@ class NodeGetHandlerClassTest(TestCase):
 
 
 class NodeGetHandlerTest(TestCase):
+    """Make sure that Node.get_handler acts as expected"""
     def test_get_handler(self):
+        """We expect an instance of handler instanciated with a Node"""
         handler_class = handlers.BaseHandler
         node = NodeFactory.build(handler=handler_class.path())
 
@@ -295,6 +297,7 @@ class NodeGetHandlerTest(TestCase):
         self.assertEqual(handler.node, node)
 
     def test_get_handler_again(self):
+        """Make sure we always get the same instance of a handler on a Node"""
         handler_class = handlers.BaseHandler
         node = NodeFactory.build(handler=handler_class.path())
 
@@ -364,12 +367,15 @@ class NodeHandlerCheckTest(TestCase):
 
 
 class NodeStrTest(TestCase):
+    """Make sure that we get something nice when Node is cast to string"""
     def test_root_str(self):
+        """Does it work for a root Node?"""
         node = RootNodeFactory.create()
 
         self.assertEqual(str(node), 'Node @ /')
 
     def test_child_str(self):
+        """Does it work for a leaf node?"""
         root = RootNodeFactory.create()
         leaf = NodeFactory.create(slug='leaf', parent=root)
 

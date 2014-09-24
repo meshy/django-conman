@@ -67,6 +67,12 @@ class Node(PolymorphicMPTTModel):
         return import_from_dotted_path(self.handler)
 
     def get_handler(self):
+        """
+        Get an instance of the handler for this Node instance.
+
+        Multiple calls to this method (on the same instance of Node) will
+        return the same instance of handler.
+        """
         try:
             return self._handler
         except AttributeError:

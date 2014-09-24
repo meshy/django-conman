@@ -21,6 +21,7 @@ class NodeRedirectTest(TestCase):
 
 
 class NodeRedirectUnicodeMethodTest(TestCase):
+    """We should get something nice when RedirectNode is cast to string"""
     def test_str(self):
         root = RootNodeFactory.create()
         leaf = ChildNodeRedirectFactory.create(
