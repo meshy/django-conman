@@ -3,4 +3,4 @@ from conman.nav_tree.handlers import SimpleHandler
 
 
 class NodeRedirectHandler(SimpleHandler):
-    view = views.NodeRedirectView
+    view = views.NodeRedirectView.as_view()
