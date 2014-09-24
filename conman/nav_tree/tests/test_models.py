@@ -21,6 +21,10 @@ NODE_BASE_FIELDS = (
     'rght',
     'tree_id',
 
+    # Polymorphic fields
+    'polymorphic_ctype',
+    'polymorphic_ctype_id',
+
     # Incoming foreign keys
     'children',  # FK from self. The other end of "parent".
 )
@@ -282,13 +286,25 @@ class NodeGetHandlerClassTest(TestCase):
 
 
 class NodeGetHandlerTest(TestCase):
+    """Make sure that Node.get_handler acts as expected"""
     def test_get_handler(self):
+        """We expect an instance of handler instanciated with a Node"""
         handler_class = handlers.BaseHandler
         node = NodeFactory.build(handler=handler_class.path())
 
         handler = node.get_handler()
         self.assertIsInstance(handler, handler_class)
         self.assertEqual(handler.node, node)
+
+    def test_get_handler_again(self):
+        """Make sure we always get the same instance of a handler on a Node"""
+        handler_class = handlers.BaseHandler
+        node = NodeFactory.build(handler=handler_class.path())
+
+        first_handler = node.get_handler()
+        second_handler = node.get_handler()
+
+        self.assertEqual(first_handler, second_handler)
 
 
 class NodeHandleTest(TestCase):
@@ -348,3 +364,19 @@ class NodeHandlerCheckTest(TestCase):
         self.assertEqual(len(errors), 1)
         expected = "Error importing 'broken' from NAV_NODE_HANDLERS"
         self.assertEqual(errors[0].msg, expected)
+
+
+class NodeStrTest(TestCase):
+    """Make sure that we get something nice when Node is cast to string"""
+    def test_root_str(self):
+        """Does it work for a root Node?"""
+        node = RootNodeFactory.create()
+
+        self.assertEqual(str(node), 'Node @ /')
+
+    def test_child_str(self):
+        """Does it work for a leaf node?"""
+        root = RootNodeFactory.create()
+        leaf = NodeFactory.create(slug='leaf', parent=root)
+
+        self.assertEqual(str(leaf), 'Node @ /leaf/')

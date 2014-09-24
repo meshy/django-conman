@@ -3,13 +3,16 @@ import inspect
 from django.conf import settings
 from django.core import checks
 from django.db import models
-from mptt.models import MPTTModel, TreeForeignKey
-from mptt.managers import TreeManager
+from polymorphic_tree.managers import PolymorphicMPTTModelManager
+from polymorphic_tree.models import (
+    PolymorphicMPTTModel,
+    PolymorphicTreeForeignKey,
+)
 
 from .utils import import_from_dotted_path, split_path
 
 
-class NodeManager(TreeManager):
+class NodeManager(PolymorphicMPTTModelManager):
     def best_match_for_path(self, path):
         """
         Return the best match for a path. If the path as given is unavailable,
@@ -34,10 +37,10 @@ class NodeManager(TreeManager):
             raise self.model.DoesNotExist(msg)
 
 
-class Node(MPTTModel):
+class Node(PolymorphicMPTTModel):
     HANDLER_CHOICES = settings.NAV_NODE_HANDLERS
 
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    parent = PolymorphicTreeForeignKey('self', null=True, blank=True, related_name='children')
     handler = models.CharField(max_length=255, choices=HANDLER_CHOICES)
     slug = models.SlugField(max_length=255, default='', help_text='''
         Used to create the location of the Node. The Root Node needs
@@ -56,13 +59,25 @@ class Node(MPTTModel):
         super().__init__(*args, **kwargs)
         self.reset_originals()
 
+    def __str__(self):
+        return '{} @ {}'.format(self.__class__.__name__, self.url)
+
     def get_handler_class(self):
         """Imports a class from the python path string in `self.handler`."""
         return import_from_dotted_path(self.handler)
 
     def get_handler(self):
-        handler_class = self.get_handler_class()
-        return handler_class(self)
+        """
+        Get an instance of the handler for this Node instance.
+
+        Multiple calls to this method (on the same instance of Node) will
+        return the same instance of handler.
+        """
+        try:
+            return self._handler
+        except AttributeError:
+            self._handler = self.get_handler_class()(self)
+            return self._handler
 
     def handle(self, request, path):
         """

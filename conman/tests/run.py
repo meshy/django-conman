@@ -17,14 +17,19 @@ settings.configure(
     INSTALLED_APPS=(
         # Put contenttypes before auth to work around test issue.
         # See: https://code.djangoproject.com/ticket/10827#comment:12
+        'conman.nav_tree',
+        'conman.pages',
+        'conman.redirects',
+
+        'polymorphic_tree',
+        'polymorphic',
+        'mptt',
+
         'django.contrib.sites',
         'django.contrib.contenttypes',
         'django.contrib.auth',
         'django.contrib.sessions',
         'django.contrib.admin',
-        'conman.nav_tree',
-        'conman.pages',
-        'conman.redirects',
     ),
     PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',),
     SITE_ID = 1,
