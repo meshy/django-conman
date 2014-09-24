@@ -70,8 +70,7 @@ class Node(PolymorphicMPTTModel):
         try:
             return self._handler
         except AttributeError:
-            handler_class = self.get_handler_class()
-            self._handler = handler_class(self)
+            self._handler = self.get_handler_class()(self)
             return self._handler
 
     def handle(self, request, path):
