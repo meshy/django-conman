@@ -376,7 +376,6 @@ class NodeStrTest(TestCase):
 
     def test_child_str(self):
         """Does it work for a leaf node?"""
-        root = RootNodeFactory.create()
-        leaf = NodeFactory.create(slug='leaf', parent=root)
+        leaf = ChildNodeFactory.create(slug='leaf')
 
         self.assertEqual(str(leaf), 'Node @ /leaf/')
