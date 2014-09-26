@@ -33,7 +33,7 @@ settings.configure(
     ),
     PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',),
     SITE_ID = 1,
-    ROOT_URLCONF='conman.nav_tree.urls',
+    ROOT_URLCONF='conman.tests.urls',
     MIDDLEWARE_CLASSES=(),
     NAV_NODE_HANDLERS=(),
 )
