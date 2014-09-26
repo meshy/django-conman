@@ -16,4 +16,4 @@ class RootNodeRedirectFactory(NodeRedirectFactoryMixin, RootNodeFactory):
 
 
 class ChildNodeRedirectFactory(NodeRedirectFactoryMixin, ChildNodeFactory):
-    pass
+    target = factory.SubFactory(ChildNodeFactory)
