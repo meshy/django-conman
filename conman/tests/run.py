@@ -17,6 +17,7 @@ settings.configure(
     INSTALLED_APPS=(
         # Put contenttypes before auth to work around test issue.
         # See: https://code.djangoproject.com/ticket/10827#comment:12
+        'conman.cms',
         'conman.nav_tree',
         'conman.pages',
         'conman.redirects',
