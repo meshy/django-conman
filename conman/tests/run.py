@@ -21,22 +21,23 @@ settings.configure(
         'conman.pages',
         'conman.redirects',
 
-        'polymorphic_tree',
-        'polymorphic',
         'mptt',
+        'polymorphic',
+        'polymorphic_tree',
 
-        'django.contrib.sites',
-        'django.contrib.contenttypes',
-        'django.contrib.auth',
-        'django.contrib.sessions',
         'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.sites',
     ),
-    PASSWORD_HASHERS = ('django.contrib.auth.hashers.MD5PasswordHasher',),
-    SITE_ID = 1,
+    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
+    SITE_ID=1,
     ROOT_URLCONF='conman.tests.urls',
     MIDDLEWARE_CLASSES=(),
     NAV_NODE_HANDLERS=(),
 )
+
 
 django.setup()
 
