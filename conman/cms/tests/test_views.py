@@ -1,4 +1,5 @@
 from conman.tests.utils import RequestTestCase
+from django.apps import apps
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -14,6 +15,13 @@ class CMSIndexTest(RequestTestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_context_data(self):
+        view = views.CMSIndex()
+
+        context = view.get_context_data()
+
+        expected = apps.get_app_config('cms').managed_apps
+        self.assertEqual(context['apps'], expected)
 
 
 class CMSIndexIntegrationTest(TestCase):
