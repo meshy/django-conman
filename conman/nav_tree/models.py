@@ -40,7 +40,12 @@ class NodeManager(PolymorphicMPTTModelManager):
 class Node(PolymorphicMPTTModel):
     HANDLER_CHOICES = settings.NAV_NODE_HANDLERS
 
-    parent = PolymorphicTreeForeignKey('self', null=True, blank=True, related_name='children')
+    parent = PolymorphicTreeForeignKey(
+        'self',
+        blank=True,
+        null=True,
+        related_name='children',
+    )
     handler = models.CharField(max_length=255, choices=HANDLER_CHOICES)
     slug = models.SlugField(max_length=255, default='', help_text='''
         Used to create the location of the Node. The Root Node needs
