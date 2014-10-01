@@ -2,6 +2,8 @@
 
 A CONtent MANagement system for Django. (Get it?)
 
+Sponsored by [Incuna](http://incuna.com/).
+
 ## Requirements
 
 Tested against:
@@ -22,7 +24,7 @@ pip install django-conman
 
 ...or from source:
 ```
-pip install -e git+https://github.com/incuna/django-conman.git#egg=conman
+pip install -e git+https://github.com/meshy/django-conman.git#egg=conman
 ```
 
 ## Configure
