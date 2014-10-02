@@ -18,15 +18,16 @@ Requires:
 
 ## Install
 
-```
+```bash
 # From PyPI...
 pip install django-conman
+
 # ...or from source
 pip install -e git+https://github.com/meshy/django-conman.git#egg=conman
 ```
 
 ## Configure
-```
+```python
 # settings.py
 INSTALLED_APPS += ['conman.nav_tree']
 
