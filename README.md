@@ -13,39 +13,26 @@ Tested against:
 
 Requires:
 - `django-mptt`
+- `django-polymorphic-tree`
+- `django-sirtrevor`
 
 ## Install
 
-First install from PyPI:
-
 ```
-# Doesn't yet work. Not yet on PyPI.
+# From PyPI...
 pip install django-conman
-```
-
-...or from source:
-```
+# ...or from source
 pip install -e git+https://github.com/meshy/django-conman.git#egg=conman
 ```
 
 ## Configure
-Add to your `settings.py`:
-
 ```
-INSTALLED_APPS = [
-    ...
-    'conman.nav_tree',
-]
-```
+# settings.py
+INSTALLED_APPS += ['conman.nav_tree']
 
-Update your `urls.py` with:
-
-```
+# urls.py
 urlpatterns = [
-    ...  # All other URLS should go above this catch-all.
+    # All other URLS should go above this catch-all.
     url(r'', include('conman.nav_tree.urls')),
 ]
 ```
-
-### TODO:
-- Add further instructions for installing/using content types
