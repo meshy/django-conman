@@ -13,39 +13,43 @@ Tested against:
 
 Requires:
 - `django-mptt`
+- `django-polymorphic-tree`
+- `django-sirtrevor`
 
 ## Install
 
-First install from PyPI:
-
-```
-# Doesn't yet work. Not yet on PyPI.
+```bash
+# From PyPI...
 pip install django-conman
-```
 
-...or from source:
-```
+# ...or from source
 pip install -e git+https://github.com/meshy/django-conman.git#egg=conman
 ```
 
 ## Configure
-Add to your `settings.py`:
+```python
+# settings.py
+INSTALLED_APPS += ['conman.nav_tree']
 
-```
-INSTALLED_APPS = [
-    ...
-    'conman.nav_tree',
-]
-```
-
-Update your `urls.py` with:
-
-```
+# urls.py
 urlpatterns = [
-    ...  # All other URLS should go above this catch-all.
+    # All other URLS should go above this catch-all.
     url(r'', include('conman.nav_tree.urls')),
 ]
 ```
 
-### TODO:
-- Add further instructions for installing/using content types
+## Simple custom app
+```python
+# models.py
+class CustomNode(conman.nav_tree.models.Node):
+    """Your data/fields"""
+
+# views.py
+class CustomNodeDetail(django.views.generic.DetailView):
+    def get_object(self):
+        return self.kwargs['node']
+
+# handlers.py
+class PageHandler(conman.nav_tree.handlers.SimpleHandler):
+    view = CustomNodeDetail.as_view()
+```
