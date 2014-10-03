@@ -42,7 +42,7 @@ urlpatterns = [
 ```python
 # models.py
 class CustomNode(conman.nav_tree.models.Node):
-    custom_content = Fields
+    """Your data/fields"""
 
 # views.py
 class CustomNodeDetail(django.views.generic.DetailView):
