@@ -1,8 +1,8 @@
 from django.test import TestCase
 
-from ..models import NodeRedirect
-from .factories import ChildNodeRedirectFactory
 from conman.nav_tree.tests.test_models import NODE_BASE_FIELDS
+from .factories import ChildNodeRedirectFactory
+from ..models import NodeRedirect
 
 
 class NodeRedirectTest(TestCase):

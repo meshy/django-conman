@@ -1,8 +1,8 @@
 from django.test import TestCase
 
+from conman.nav_tree.handlers import SimpleHandler
 from ..handlers import NodeRedirectHandler
 from ..views import NodeRedirectView
-from conman.nav_tree.handlers import SimpleHandler
 
 
 class TestNodeRedirectHandler(TestCase):

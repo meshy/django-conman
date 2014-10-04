@@ -1,8 +1,8 @@
 from django.test import TestCase
 
-from .. import views
-from . import factories
 from conman.tests.utils import RequestTestCase
+from . import factories
+from .. import views
 
 
 class TestPageDetail(RequestTestCase):

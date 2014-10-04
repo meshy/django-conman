@@ -3,8 +3,8 @@ from unittest import mock
 from django.http import HttpResponse
 from django.test import TestCase
 
-from .. import views
 from . import factories
+from .. import views
 
 
 class RouterTest(TestCase):
