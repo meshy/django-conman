@@ -45,12 +45,12 @@ class BasicNode(conman.nav_tree.models.Node):
     handler = BasicHandler.path()
     # Your data/fields here
 
+# handlers.py
+class BasicHandler(conman.nav_tree.handlers.SimpleHandler):
+    view = BasicNodeDetail.as_view()
+
 # views.py
 class BasicNodeDetail(django.views.generic.DetailView):
     def get_object(self):
         return self.kwargs['node']
-
-# handlers.py
-class BasicHandler(conman.nav_tree.handlers.SimpleHandler):
-    view = BasicNodeDetail.as_view()
 ```
