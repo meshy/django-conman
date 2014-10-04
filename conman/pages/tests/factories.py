@@ -1,9 +1,7 @@
 from conman.nav_tree.tests.factories import RootNodeFactory
-from .. import handlers, models
+from .. import models
 
 
 class PageFactory(RootNodeFactory):
-    handler = handlers.PageHandler.path()
-
     class Meta:
         model = models.Page

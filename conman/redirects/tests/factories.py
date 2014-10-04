@@ -1,12 +1,10 @@
 import factory
 
 from conman.nav_tree.tests.factories import ChildNodeFactory, RootNodeFactory
-from .. import handlers, models
+from .. import models
 
 
 class NodeRedirectFactoryMixin(factory.Factory):
-    handler = handlers.NodeRedirectHandler.path()
-
     class Meta:
         model = models.NodeRedirect
 

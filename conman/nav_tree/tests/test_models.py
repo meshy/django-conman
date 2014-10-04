@@ -9,7 +9,6 @@ from ..models import Node
 
 
 NODE_BASE_FIELDS = (
-    'handler',
     'parent',
     'parent_id',
     'slug',
@@ -280,7 +279,8 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
 class NodeGetHandlerClassTest(TestCase):
     def test_get_handler_class(self):
         handler = handlers.BaseHandler
-        node = NodeFactory.build(handler=handler.path())
+        node = NodeFactory.build()
+        node.handler = handler.path()
 
         self.assertEqual(node.get_handler_class(), handler)
 
@@ -290,7 +290,8 @@ class NodeGetHandlerTest(TestCase):
     def test_get_handler(self):
         """We expect an instance of handler instanciated with a Node"""
         handler_class = handlers.BaseHandler
-        node = NodeFactory.build(handler=handler_class.path())
+        node = NodeFactory.build()
+        node.handler = handler_class.path()
 
         handler = node.get_handler()
         self.assertIsInstance(handler, handler_class)
@@ -299,7 +300,8 @@ class NodeGetHandlerTest(TestCase):
     def test_get_handler_again(self):
         """Make sure we always get the same instance of a handler on a Node"""
         handler_class = handlers.BaseHandler
-        node = NodeFactory.build(handler=handler_class.path())
+        node = NodeFactory.build()
+        node.handler = handler_class.path()
 
         first_handler = node.get_handler()
         second_handler = node.get_handler()
@@ -317,53 +319,6 @@ class NodeHandleTest(TestCase):
 
         expected = node.get_handler_class()(node).handle(request, '/leaf/')
         self.assertEqual(result, expected)
-
-
-class NodeHandlerCheckTest(TestCase):
-    """Test the `check` method on Node.
-
-    This method has been written to check that the NAV_NODE_HANDLERS setting
-    is valid.
-
-    NAV_NODE_HANDLERS must comply with the format of choices for a CharField,
-    but that is already checked by passing it as choices for `Node.handler`.
-    """
-    def test_no_choices(self):
-        """Having no choices should not (yet!) return any errors"""
-        with self.settings(NAV_NODE_HANDLERS=[]):
-            errors = Node.check()
-
-        self.assertEqual(errors, [])
-
-    def test_good_choices(self):
-        """Having ok choices should not return any errors"""
-        handlers = [('conman.nav_tree.handlers.BaseHandler', 'Base handler')]
-
-        with self.settings(NAV_NODE_HANDLERS=handlers):
-            errors = Node.check()
-
-        self.assertEqual(errors, [])
-
-    def test_wrong_choice_class(self):
-        """Having choices that are not classes should return an error"""
-        path = 'conman.nav_tree.tests'
-        handlers = [(path, 'A module')]
-
-        with self.settings(NAV_NODE_HANDLERS=handlers):
-            errors = Node.check()
-
-        self.assertEqual(len(errors), 1)
-        expected = "Expected '{}' from NAV_NODE_HANDLERS to be a class"
-        self.assertEqual(errors[0].msg, expected.format(path))
-
-    def test_bad_path(self):
-        """Having a choice that cannot be imported should return an error"""
-        with self.settings(NAV_NODE_HANDLERS=[('broken', 'Invalid path')]):
-            errors = Node.check()
-
-        self.assertEqual(len(errors), 1)
-        expected = "Error importing 'broken' from NAV_NODE_HANDLERS"
-        self.assertEqual(errors[0].msg, expected)
 
 
 class NodeStrTest(TestCase):
