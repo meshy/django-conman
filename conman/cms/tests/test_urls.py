@@ -9,5 +9,5 @@ class TestCMSIndexURL(URLTestCase):
         self.assert_url_matches_view(
             views.CMSIndex,
             '/cms/',
-            'cms-index',
+            'cms:index',
         )

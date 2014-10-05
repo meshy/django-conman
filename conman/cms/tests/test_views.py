@@ -27,7 +27,7 @@ class CMSIndexTest(RequestTestCase):
 class CMSIndexIntegrationTest(TestCase):
     def test_get(self):
         """Does CMSIndex use the correct template?"""
-        response = self.client.get(reverse('cms-index'))
+        response = self.client.get(reverse('cms:index'))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cms/index.html')
