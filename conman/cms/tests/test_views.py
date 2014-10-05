@@ -1,8 +1,8 @@
-from conman.tests.utils import RequestTestCase
 from django.apps import apps
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
+from conman.tests.utils import RequestTestCase
 from .. import views
 
 
