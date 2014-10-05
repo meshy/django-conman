@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from .. import models
 from conman.nav_tree.tests.test_models import NODE_BASE_FIELDS
+from .. import models
 
 
 class PageTest(TestCase):

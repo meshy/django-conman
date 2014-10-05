@@ -10,8 +10,7 @@ env:
   matrix:
     - DJANGO='django>=1.7,<1.8'
 install:
-  - pip install flake8 python-coveralls
-  - flake8 .
+  - pip install python-coveralls
   - psql -c 'CREATE DATABASE conman' -U postgres;
   - pip install -r test_requirements.txt
   - pip install $DJANGO

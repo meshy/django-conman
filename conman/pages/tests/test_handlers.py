@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from .. import handlers, views
 from conman.nav_tree.handlers import SimpleHandler
+from .. import handlers, views
 
 
 class TestPageHandler(TestCase):

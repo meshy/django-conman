@@ -2,9 +2,9 @@
 """From http://stackoverflow.com/a/12260597/400691"""
 import sys
 
-from colour_runner.django_runner import ColourRunnerMixin
 import dj_database_url
 import django
+from colour_runner.django_runner import ColourRunnerMixin
 from django.conf import settings
 from django.test.runner import DiscoverRunner
 

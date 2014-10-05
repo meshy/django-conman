@@ -3,9 +3,9 @@ from unittest import mock
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
+from .factories import ChildNodeFactory, NodeFactory, RootNodeFactory
 from .. import handlers
 from ..models import Node
-from .factories import ChildNodeFactory, NodeFactory, RootNodeFactory
 
 
 NODE_BASE_FIELDS = (
