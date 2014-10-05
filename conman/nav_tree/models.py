@@ -1,6 +1,3 @@
-import inspect
-
-from django.conf import settings
 from django.core import checks
 from django.db import models
 from polymorphic_tree.managers import PolymorphicMPTTModelManager
@@ -38,15 +35,12 @@ class NodeManager(PolymorphicMPTTModelManager):
 
 
 class Node(PolymorphicMPTTModel):
-    HANDLER_CHOICES = settings.NAV_NODE_HANDLERS
-
     parent = PolymorphicTreeForeignKey(
         'self',
         blank=True,
         null=True,
         related_name='children',
     )
-    handler = models.CharField(max_length=255, choices=HANDLER_CHOICES)
     slug = models.SlugField(max_length=255, default='', help_text='''
         Used to create the location of the Node. The Root Node needs
         "slug" to be blank; all other Nodes need a value unique to the parent.
@@ -155,37 +149,12 @@ class Node(PolymorphicMPTTModel):
 
     @classmethod
     def check(cls, **kwargs):
-        """
-        Check that the requirements for this class are correctly set up.
-
-        In particular, this checks that each path in NAV_NODE_HANDLERS can be
-        imported, and that the resultant object is a class.
-
-        I decided against checking that the classes were subclasses of
-        `BaseHandler` to allow for ducktyping, but perhaps in future this could
-        check that the class has a "handle" method, and can take a Node
-        instance as an arg on instantiation.
-        """
+        """Check that the `handler` attribute exists."""
         errors = super().check(**kwargs)
-        for path, name in settings.NAV_NODE_HANDLERS:
-            try:
-                imported = import_from_dotted_path(path)
-            except (ImportError, ValueError):
-                msg = "Error importing '{}' from NAV_NODE_HANDLERS"
-                errors.append(checks.Error(
-                    msg.format(path),
-                    hint='This setting must be a dotted python path',
-                    obj=cls,
-                ))
-                continue
-
-            if not inspect.isclass(imported):
-                msg = "Expected '{}' from NAV_NODE_HANDLERS to be a class"
-                hint = 'This setting must reference a class, not a {}'
-                errors.append(checks.Error(
-                    msg.format(path),
-                    hint=hint.format(type(imported)),
-                    obj=cls,
-                ))
-
+        if cls != Node and not hasattr(cls, 'handler'):
+            errors.append(checks.Error(
+                'Node subclasses must have a `handler` attribute',
+                hint='`handler` must resolve to a dotted python path',
+                obj=cls,
+            ))
         return errors

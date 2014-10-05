@@ -38,18 +38,19 @@ urlpatterns = [
 ]
 ```
 
-## Simple custom app
+## Basic custom app
 ```python
 # models.py
-class CustomNode(conman.nav_tree.models.Node):
-    """Your data/fields"""
-
-# views.py
-class CustomNodeDetail(django.views.generic.DetailView):
-    def get_object(self):
-        return self.kwargs['node']
+class ExampleNode(conman.nav_tree.models.Node):
+    handler = ExampleHandler.path()
+    # Your data/fields here
 
 # handlers.py
-class PageHandler(conman.nav_tree.handlers.SimpleHandler):
-    view = CustomNodeDetail.as_view()
+class ExampleHandler(conman.nav_tree.handlers.SimpleHandler):
+    view = ExampleNodeDetail.as_view()
+
+# views.py
+class ExampleNodeDetail(django.views.generic.DetailView):
+    def get_object(self):
+        return self.kwargs['node']
 ```

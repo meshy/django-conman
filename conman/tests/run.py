@@ -35,7 +35,6 @@ settings.configure(
     SITE_ID=1,
     ROOT_URLCONF='conman.tests.urls',
     MIDDLEWARE_CLASSES=(),
-    NAV_NODE_HANDLERS=(),
 )
 
 
