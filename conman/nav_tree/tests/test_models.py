@@ -334,3 +334,27 @@ class NodeStrTest(TestCase):
         leaf = ChildNodeFactory.create(slug='leaf')
 
         self.assertEqual(str(leaf), 'Node @ /leaf/')
+
+
+class NodeCheckTest(TestCase):
+    def test_node_class(self):
+        errors = Node.check()
+        self.assertEqual(errors, [])
+
+    def test_subclass_with_handler(self):
+        class NodeWithHandler(Node):
+            handler = 'has.been.set'
+
+        errors = NodeWithHandler.check()
+        self.assertEqual(errors, [])
+
+    def test_subclass_without_handler(self):
+        class NodeWithoutHandler(Node):
+            pass  # handler not set
+
+        errors = NodeWithoutHandler.check()
+        self.assertEqual(len(errors), 1)
+        error = errors[0]
+        self.assertEqual(error.obj, NodeWithoutHandler)
+        expected_msg = 'Node subclasses must have a `handler` attribute'
+        self.assertEqual(error.msg, expected_msg)

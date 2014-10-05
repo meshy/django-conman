@@ -1,3 +1,4 @@
+from django.core import checks
 from django.db import models
 from polymorphic_tree.managers import PolymorphicMPTTModelManager
 from polymorphic_tree.models import (
@@ -145,3 +146,15 @@ class Node(PolymorphicMPTTModel):
             # Skip this logic on save so we do not recurse.
             super(Node, node).save()
     save.alters_data = True
+
+    @classmethod
+    def check(cls, **kwargs):
+        """Check that the `handler` attribute exists."""
+        errors = super().check(**kwargs)
+        if cls != Node and not hasattr(cls, 'handler'):
+            errors.append(checks.Error(
+                'Node subclasses must have a `handler` attribute',
+                hint='`handler` must resolve to a dotted python path',
+                obj=cls,
+            ))
+        return errors
