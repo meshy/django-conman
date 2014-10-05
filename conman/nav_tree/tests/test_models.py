@@ -278,11 +278,11 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
 
 class NodeGetHandlerClassTest(TestCase):
     def test_get_handler_class(self):
-        handler = handlers.BaseHandler
+        handler_class = handlers.BaseHandler
         node = NodeFactory.build()
-        node.handler = handler.path()
+        node.handler = handler_class.path()
 
-        self.assertEqual(node.get_handler_class(), handler)
+        self.assertEqual(node.get_handler_class(), handler_class)
 
 
 class NodeGetHandlerTest(TestCase):
