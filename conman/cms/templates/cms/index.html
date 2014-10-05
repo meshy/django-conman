@@ -4,7 +4,7 @@
 
 <ul>
     {% for app in apps %}
-        <li>{{ app }}</li>
+        <li><a href="{{ app.get_cms_url }}">{{ app.verbose_name }}</a></li>
     {% empty %}
         <li>...none!</li>
     {% endfor %}

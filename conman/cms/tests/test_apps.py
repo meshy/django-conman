@@ -17,8 +17,15 @@ class CMSAppRegistrationTest(TestCase):
         self.config._managed_apps = self._original_registry
 
     def test_apps_can_register(self):
-        mock_app = mock.Mock()
+        mock_app = mock.Mock(spec=self.config)
+        mock_app.cms_urls = 'has.been.set'
 
         self.config.manage_app(mock_app)
 
-        self.assertIn(mock_app, self.config._managed_apps)
+        self.assertIn(mock_app, self.config.managed_apps)
+
+    def test_app_needs_cms_urls(self):
+        mock_app = mock.Mock(spec=self.config)
+
+        with self.assertRaises(ValueError):
+            self.config.manage_app(mock_app)
