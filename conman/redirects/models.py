@@ -1,7 +1,7 @@
 from django.db import models
 
-from . import handlers
 from conman.nav_tree.models import Node
+from . import handlers
 
 
 class NodeRedirect(Node):

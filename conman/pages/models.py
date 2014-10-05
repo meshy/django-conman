@@ -1,7 +1,7 @@
 from sirtrevor.fields import SirTrevorField
 
-from . import handlers
 from conman.nav_tree.models import Node
+from . import handlers
 
 
 class Page(Node):
