@@ -1,11 +1,11 @@
-from setuptools import find_packages, setup
+from setuptools import setup
 
 
 version = '0.0.1a1'
 
 setup(
     name='django-conman',
-    packages=find_packages(),
+    packages=['conman'],
     include_package_data=True,
     version=version,
     description='A modular CMS for django, sponsored by Incuna',
