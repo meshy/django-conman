@@ -2,13 +2,13 @@ import os
 
 import dj_database_url
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-TEMPLATE_DEBUG = DEBUG = True
+DEBUG = TEMPLATE_DEBUG = True
 
 
 SECRET_KEY = 'example-app!'
 ROOT_URLCONF = 'example.urls'
-WSGI_APPLICATION = 'example.wsgi.application'
 STATIC_URL = '/static/'
 
 
