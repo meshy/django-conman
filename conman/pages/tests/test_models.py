@@ -6,6 +6,7 @@ from .. import models
 
 class PageTest(TestCase):
     def test_fields(self):
+        """Check Page has Node's fields and a few of its own."""
         expected = (
             'id',
             'node_ptr',
