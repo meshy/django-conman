@@ -31,6 +31,7 @@ NODE_BASE_FIELDS = (
 
 class NodeTest(TestCase):
     def test_fields(self):
+        """Check the Node model has the expected fields."""
         expected = (
             'id',
             'noderedirect',
@@ -59,6 +60,7 @@ class NodeValidateOnSave(TestCase):
 
 class NodeUniqueness(TestCase):
     def test_unique_slug_per_parent(self):
+        """Two Nodes cannot share the same slug and parent Node."""
         slug = 'slug'
         root_node = RootNodeFactory.create()
         NodeFactory.create(slug=slug, parent=root_node)
@@ -67,6 +69,7 @@ class NodeUniqueness(TestCase):
             NodeFactory.create(slug=slug, parent=root_node)
 
     def test_unique_root_url(self):
+        """Only one Node can exist with an empty slug."""
         Node.objects.create(slug='')
 
         with self.assertRaises(IntegrityError):
@@ -201,6 +204,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
             LIMIT 1
     """
     def test_get_root(self):
+        """Check a Root Node matches a simple '/' path."""
         root = RootNodeFactory.create()
         with self.assertNumQueries(1):
             node = Node.objects.best_match_for_path('/')
@@ -208,6 +212,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
         self.assertEqual(node, root)
 
     def test_get_leaf(self):
+        """Check a Node with a slug matches a path of that slug."""
         leaf = ChildNodeFactory.create(slug='leaf')
 
         with self.assertNumQueries(1):
@@ -216,6 +221,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
         self.assertEqual(node, leaf)
 
     def test_get_leaf_on_branch(self):
+        """Check a Node matches a path containing its slug and parent's slug."""
         branch = ChildNodeFactory.create(slug='branch')
         leaf = NodeFactory.create(slug='leaf', parent=branch)
 
@@ -225,6 +231,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
         self.assertEqual(node, leaf)
 
     def test_get_branch_with_leaf(self):
+        """Check a Branch Node matches a path of its slug even if a Leaf exists."""
         branch = ChildNodeFactory.create(slug='branch')
         NodeFactory.create(slug='leaf', parent=branch)
 
@@ -255,11 +262,13 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
             LIMIT 1
     """
     def test_throw_error_without_match(self):
+        """Check Node.DoesNotExist is raised if no Root Node exists."""
         with self.assertNumQueries(1):
             with self.assertRaises(Node.DoesNotExist):
                 Node.objects.best_match_for_path('/')
 
     def test_fall_back_to_root(self):
+        """Check the Root Node matches when no better Node is available."""
         root = RootNodeFactory.create()
 
         with self.assertNumQueries(1):
@@ -268,6 +277,7 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
         self.assertEqual(node, root)
 
     def test_fall_back_to_branch(self):
+        """Check a Branch Node matches when no Leaf Node matches."""
         branch = ChildNodeFactory.create(slug='branch')
 
         with self.assertNumQueries(1):
@@ -278,6 +288,7 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
 
 class NodeGetHandlerClassTest(TestCase):
     def test_get_handler_class(self):
+        """A Node's handler is looked up from the handler's path."""
         handler_class = handlers.BaseHandler
         node = NodeFactory.build()
         node.handler = handler_class.path()
@@ -311,6 +322,9 @@ class NodeGetHandlerTest(TestCase):
 
 class NodeHandleTest(TestCase):
     def test_handle(self):
+        """
+        Node delegates a request to its handler after stripping its url from the path.
+        """
         node = NodeFactory.build(url='/branch/')
         node.get_handler_class = mock.MagicMock()
         request = mock.Mock()
@@ -338,10 +352,12 @@ class NodeStrTest(TestCase):
 
 class NodeCheckTest(TestCase):
     def test_node_class(self):
+        """The Node class does not require a handler attribute."""
         errors = Node.check()
         self.assertEqual(errors, [])
 
     def test_subclass_with_handler(self):
+        """A subclass of Node must have a handler attribute."""
         class NodeWithHandler(Node):
             handler = 'has.been.set'
 
@@ -349,6 +365,7 @@ class NodeCheckTest(TestCase):
         self.assertEqual(errors, [])
 
     def test_subclass_without_handler(self):
+        """A subclass of Node without a handler fails Node.check."""
         class NodeWithoutHandler(Node):
             pass  # handler not set
 
