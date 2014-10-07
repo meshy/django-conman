@@ -10,6 +10,7 @@ from .. import views
 class RouterTest(TestCase):
     """Test that `node_router` correctly deals with the urls handed to it."""
     def test_root(self):
+        """node_router delegates to the Root Node's handler for an empty url."""
         url = ''
         factories.NodeFactory.create()
         request = mock.MagicMock()
@@ -21,6 +22,7 @@ class RouterTest(TestCase):
         self.assertEqual(response, handle(request, '/' + url))
 
     def test_complex_url(self):
+        """node_router finds the url's best match and delegates to its handler."""
         url = 'slug/42/foo/bar/'
         factories.NodeFactory.create()
         request = mock.MagicMock()
@@ -35,6 +37,7 @@ class RouterTest(TestCase):
 class RouterIntegrationTest(TestCase):
     """Test that `node_router` is correctly handed urls."""
     def test_root_url(self):
+        """The Root Node handler is passed the correct request and root url."""
         url = '/'
         factories.NodeFactory.create()
         handle_path = 'conman.nav_tree.models.Node.handle'
@@ -45,6 +48,7 @@ class RouterIntegrationTest(TestCase):
         handle.assert_called_with(response.wsgi_request, url)
 
     def test_complex_url(self):
+        """The correct request and url is passed through to the node's handler."""
         url = '/slug/42/foo/bar/'
         factories.NodeFactory.create()
         handle_path = 'conman.nav_tree.models.Node.handle'
