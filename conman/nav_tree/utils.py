@@ -3,6 +3,12 @@ import os
 
 
 def split_path(path):
+    """
+    Split a url path into its sub-paths.
+
+    A url's sub-paths consist of all substrings ending in / and starting at
+    the start of the url.
+    """
     paths = ['/']
     path = path.rstrip('/')
 

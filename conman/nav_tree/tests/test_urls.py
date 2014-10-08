@@ -6,6 +6,7 @@ from .. import views
 
 class TestNavTreeURLRouter(TestCase):
     def assert_url_uses_router(self, url):
+        """Check a url resolves to the node_router view."""
         resolved_view = resolve(url)
         expected_view = views.node_router
         self.assertEqual(resolved_view.func, expected_view)

@@ -57,10 +57,12 @@ class Node(PolymorphicMPTTModel):
         unique_together = ('parent', 'slug')
 
     def __init__(self, *args, **kwargs):
+        """Cache the Node's parent_id and slug."""
         super().__init__(*args, **kwargs)
         self.reset_originals()
 
     def __str__(self):
+        """Display a Node's class and url."""
         return '{} @ {}'.format(self.__class__.__name__, self.url)
 
     def get_handler_class(self):

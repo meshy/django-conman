@@ -4,6 +4,11 @@ from django.views.generic import RedirectView
 class NodeRedirectView(RedirectView):
     """Redirect to the target Node."""
     def get_redirect_url(self, *args, **kwargs):
+        """
+        Return the node's target url.
+
+        Save the node's redirect type for use by RedirectView.
+        """
         redirect = kwargs['node']
         self.permanent = redirect.permanent
         return redirect.target.url
