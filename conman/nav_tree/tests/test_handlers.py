@@ -45,7 +45,7 @@ class BaseHandlerHandleTest(TestCase):
         self.view = 'conman.nav_tree.tests.urls.dummy_view'
 
     def tearDown(self):
-        """Stops the tests leaking into each other through the url cache"""
+        """Stop tests leaking into each other through the url cache"""
         clear_url_caches()
 
     def test_handle_basic(self):
@@ -89,7 +89,7 @@ class SimpleHandlerHandleTest(TestCase):
         self.view = TestHandler.view
 
     def tearDown(self):
-        """Stops the tests leaking into each other through the url cache"""
+        """Stop tests leaking into each other through the url cache"""
         clear_url_caches()
 
     def test_handle_basic(self):

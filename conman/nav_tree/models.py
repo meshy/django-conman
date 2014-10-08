@@ -62,7 +62,7 @@ class Node(PolymorphicMPTTModel):
         return '{} @ {}'.format(self.__class__.__name__, self.url)
 
     def get_handler_class(self):
-        """Imports a class from the python path string in `self.handler`."""
+        """Import a class from the python path string in `self.handler`."""
         return import_from_dotted_path(self.handler)
 
     def get_handler(self):

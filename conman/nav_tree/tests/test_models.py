@@ -338,13 +338,13 @@ class NodeHandleTest(TestCase):
 class NodeStrTest(TestCase):
     """Make sure that we get something nice when Node is cast to string"""
     def test_root_str(self):
-        """Does it work for a root Node?"""
+        """A Root Node has a useful string representation."""
         node = RootNodeFactory.create()
 
         self.assertEqual(str(node), 'Node @ /')
 
     def test_child_str(self):
-        """Does it work for a leaf node?"""
+        """A Child Node has a string representation that includes its slug."""
         leaf = ChildNodeFactory.create(slug='leaf')
 
         self.assertEqual(str(leaf), 'Node @ /leaf/')
