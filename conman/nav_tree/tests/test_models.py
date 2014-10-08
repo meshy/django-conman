@@ -344,7 +344,7 @@ class NodeStrTest(TestCase):
         self.assertEqual(str(node), 'Node @ /')
 
     def test_child_str(self):
-        """A Child Node has a string representation that includes its slug."""
+        """A Child Node has a string representation that includes its url."""
         leaf = ChildNodeFactory.create(slug='leaf')
 
         self.assertEqual(str(leaf), 'Node @ /leaf/')
