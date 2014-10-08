@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-"""From http://stackoverflow.com/a/12260597/400691"""
+"""From http://stackoverflow.com/a/12260597/400691."""
 import sys
 
 import dj_database_url

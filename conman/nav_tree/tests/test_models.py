@@ -43,14 +43,14 @@ class NodeTest(TestCase):
 
 class NodeValidateOnSave(TestCase):
     def test_create_root_with_slug(self):
-        """Root must not have a slug"""
+        """Root must not have a slug."""
         root_node = NodeFactory.build(slug='slug', parent=None)
 
         with self.assertRaises(ValueError):
             root_node.save()
 
     def test_create_leaf_without_slug(self):
-        """Leaf nodes must have a slug"""
+        """Leaf nodes must have a slug."""
         root_node = RootNodeFactory.create()
         leaf = NodeFactory.build(slug='', parent=root_node)
 
@@ -297,9 +297,9 @@ class NodeGetHandlerClassTest(TestCase):
 
 
 class NodeGetHandlerTest(TestCase):
-    """Make sure that Node.get_handler acts as expected"""
+    """Make sure that Node.get_handler acts as expected."""
     def test_get_handler(self):
-        """We expect an instance of handler instanciated with a Node"""
+        """We expect an instance of handler instanciated with a Node."""
         handler_class = handlers.BaseHandler
         node = NodeFactory.build()
         node.handler = handler_class.path()
@@ -309,7 +309,7 @@ class NodeGetHandlerTest(TestCase):
         self.assertEqual(handler.node, node)
 
     def test_get_handler_again(self):
-        """Make sure we always get the same instance of a handler on a Node"""
+        """Make sure we always get the same instance of a handler on a Node."""
         handler_class = handlers.BaseHandler
         node = NodeFactory.build()
         node.handler = handler_class.path()
@@ -336,7 +336,7 @@ class NodeHandleTest(TestCase):
 
 
 class NodeStrTest(TestCase):
-    """Make sure that we get something nice when Node is cast to string"""
+    """Make sure that we get something nice when Node is cast to string."""
     def test_root_str(self):
         """A Root Node has a useful string representation."""
         node = RootNodeFactory.create()

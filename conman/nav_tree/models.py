@@ -12,8 +12,10 @@ from .utils import import_from_dotted_path, split_path
 class NodeManager(PolymorphicMPTTModelManager):
     def best_match_for_path(self, path):
         """
-        Return the best match for a path. If the path as given is unavailable,
-        continues to search by chopping path components off the end.
+        Return the best match for a path.
+
+        If the path as given is unavailable, continues to search by chopping
+        path components off the end.
 
         Tries hard to avoid unnecessary database lookups by comparing all
         possible matching URL prefixes and choosing the longest match.
