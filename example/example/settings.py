@@ -20,7 +20,7 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 INSTALLED_APPS = (
     'conman.cms',
-    'conman.nav_tree',
+    'conman.url_tree',
     'conman.pages',
     'conman.redirects',
 

@@ -53,11 +53,11 @@ class TestImportFromDottedPath(TestCase):
 
     def test_import_module(self):
         """A module can be imported by dotted path."""
-        result = utils.import_from_dotted_path('conman.nav_tree.utils')
+        result = utils.import_from_dotted_path('conman.url_tree.utils')
         self.assertEqual(result, utils)
 
     def test_import_class(self):
         """A class can be imported by dotted path."""
-        this_test = 'conman.nav_tree.tests.test_utils.TestImportFromDottedPath'
+        this_test = 'conman.url_tree.tests.test_utils.TestImportFromDottedPath'
         result = utils.import_from_dotted_path(this_test)
         self.assertEqual(result, self.__class__)

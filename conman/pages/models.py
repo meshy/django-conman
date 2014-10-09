@@ -1,6 +1,6 @@
 from sirtrevor.fields import SirTrevorField
 
-from conman.nav_tree.models import Node
+from conman.url_tree.models import Node
 from . import handlers
 
 

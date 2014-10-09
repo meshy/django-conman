@@ -18,7 +18,7 @@ settings.configure(
         # Put contenttypes before auth to work around test issue.
         # See: https://code.djangoproject.com/ticket/10827#comment:12
         'conman.cms',
-        'conman.nav_tree',
+        'conman.url_tree',
         'conman.pages',
         'conman.redirects',
 
