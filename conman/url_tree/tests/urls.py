@@ -5,7 +5,7 @@ def dummy_view():
     """Always gets mocked."""
 
 
-view_path = 'conman.nav_tree.tests.urls.dummy_view'
+view_path = 'conman.url_tree.tests.urls.dummy_view'
 
 
 urlpatterns = [

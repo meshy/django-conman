@@ -1,4 +1,4 @@
-from conman.nav_tree.tests.factories import RootNodeFactory
+from conman.url_tree.tests.factories import RootNodeFactory
 from .. import models
 
 

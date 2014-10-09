@@ -1,6 +1,6 @@
 import factory
 
-from conman.nav_tree.tests.factories import ChildNodeFactory, RootNodeFactory
+from conman.url_tree.tests.factories import ChildNodeFactory, RootNodeFactory
 from .. import models
 
 
