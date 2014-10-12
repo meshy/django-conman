@@ -323,7 +323,9 @@ class NodeGetHandlerTest(TestCase):
 class NodeHandleTest(TestCase):
     def test_handle(self):
         """
-        Node delegates a request to its handler after stripping its url from the path.
+        Node delegates requests to its handler.
+
+        The Node's url is stripped from the requested url path.
         """
         node = NodeFactory.build(url='/branch/')
         node.get_handler_class = mock.MagicMock()
