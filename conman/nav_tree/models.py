@@ -10,6 +10,7 @@ from .utils import import_from_dotted_path, split_path
 
 
 class NodeManager(PolymorphicMPTTModelManager):
+    """Helpful methods for working with Nodes."""
     def best_match_for_path(self, path):
         """
         Return the best match for a path.
@@ -37,6 +38,14 @@ class NodeManager(PolymorphicMPTTModelManager):
 
 
 class Node(PolymorphicMPTTModel):
+    """
+    A Node in a tree of url endpoints.
+
+    A Node can be a Root Node or a Child Node.
+    A Root Node has no parent and has an empty slug.
+    A Child Node has a parent Node and a slug unique with the parent.
+    A Child Node's url is built from its slug and its parent's url.
+    """
     parent = PolymorphicTreeForeignKey(
         'self',
         blank=True,

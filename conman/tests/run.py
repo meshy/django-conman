@@ -42,7 +42,7 @@ django.setup()
 
 
 class TestRunner(ColourRunnerMixin, DiscoverRunner):
-    pass
+    """Enable coloured output for tests."""
 
 
 test_runner = TestRunner(verbosity=1)
