@@ -5,7 +5,7 @@ from django.test import TestCase
 
 
 class CMSAppRegistrationTest(TestCase):
-    """Test the app registration process"""
+    """Test the app registration process."""
     def setUp(self):
         # Get the AppConfig for this app (by label).
         self.config = apps.get_app_config('cms')
