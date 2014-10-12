@@ -41,15 +41,22 @@ class TestSplitPath(TestCase):
 
 
 class TestImportFromDottedPath(TestCase):
+    def assert_error_message(self, exception):
+        """Check the exception's message is correct."""
+        message = 'An import path with two or more components is required.'
+        self.assertEqual(exception.args[0], message)
+
     def test_empty(self):
         """An empty path cannot be imported."""
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as cm:
             utils.import_from_dotted_path('')
+        self.assert_error_message(cm.exception)
 
     def test_too_short(self):
         """A path with only one component cannot be imported."""
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError) as cm:
             utils.import_from_dotted_path('antigravity')
+        self.assert_error_message(cm.exception)
 
     def test_import_module(self):
         """A module can be imported by dotted path."""
