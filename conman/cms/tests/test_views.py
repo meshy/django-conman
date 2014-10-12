@@ -16,6 +16,7 @@ class CMSIndexTest(RequestTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_context_data(self):
+        """The CMSIndex view's context contains the managed apps."""
         view = views.CMSIndex()
 
         context = view.get_context_data()
