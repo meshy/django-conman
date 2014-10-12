@@ -1,0 +1,11 @@
+<h1>Welcome to <code>django-conman</code></h1>
+
+<p>The following apps have registered:</p>
+
+<ul>
+    {% for app in apps %}
+        <li><a href="{{ app.get_cms_url }}">{{ app.verbose_name }}</a></li>
+    {% empty %}
+        <li>...none!</li>
+    {% endfor %}
+</ul>
