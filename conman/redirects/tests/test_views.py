@@ -7,6 +7,7 @@ from .. import views
 
 
 class TestNodeRedirectView(RequestTestCase):
+    """Verify behaviour of NodeRedirectView."""
     def setUp(self):
         self.target = ChildNodeFactory.create()
         self.request = self.create_request()
@@ -35,6 +36,7 @@ class TestNodeRedirectView(RequestTestCase):
 
 
 class TestNodeRedirectViewIntegration(TestCase):
+    """Check integration of NodeRedirectView."""
     def setUp(self):
         self.target = ChildNodeFactory.create()
         self.expected = 'http://testserver' + self.target.url
