@@ -10,11 +10,7 @@ def app_url(app):
 
 
 def urls():
-    """
-    Yield all urls registered in the cms.
-
-    Yield the CMSIndex view and all managed apps' urls.
-    """
+    """Yield the CMSIndex view and all managed apps' urls."""
     app = apps.get_app_config('cms')
     yield url(r'^$', views.CMSIndex.as_view(), name='index')
     yield from map(app_url, app.managed_apps)
