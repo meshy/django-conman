@@ -1,1 +1,0 @@
-flake8-docstrings==0.2.1
