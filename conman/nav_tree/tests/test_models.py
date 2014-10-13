@@ -43,7 +43,7 @@ class NodeTest(TestCase):
 
 
 class NodeValidateOnSave(TestCase):
-    """Check validation of node slugs on save."""
+    """Check validation of Node slugs and ancestry on save."""
     def test_create_root_with_slug(self):
         """Root must not have a slug."""
         root_node = NodeFactory.build(slug='slug', parent=None)
@@ -52,7 +52,7 @@ class NodeValidateOnSave(TestCase):
             root_node.save()
 
     def test_create_leaf_without_slug(self):
-        """Leaf nodes must have a slug."""
+        """Leaf Nodes must have a slug."""
         root_node = RootNodeFactory.create()
         leaf = NodeFactory.build(slug='', parent=root_node)
 
@@ -80,7 +80,7 @@ class NodeUniqueness(TestCase):
 
 
 class NodeSkipUpdateWithoutChange(TestCase):
-    """Be frugal with DB access where we can be."""
+    """Be frugal with DB hits when saving unmodified Nodes."""
     def test_no_update_without_changes(self):
         """Saving unchanged Node shouldn't query parent to rebuild the url."""
         branch = ChildNodeFactory.create(slug='branch')
@@ -111,7 +111,7 @@ class NodeCachesURLOnCreateTest(TestCase):
         self.root = RootNodeFactory.create()
 
     def test_create_root(self):
-        """Root node should be at the root url."""
+        """Root Node should be at the root url."""
         self.assertEqual(self.root.url, '/')
 
     def test_create_leaf_on_root(self):
@@ -129,7 +129,7 @@ class NodeCachesURLOnCreateTest(TestCase):
 
 
 class NodeCachesURLOnRenameTest(TestCase):
-    """Make sure Node urls are updated correctly when slug changed."""
+    """Make sure Node urls are updated correctly when a slug changes."""
     def test_rename_leaf(self):
         """Changing slug on a leaf should update the cached url."""
         leaf = ChildNodeFactory.create(slug='foo')
@@ -195,7 +195,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
     Test Node.objects.best_match_for_path works with perfect url matches.
 
     All of these tests assert use of only one query:
-        * Get the best node based on url:
+        * Get the best Node based on url:
             SELECT
                 (LENGTH(url)) AS "length",
                 <other fields>
@@ -253,7 +253,7 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
     Test Node.objects.best_match_for_path works without a perfect url match.
 
     All of these tests assert use of only one query:
-        * Get the best node based on url:
+        * Get the best Node based on url:
             SELECT
                 (LENGTH(url)) AS "length",
                 <other fields>
