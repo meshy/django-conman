@@ -10,10 +10,13 @@ from .utils import import_from_dotted_path, split_path
 
 
 class NodeManager(PolymorphicMPTTModelManager):
+    """Helpful methods for working with Nodes."""
     def best_match_for_path(self, path):
         """
-        Return the best match for a path. If the path as given is unavailable,
-        continues to search by chopping path components off the end.
+        Return the best match for a path.
+
+        If the path as given is unavailable, continues to search by chopping
+        path components off the end.
 
         Tries hard to avoid unnecessary database lookups by comparing all
         possible matching URL prefixes and choosing the longest match.
@@ -35,6 +38,14 @@ class NodeManager(PolymorphicMPTTModelManager):
 
 
 class Node(PolymorphicMPTTModel):
+    """
+    A Node in a tree of url endpoints.
+
+    A Node can be a Root Node or a Child Node.
+    A Root Node has no parent and has an empty slug.
+    A Child Node has a parent Node and a slug unique with the parent.
+    A Child Node's url is built from its slug and its parent's url.
+    """
     parent = PolymorphicTreeForeignKey(
         'self',
         blank=True,
@@ -55,14 +66,16 @@ class Node(PolymorphicMPTTModel):
         unique_together = ('parent', 'slug')
 
     def __init__(self, *args, **kwargs):
+        """Cache the Node's parent_id and slug."""
         super().__init__(*args, **kwargs)
         self.reset_originals()
 
     def __str__(self):
+        """Display a Node's class and url."""
         return '{} @ {}'.format(self.__class__.__name__, self.url)
 
     def get_handler_class(self):
-        """Imports a class from the python path string in `self.handler`."""
+        """Import a class from the python path string in `self.handler`."""
         return import_from_dotted_path(self.handler)
 
     def get_handler(self):

@@ -5,6 +5,6 @@ from . import handlers
 
 
 class Page(Node):
-    """A basic Page of content provided by Sir Trevor"""
+    """A basic Page of content provided by Sir Trevor."""
     handler = handlers.PageHandler.path()
     content = SirTrevorField(default='')

@@ -43,14 +43,14 @@ class NodeTest(TestCase):
 
 class NodeValidateOnSave(TestCase):
     def test_create_root_with_slug(self):
-        """Root must not have a slug"""
+        """Root must not have a slug."""
         root_node = NodeFactory.build(slug='slug', parent=None)
 
         with self.assertRaises(ValueError):
             root_node.save()
 
     def test_create_leaf_without_slug(self):
-        """Leaf nodes must have a slug"""
+        """Leaf nodes must have a slug."""
         root_node = RootNodeFactory.create()
         leaf = NodeFactory.build(slug='', parent=root_node)
 
@@ -297,9 +297,9 @@ class NodeGetHandlerClassTest(TestCase):
 
 
 class NodeGetHandlerTest(TestCase):
-    """Make sure that Node.get_handler acts as expected"""
+    """Make sure that Node.get_handler acts as expected."""
     def test_get_handler(self):
-        """We expect an instance of handler instanciated with a Node"""
+        """We expect an instance of handler instanciated with a Node."""
         handler_class = handlers.BaseHandler
         node = NodeFactory.build()
         node.handler = handler_class.path()
@@ -309,7 +309,7 @@ class NodeGetHandlerTest(TestCase):
         self.assertEqual(handler.node, node)
 
     def test_get_handler_again(self):
-        """Make sure we always get the same instance of a handler on a Node"""
+        """Make sure we always get the same instance of a handler on a Node."""
         handler_class = handlers.BaseHandler
         node = NodeFactory.build()
         node.handler = handler_class.path()
@@ -323,7 +323,9 @@ class NodeGetHandlerTest(TestCase):
 class NodeHandleTest(TestCase):
     def test_handle(self):
         """
-        Node delegates a request to its handler after stripping its url from the path.
+        Node delegates requests to its handler.
+
+        The Node's url is stripped from the requested url path.
         """
         node = NodeFactory.build(url='/branch/')
         node.get_handler_class = mock.MagicMock()
@@ -336,15 +338,15 @@ class NodeHandleTest(TestCase):
 
 
 class NodeStrTest(TestCase):
-    """Make sure that we get something nice when Node is cast to string"""
+    """Make sure that we get something nice when Node is cast to string."""
     def test_root_str(self):
-        """Does it work for a root Node?"""
+        """A Root Node has a useful string representation."""
         node = RootNodeFactory.create()
 
         self.assertEqual(str(node), 'Node @ /')
 
     def test_child_str(self):
-        """Does it work for a leaf node?"""
+        """A Child Node has a string representation that includes its url."""
         leaf = ChildNodeFactory.create(slug='leaf')
 
         self.assertEqual(str(leaf), 'Node @ /leaf/')

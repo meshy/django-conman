@@ -8,6 +8,7 @@ class UnboundViewMeta(type):
     This ensures that the method does not bind to the class unintentionally.
     """
     def __new__(cls, name, bases, attrs):
+        """Create the new class with a staticmethod view attribute."""
         view = attrs.get('view')
         if view:
             attrs['view'] = staticmethod(view)

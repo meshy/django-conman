@@ -7,8 +7,9 @@ from .. import urls, views
 
 
 class TestCMSIndexURL(URLTestCase):
-    """Make sure that the CMSIndex view has a URL"""
+    """Make sure that the CMSIndex view has a URL."""
     def test_url(self):
+        """The CMSIndex is available at /cms/ and has name cms:index."""
         self.assert_url_matches_view(
             views.CMSIndex,
             '/cms/',
@@ -21,6 +22,7 @@ class TestCMSURLs(TestCase):
     @mock.patch('conman.cms.urls.include')
     @mock.patch('django.apps.apps.get_app_config')
     def test_urls(self, get_app_config, include, url):
+        """A managed app's urls are included with the CMSIndex's url."""
         fake_config = mock.Mock()
         fake_config.cms_urls = 'example.path.to.urls'
         fake_config.label = 'example'

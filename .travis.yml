@@ -13,5 +13,6 @@ install:
   - pip install python-coveralls
   - psql -c 'CREATE DATABASE conman' -U postgres;
   - pip install -r test_requirements.txt
+  - pip uninstall flake8-docstrings --yes
   - pip install $DJANGO
 after_success: coveralls

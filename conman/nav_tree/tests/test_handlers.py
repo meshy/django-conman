@@ -8,14 +8,14 @@ from ..handlers import BaseHandler, SimpleHandler
 
 
 class BaseHandlerPathTest(TestCase):
-    """Test BaseHandler.path()"""
+    """Test BaseHandler.path()."""
     def test_path(self):
-        """Test directly on base class"""
+        """Test directly on base class."""
         base_handler_path = 'conman.nav_tree.handlers.base.BaseHandler'
         self.assertEqual(BaseHandler.path(), base_handler_path)
 
     def test_path_on_subclass(self):
-        """Test on subclass"""
+        """Test on subclass."""
         class TestHandler(BaseHandler):
             __module__ = 'does_not_exist'
 
@@ -23,9 +23,9 @@ class BaseHandlerPathTest(TestCase):
 
 
 class BaseHandlerInitTest(TestCase):
-    """Test BaseHandler.__init__()"""
+    """Test BaseHandler.__init__()."""
     def test_init(self):
-        """Make sure "node" gets saved on the handler"""
+        """Make sure "node" gets saved on the handler."""
         node = mock.MagicMock()
 
         handler = BaseHandler(node)
@@ -34,7 +34,7 @@ class BaseHandlerInitTest(TestCase):
 
 
 class BaseHandlerHandleTest(TestCase):
-    """Test BaseHandler.handle()"""
+    """Test BaseHandler.handle()."""
     def setUp(self):
         class TestHandler(BaseHandler):
             urlconf = 'conman.nav_tree.tests.urls'
@@ -45,11 +45,11 @@ class BaseHandlerHandleTest(TestCase):
         self.view = 'conman.nav_tree.tests.urls.dummy_view'
 
     def tearDown(self):
-        """Stops the tests leaking into each other through the url cache"""
+        """Stop tests leaking into each other through the url cache."""
         clear_url_caches()
 
     def test_handle_basic(self):
-        """Show that url resolving works at the root of the urlconf"""
+        """Show that url resolving works at the root of the urlconf."""
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request, '/')
 
@@ -57,7 +57,7 @@ class BaseHandlerHandleTest(TestCase):
         self.assertEqual(response, view(self.request, node=self.node))
 
     def test_handle_slug(self):
-        """Show that url resolving works with slugs"""
+        """Show that url resolving works with slugs."""
         slug = 'slug'
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request, '/slug/')
@@ -68,7 +68,7 @@ class BaseHandlerHandleTest(TestCase):
         self.assertEqual(response, expected)
 
     def test_handle_no_url_match(self):
-        """Show that an error is thrown when the url does not match"""
+        """Show that an error is thrown when the url does not match."""
         with self.assertRaises(Resolver404):
             with mock.patch(self.view) as view:
                 self.handler.handle(self.request, '/no/match/')
@@ -77,7 +77,7 @@ class BaseHandlerHandleTest(TestCase):
 
 
 class SimpleHandlerHandleTest(TestCase):
-    """Test SimpleHandler.handle()"""
+    """Test SimpleHandler.handle()."""
     def setUp(self):
         class TestHandler(SimpleHandler):
             view = mock.MagicMock()
@@ -89,11 +89,11 @@ class SimpleHandlerHandleTest(TestCase):
         self.view = TestHandler.view
 
     def tearDown(self):
-        """Stops the tests leaking into each other through the url cache"""
+        """Stop tests leaking into each other through the url cache."""
         clear_url_caches()
 
     def test_handle_basic(self):
-        """Show that SimpleHandler.view is used to process the request"""
+        """Show that SimpleHandler.view is used to process the request."""
         response = self.handler.handle(self.request, '/')
 
         self.view.assert_called_with(self.request, node=self.node)
@@ -101,14 +101,14 @@ class SimpleHandlerHandleTest(TestCase):
         self.assertEqual(response, expected)
 
     def test_handle_slug(self):
-        """Show that slugs are not accepted"""
+        """Show that slugs are not accepted."""
         with self.assertRaises(Resolver404):
             self.handler.handle(self.request, '/slug/')
 
         self.assertFalse(self.view.called)
 
     def test_handle_pk(self):
-        """Show that pks are not accepted"""
+        """Show that pks are not accepted."""
         with self.assertRaises(Resolver404):
             self.handler.handle(self.request, '/42/')
 
@@ -116,9 +116,9 @@ class SimpleHandlerHandleTest(TestCase):
 
 
 class SimpleHandlerViewBindingTest(TestCase):
-    """Views should not unexpectedly "bind" to SimpleHandler subclasses"""
+    """Views should not unexpectedly "bind" to SimpleHandler subclasses."""
     def test_unbound_function(self):
-        """Make sure that the handler is not bound to self on the view"""
+        """Make sure that the handler is not bound to self on the view."""
         def unbound_function(request, **kwargs):
             return request
 
@@ -131,7 +131,7 @@ class SimpleHandlerViewBindingTest(TestCase):
         self.assertIs(response, request)
 
     def test_bound_function(self):
-        """Make sure that class based views get the expected args"""
+        """Make sure that class based views get the expected args."""
         class TestView(View):
             def dispatch(self, request, node=None):
                 return self, request

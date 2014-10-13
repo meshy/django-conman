@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-"""From http://stackoverflow.com/a/12260597/400691"""
+"""From http://stackoverflow.com/a/12260597/400691."""
 import sys
 
 import dj_database_url
@@ -43,7 +43,7 @@ django.setup()
 
 
 class TestRunner(ColourRunnerMixin, DiscoverRunner):
-    pass
+    """Enable coloured output for tests."""
 
 
 test_runner = TestRunner(verbosity=1)
