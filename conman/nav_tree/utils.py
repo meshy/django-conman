@@ -26,6 +26,11 @@ def import_from_dotted_path(path):
 
     The path must have at least one dot.
     """
-    module_path, attr = path.rsplit('.', 1)
+    try:
+        module_path, attr = path.rsplit('.', 1)
+    except ValueError:
+        message = 'An import path with two or more components is required.'
+        raise ValueError(message) from None
+
     module = importlib.import_module(module_path)
     return getattr(module, attr)
