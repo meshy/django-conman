@@ -30,6 +30,7 @@ NODE_BASE_FIELDS = (
 
 
 class NodeTest(TestCase):
+    """Test Node fields."""
     def test_fields(self):
         """Check the Node model has the expected fields."""
         expected = (
@@ -42,6 +43,7 @@ class NodeTest(TestCase):
 
 
 class NodeValidateOnSave(TestCase):
+    """Check validation of Node slugs and ancestry on save."""
     def test_create_root_with_slug(self):
         """Root must not have a slug."""
         root_node = NodeFactory.build(slug='slug', parent=None)
@@ -50,7 +52,7 @@ class NodeValidateOnSave(TestCase):
             root_node.save()
 
     def test_create_leaf_without_slug(self):
-        """Leaf nodes must have a slug."""
+        """Leaf Nodes must have a slug."""
         root_node = RootNodeFactory.create()
         leaf = NodeFactory.build(slug='', parent=root_node)
 
@@ -59,6 +61,7 @@ class NodeValidateOnSave(TestCase):
 
 
 class NodeUniqueness(TestCase):
+    """Check uniqueness conditions on Node are enforced in the DB."""
     def test_unique_slug_per_parent(self):
         """Two Nodes cannot share the same slug and parent Node."""
         slug = 'slug'
@@ -77,6 +80,7 @@ class NodeUniqueness(TestCase):
 
 
 class NodeSkipUpdateWithoutChange(TestCase):
+    """Be frugal with DB hits when saving unmodified Nodes."""
     def test_no_update_without_changes(self):
         """Saving unchanged Node shouldn't query parent to rebuild the url."""
         branch = ChildNodeFactory.create(slug='branch')
@@ -102,11 +106,12 @@ class NodeSkipUpdateWithoutChange(TestCase):
 
 
 class NodeCachesURLOnCreateTest(TestCase):
+    """Make sure Node urls are built correctly on create."""
     def setUp(self):
         self.root = RootNodeFactory.create()
 
     def test_create_root(self):
-        """Root node should be at the root url."""
+        """Root Node should be at the root url."""
         self.assertEqual(self.root.url, '/')
 
     def test_create_leaf_on_root(self):
@@ -124,6 +129,7 @@ class NodeCachesURLOnCreateTest(TestCase):
 
 
 class NodeCachesURLOnRenameTest(TestCase):
+    """Make sure Node urls are updated correctly when a slug changes."""
     def test_rename_leaf(self):
         """Changing slug on a leaf should update the cached url."""
         leaf = ChildNodeFactory.create(slug='foo')
@@ -158,6 +164,7 @@ class NodeCachesURLOnRenameTest(TestCase):
 
 
 class NodeCachesURLOnMoveTest(TestCase):
+    """Make sure Node urls are updated correctly when moved in the tree."""
     def test_move_leaf(self):
         """Moving a leaf onto a new branch should update the cached url."""
         branch = ChildNodeFactory.create(slug='foo')
@@ -188,7 +195,7 @@ class NodeManagerBestMatchForPathTest(TestCase):
     Test Node.objects.best_match_for_path works with perfect url matches.
 
     All of these tests assert use of only one query:
-        * Get the best node based on url:
+        * Get the best Node based on url:
             SELECT
                 (LENGTH(url)) AS "length",
                 <other fields>
@@ -246,7 +253,7 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
     Test Node.objects.best_match_for_path works without a perfect url match.
 
     All of these tests assert use of only one query:
-        * Get the best node based on url:
+        * Get the best Node based on url:
             SELECT
                 (LENGTH(url)) AS "length",
                 <other fields>
@@ -287,6 +294,7 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
 
 
 class NodeGetHandlerClassTest(TestCase):
+    """Check the behaviour of Node().get_handler_class()."""
     def test_get_handler_class(self):
         """A Node's handler is looked up from the handler's path."""
         handler_class = handlers.BaseHandler
@@ -321,6 +329,7 @@ class NodeGetHandlerTest(TestCase):
 
 
 class NodeHandleTest(TestCase):
+    """Check the behaviour of Node.handle()."""
     def test_handle(self):
         """
         Node delegates requests to its handler.
@@ -353,6 +362,7 @@ class NodeStrTest(TestCase):
 
 
 class NodeCheckTest(TestCase):
+    """Ensure that Node.check does useful validation."""
     def test_node_class(self):
         """The Node class does not require a handler attribute."""
         errors = Node.check()
