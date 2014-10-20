@@ -9,16 +9,16 @@ from .. import views
 class TestNodeRedirectView(RequestTestCase):
     """Verify behaviour of NodeRedirectView."""
     def setUp(self):
-        self.target = ChildNodeFactory.create()
         self.request = self.create_request()
         self.view = views.NodeRedirectView.as_view()
 
     def test_target(self):
         """NodeRedirectView redirects to the target's url."""
-        node = ChildNodeRedirectFactory.create(target=self.target)
+        target = ChildNodeFactory.create()
+        node = ChildNodeRedirectFactory.create(target=target)
         response = self.view(self.request, node=node)
 
-        self.assertEqual(response['Location'], self.target.url)
+        self.assertEqual(response['Location'], target.url)
 
     def test_permanent(self):
         """A permanent redirect has status_code 301."""
