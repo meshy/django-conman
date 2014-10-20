@@ -37,13 +37,11 @@ class TestNodeRedirectView(RequestTestCase):
 
 class TestNodeRedirectViewIntegration(TestCase):
     """Check integration of NodeRedirectView."""
-    def setUp(self):
-        self.target = ChildNodeFactory.create()
-        self.expected = 'http://testserver' + self.target.url
-
     def test_access_redirect(self):
         """Accessing a NodeRedirect's url redirects to its target's url."""
-        node = ChildNodeRedirectFactory.create(target=self.target)
+        target = ChildNodeFactory.create()
+        node = ChildNodeRedirectFactory.create(target=target)
         response = self.client.get(node.url)
 
-        self.assertEqual(response['Location'], self.expected)
+        expected = 'http://testserver' + target.url
+        self.assertEqual(response['Location'], expected)
