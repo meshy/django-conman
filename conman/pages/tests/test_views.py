@@ -18,8 +18,6 @@ class TestPageDetail(RequestTestCase):
 
 
 class TestPageDetailIntegration(TestCase):
-    view = views.PageDetail
-
     def test_get(self):
         """A page's content is rendered at its url."""
         page = factories.PageFactory.create(content='This is a test')
