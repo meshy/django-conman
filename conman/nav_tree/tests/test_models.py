@@ -107,22 +107,20 @@ class NodeSkipUpdateWithoutChange(TestCase):
 
 class NodeCachesURLOnCreateTest(TestCase):
     """Make sure Node urls are built correctly on create."""
-    def setUp(self):
-        self.root = RootNodeFactory.create()
-
     def test_create_root(self):
         """Root Node should be at the root url."""
+        self.root = RootNodeFactory.create()
         self.assertEqual(self.root.url, '/')
 
     def test_create_leaf_on_root(self):
         """Children of the root should be at /<slug>/."""
-        leaf = NodeFactory.create(slug='leaf', parent=self.root)
+        leaf = ChildNodeFactory.create(slug='leaf')
 
         self.assertEqual(leaf.url, '/leaf/')
 
     def test_create_child_of_child(self):
         """Children of children should be at /<parent-slug>/<slug>/."""
-        branch = NodeFactory.create(slug='branch', parent=self.root)
+        branch = ChildNodeFactory.create(slug='branch')
         leaf = NodeFactory.create(slug='leaf', parent=branch)
 
         self.assertEqual(leaf.url, '/branch/leaf/')
