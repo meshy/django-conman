@@ -8,27 +8,30 @@ from .. import views
 
 class TestNodeRedirectView(RequestTestCase):
     """Verify behaviour of NodeRedirectView."""
-    view = staticmethod(views.NodeRedirectView.as_view())
+    view = views.NodeRedirectView
 
     def test_target(self):
         """NodeRedirectView redirects to the target's url."""
         target = ChildNodeFactory.create()
         node = ChildNodeRedirectFactory.create(target=target)
-        response = self.view(self.create_request(), node=node)
+        view = self.get_view()
+        response = view(self.create_request(), node=node)
 
         self.assertEqual(response['Location'], target.url)
 
     def test_permanent(self):
         """A permanent redirect has status_code 301."""
         node = ChildNodeRedirectFactory.create(permanent=True)
-        response = self.view(self.create_request(), node=node)
+        view = self.get_view()
+        response = view(self.create_request(), node=node)
 
         self.assertEqual(response.status_code, 301)
 
     def test_temporary(self):
         """A temporary redirect has status_code 302."""
         node = ChildNodeRedirectFactory.create(permanent=False)
-        response = self.view(self.create_request(), node=node)
+        view = self.get_view()
+        response = view(self.create_request(), node=node)
 
         self.assertEqual(response.status_code, 302)
 
