@@ -17,7 +17,7 @@ class UnboundViewMeta(type):
 
 class SimpleHandler(BaseHandler, metaclass=UnboundViewMeta):
     """
-    Abstract handler for Nodes that have one url: `/` relative to the Node.
+    Abstract handler for Routes that have one url: `/` relative to the Route.
 
     Subclasses should define a view on the class as `view`. This will be
     called if the `path` passed to `handle` is `/`.

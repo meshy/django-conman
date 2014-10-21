@@ -1,8 +1,8 @@
-from conman.routes.tests.factories import RootNodeFactory
+from conman.routes.tests.factories import RootRouteFactory
 from .. import models
 
 
-class PageFactory(RootNodeFactory):
+class PageFactory(RootRouteFactory):
     """Create instances of Page for testing."""
     class Meta:
         model = models.Page

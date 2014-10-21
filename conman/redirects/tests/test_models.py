@@ -1,29 +1,29 @@
 from django.test import TestCase
 
 from conman.routes.tests.test_models import NODE_BASE_FIELDS
-from .factories import ChildNodeRedirectFactory
-from ..models import NodeRedirect
+from .factories import ChildRouteRedirectFactory
+from ..models import RouteRedirect
 
 
-class NodeRedirectTest(TestCase):
+class RouteRedirectTest(TestCase):
     def test_fields(self):
-        """NodeRedirect has Node's fields and some specific to redirects."""
+        """RouteRedirect has Route's fields and some specific to redirects."""
         expected = (
             'id',
-            'node_ptr',
-            'node_ptr_id',
+            'route_ptr',
+            'route_ptr_id',
             'target',
             'target_id',
             'permanent',
         ) + NODE_BASE_FIELDS
-        fields = NodeRedirect._meta.get_all_field_names()
+        fields = RouteRedirect._meta.get_all_field_names()
         self.assertCountEqual(fields, expected)
 
 
-class NodeRedirectUnicodeMethodTest(TestCase):
-    """We should get something nice when RedirectNode is cast to string."""
+class RouteRedirectUnicodeMethodTest(TestCase):
+    """We should get something nice when RedirectRoute is cast to string."""
     def test_str(self):
-        """The str of a NodeRedirect identifies it by class and url."""
-        leaf = ChildNodeRedirectFactory.create(slug='leaf')
+        """The str of a RouteRedirect identifies it by class and url."""
+        leaf = ChildRouteRedirectFactory.create(slug='leaf')
 
-        self.assertEqual(str(leaf), 'NodeRedirect @ /leaf/')
+        self.assertEqual(str(leaf), 'RouteRedirect @ /leaf/')

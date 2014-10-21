@@ -7,11 +7,11 @@ from .. import views
 
 class TestPageDetail(RequestTestCase):
     def test_get_object(self):
-        """PageDetail displays the page instance passed in the node kwarg."""
+        """PageDetail displays the page instance passed in the route kwarg."""
         request = self.create_request()
         page = factories.PageFactory.create()
 
-        view = views.PageDetail(request=request, kwargs={'node': page})
+        view = views.PageDetail(request=request, kwargs={'route': page})
         obj = view.get_object()
 
         self.assertEqual(obj, page)

@@ -1,12 +1,12 @@
 import factory
 
-from conman.routes.tests.factories import ChildNodeFactory
+from conman.routes.tests.factories import ChildRouteFactory
 from .. import models
 
 
-class ChildNodeRedirectFactory(ChildNodeFactory):
-    """Create a NodeRedirect with a target to a Child Node."""
-    target = factory.SubFactory(ChildNodeFactory)
+class ChildRouteRedirectFactory(ChildRouteFactory):
+    """Create a RouteRedirect with a target to a Child Route."""
+    target = factory.SubFactory(ChildRouteFactory)
 
     class Meta:
-        model = models.NodeRedirect
+        model = models.RouteRedirect

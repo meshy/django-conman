@@ -3,9 +3,9 @@ from unittest import mock
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
-from .factories import ChildNodeFactory, NodeFactory, RootNodeFactory
+from .factories import ChildRouteFactory, RootRouteFactory, RouteFactory
 from .. import handlers
-from ..models import Node
+from ..models import Route
 
 
 NODE_BASE_FIELDS = (
@@ -29,62 +29,62 @@ NODE_BASE_FIELDS = (
 )
 
 
-class NodeTest(TestCase):
-    """Test Node fields."""
+class RouteTest(TestCase):
+    """Test Route fields."""
     def test_fields(self):
-        """Check the Node model has the expected fields."""
+        """Check the Route model has the expected fields."""
         expected = (
             'id',
-            'noderedirect',
+            'routeredirect',
             'page',
         ) + NODE_BASE_FIELDS
-        fields = Node._meta.get_all_field_names()
+        fields = Route._meta.get_all_field_names()
         self.assertCountEqual(fields, expected)
 
 
-class NodeValidateOnSave(TestCase):
-    """Check validation of Node slugs and ancestry on save."""
+class RouteValidateOnSave(TestCase):
+    """Check validation of Route slugs and ancestry on save."""
     def test_create_root_with_slug(self):
         """Root must not have a slug."""
-        root_node = NodeFactory.build(slug='slug', parent=None)
+        root_route = RouteFactory.build(slug='slug', parent=None)
 
         with self.assertRaises(ValueError):
-            root_node.save()
+            root_route.save()
 
     def test_create_leaf_without_slug(self):
-        """Leaf Nodes must have a slug."""
-        root_node = RootNodeFactory.create()
-        leaf = NodeFactory.build(slug='', parent=root_node)
+        """Leaf Routes must have a slug."""
+        root_route = RootRouteFactory.create()
+        leaf = RouteFactory.build(slug='', parent=root_route)
 
         with self.assertRaises(ValueError):
             leaf.save()
 
 
-class NodeUniqueness(TestCase):
-    """Check uniqueness conditions on Node are enforced in the DB."""
+class RouteUniqueness(TestCase):
+    """Check uniqueness conditions on Route are enforced in the DB."""
     def test_unique_slug_per_parent(self):
-        """Two Nodes cannot share the same slug and parent Node."""
+        """Two Routes cannot share the same slug and parent Route."""
         slug = 'slug'
-        root_node = RootNodeFactory.create()
-        NodeFactory.create(slug=slug, parent=root_node)
+        root_route = RootRouteFactory.create()
+        RouteFactory.create(slug=slug, parent=root_route)
 
         with self.assertRaises(IntegrityError):
-            NodeFactory.create(slug=slug, parent=root_node)
+            RouteFactory.create(slug=slug, parent=root_route)
 
     def test_unique_root_url(self):
-        """Only one Node can exist with an empty slug."""
-        Node.objects.create(slug='')
+        """Only one Route can exist with an empty slug."""
+        Route.objects.create(slug='')
 
         with self.assertRaises(IntegrityError):
-            Node.objects.create(slug='')
+            Route.objects.create(slug='')
 
 
-class NodeSkipUpdateWithoutChange(TestCase):
-    """Be frugal with DB hits when saving unmodified Nodes."""
+class RouteSkipUpdateWithoutChange(TestCase):
+    """Be frugal with DB hits when saving unmodified Routes."""
     def test_no_update_without_changes(self):
-        """Saving unchanged Node shouldn't query parent to rebuild the url."""
-        branch = ChildNodeFactory.create(slug='branch')
-        branch = Node.objects.get(pk=branch.pk)
+        """Saving unchanged Route shouldn't query parent to rebuild the url."""
+        branch = ChildRouteFactory.create(slug='branch')
+        branch = Route.objects.get(pk=branch.pk)
         # Prove that no attempt is made to update descendants.
         with self.assertNumQueries(1):
             # One query:
@@ -92,9 +92,9 @@ class NodeSkipUpdateWithoutChange(TestCase):
             branch.save()
 
     def test_no_update_on_resave(self):
-        """Resaving changed Node should only update descendants once."""
-        branch = ChildNodeFactory.create(slug='branch')
-        NodeFactory.create(slug='leaf', parent=branch)
+        """Resaving changed Route should only update descendants once."""
+        branch = ChildRouteFactory.create(slug='branch')
+        RouteFactory.create(slug='leaf', parent=branch)
         branch.slug = 'new_slug'
         branch.save()
 
@@ -105,34 +105,34 @@ class NodeSkipUpdateWithoutChange(TestCase):
             branch.save()
 
 
-class NodeCachesURLOnCreateTest(TestCase):
-    """Make sure Node urls are built correctly on create."""
+class RouteCachesURLOnCreateTest(TestCase):
+    """Make sure Route urls are built correctly on create."""
     def setUp(self):
-        self.root = RootNodeFactory.create()
+        self.root = RootRouteFactory.create()
 
     def test_create_root(self):
-        """Root Node should be at the root url."""
+        """Root Route should be at the root url."""
         self.assertEqual(self.root.url, '/')
 
     def test_create_leaf_on_root(self):
         """Children of the root should be at /<slug>/."""
-        leaf = NodeFactory.create(slug='leaf', parent=self.root)
+        leaf = RouteFactory.create(slug='leaf', parent=self.root)
 
         self.assertEqual(leaf.url, '/leaf/')
 
     def test_create_child_of_child(self):
         """Children of children should be at /<parent-slug>/<slug>/."""
-        branch = NodeFactory.create(slug='branch', parent=self.root)
-        leaf = NodeFactory.create(slug='leaf', parent=branch)
+        branch = RouteFactory.create(slug='branch', parent=self.root)
+        leaf = RouteFactory.create(slug='leaf', parent=branch)
 
         self.assertEqual(leaf.url, '/branch/leaf/')
 
 
-class NodeCachesURLOnRenameTest(TestCase):
-    """Make sure Node urls are updated correctly when a slug changes."""
+class RouteCachesURLOnRenameTest(TestCase):
+    """Make sure Route urls are updated correctly when a slug changes."""
     def test_rename_leaf(self):
         """Changing slug on a leaf should update the cached url."""
-        leaf = ChildNodeFactory.create(slug='foo')
+        leaf = ChildRouteFactory.create(slug='foo')
 
         leaf.slug = 'bar'
         leaf.save()
@@ -141,36 +141,36 @@ class NodeCachesURLOnRenameTest(TestCase):
 
     def test_rename_branch(self):
         """Changing a branch slug should update the child url."""
-        branch = ChildNodeFactory.create(slug='foo')
-        leaf = NodeFactory.create(slug='leaf', parent=branch)
+        branch = ChildRouteFactory.create(slug='foo')
+        leaf = RouteFactory.create(slug='leaf', parent=branch)
 
         branch.slug = 'bar'
         branch.save()
 
-        leaf = Node.objects.get(pk=leaf.pk)
+        leaf = Route.objects.get(pk=leaf.pk)
         self.assertEqual(leaf.url, '/bar/leaf/')
 
     def test_rename_trunk(self):
         """Changing a trunk slug should update the grandchild url."""
-        trunk = ChildNodeFactory.create(slug='foo')
-        branch = NodeFactory.create(slug='branch', parent=trunk)
-        leaf = NodeFactory.create(slug='leaf', parent=branch)
+        trunk = ChildRouteFactory.create(slug='foo')
+        branch = RouteFactory.create(slug='branch', parent=trunk)
+        leaf = RouteFactory.create(slug='leaf', parent=branch)
 
         trunk.slug = 'bar'
         trunk.save()
 
-        leaf = Node.objects.get(pk=leaf.pk)
+        leaf = Route.objects.get(pk=leaf.pk)
         self.assertEqual(leaf.url, '/bar/branch/leaf/')
 
 
-class NodeCachesURLOnMoveTest(TestCase):
-    """Make sure Node urls are updated correctly when moved in the tree."""
+class RouteCachesURLOnMoveTest(TestCase):
+    """Make sure Route urls are updated correctly when moved in the tree."""
     def test_move_leaf(self):
         """Moving a leaf onto a new branch should update the cached url."""
-        branch = ChildNodeFactory.create(slug='foo')
-        leaf = NodeFactory.create(slug='leaf', parent=branch)
+        branch = ChildRouteFactory.create(slug='foo')
+        leaf = RouteFactory.create(slug='leaf', parent=branch)
 
-        new_branch = ChildNodeFactory.create(slug='bar')
+        new_branch = ChildRouteFactory.create(slug='bar')
         leaf.parent = new_branch
         leaf.save()
 
@@ -178,30 +178,30 @@ class NodeCachesURLOnMoveTest(TestCase):
 
     def test_move_branch(self):
         """Moving a branch onto a new trunk should update the leaf urls."""
-        trunk = ChildNodeFactory.create(slug='foo')
-        branch = NodeFactory.create(slug='branch', parent=trunk)
-        leaf = NodeFactory.create(slug='leaf', parent=branch)
+        trunk = ChildRouteFactory.create(slug='foo')
+        branch = RouteFactory.create(slug='branch', parent=trunk)
+        leaf = RouteFactory.create(slug='leaf', parent=branch)
 
-        new_trunk = ChildNodeFactory.create(slug='bar')
+        new_trunk = ChildRouteFactory.create(slug='bar')
         branch.parent = new_trunk
         branch.save()
 
-        leaf = Node.objects.get(pk=leaf.pk)
+        leaf = Route.objects.get(pk=leaf.pk)
         self.assertEqual(leaf.url, '/bar/branch/leaf/')
 
 
-class NodeManagerBestMatchForPathTest(TestCase):
+class RouteManagerBestMatchForPathTest(TestCase):
     """
-    Test Node.objects.best_match_for_path works with perfect url matches.
+    Test Route.objects.best_match_for_path works with perfect url matches.
 
     All of these tests assert use of only one query:
-        * Get the best Node based on url:
+        * Get the best Route based on url:
             SELECT
                 (LENGTH(url)) AS "length",
                 <other fields>
-            FROM "routes_node"
+            FROM "routes_route"
             WHERE
-                "routes_node"."url" IN (
+                "routes_route"."url" IN (
                     '/',
                     '/url/',
                     '/url/split/',
@@ -211,55 +211,55 @@ class NodeManagerBestMatchForPathTest(TestCase):
             LIMIT 1
     """
     def test_get_root(self):
-        """Check a Root Node matches a simple '/' path."""
-        root = RootNodeFactory.create()
+        """Check a Root Route matches a simple '/' path."""
+        root = RootRouteFactory.create()
         with self.assertNumQueries(1):
-            node = Node.objects.best_match_for_path('/')
+            route = Route.objects.best_match_for_path('/')
 
-        self.assertEqual(node, root)
+        self.assertEqual(route, root)
 
     def test_get_leaf(self):
-        """Check a Node with a slug matches a path of that slug."""
-        leaf = ChildNodeFactory.create(slug='leaf')
+        """Check a Route with a slug matches a path of that slug."""
+        leaf = ChildRouteFactory.create(slug='leaf')
 
         with self.assertNumQueries(1):
-            node = Node.objects.best_match_for_path('/leaf/')
+            route = Route.objects.best_match_for_path('/leaf/')
 
-        self.assertEqual(node, leaf)
+        self.assertEqual(route, leaf)
 
     def test_get_leaf_on_branch(self):
-        """Check a Node matches a path containing its slug and parent's slug."""
-        branch = ChildNodeFactory.create(slug='branch')
-        leaf = NodeFactory.create(slug='leaf', parent=branch)
+        """Check a Route matches a path containing its slug and parent's slug."""
+        branch = ChildRouteFactory.create(slug='branch')
+        leaf = RouteFactory.create(slug='leaf', parent=branch)
 
         with self.assertNumQueries(1):
-            node = Node.objects.best_match_for_path('/branch/leaf/')
+            route = Route.objects.best_match_for_path('/branch/leaf/')
 
-        self.assertEqual(node, leaf)
+        self.assertEqual(route, leaf)
 
     def test_get_branch_with_leaf(self):
-        """Check a Branch Node matches a path of its slug even if a Leaf exists."""
-        branch = ChildNodeFactory.create(slug='branch')
-        NodeFactory.create(slug='leaf', parent=branch)
+        """Check a Branch Route matches a path of its slug even if a Leaf exists."""
+        branch = ChildRouteFactory.create(slug='branch')
+        RouteFactory.create(slug='leaf', parent=branch)
 
         with self.assertNumQueries(1):
-            node = Node.objects.best_match_for_path('/branch/')
+            route = Route.objects.best_match_for_path('/branch/')
 
-        self.assertEqual(node, branch)
+        self.assertEqual(route, branch)
 
 
-class NodeManagerBestMatchForBrokenPathTest(TestCase):
+class RouteManagerBestMatchForBrokenPathTest(TestCase):
     """
-    Test Node.objects.best_match_for_path works without a perfect url match.
+    Test Route.objects.best_match_for_path works without a perfect url match.
 
     All of these tests assert use of only one query:
-        * Get the best Node based on url:
+        * Get the best Route based on url:
             SELECT
                 (LENGTH(url)) AS "length",
                 <other fields>
-            FROM "routes_node"
+            FROM "routes_route"
             WHERE
-                "routes_node"."url" IN (
+                "routes_route"."url" IN (
                     '/',
                     '/url/',
                     '/url/split/',
@@ -269,121 +269,121 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
             LIMIT 1
     """
     def test_throw_error_without_match(self):
-        """Check Node.DoesNotExist is raised if no Root Node exists."""
+        """Check Route.DoesNotExist is raised if no Root Route exists."""
         with self.assertNumQueries(1):
-            with self.assertRaises(Node.DoesNotExist):
-                Node.objects.best_match_for_path('/')
+            with self.assertRaises(Route.DoesNotExist):
+                Route.objects.best_match_for_path('/')
 
     def test_fall_back_to_root(self):
-        """Check the Root Node matches when no better Node is available."""
-        root = RootNodeFactory.create()
+        """Check the Root Route matches when no better Route is available."""
+        root = RootRouteFactory.create()
 
         with self.assertNumQueries(1):
-            node = Node.objects.best_match_for_path('/absent-branch/')
+            route = Route.objects.best_match_for_path('/absent-branch/')
 
-        self.assertEqual(node, root)
+        self.assertEqual(route, root)
 
     def test_fall_back_to_branch(self):
-        """Check a Branch Node matches when no Leaf Node matches."""
-        branch = ChildNodeFactory.create(slug='branch')
+        """Check a Branch Route matches when no Leaf Route matches."""
+        branch = ChildRouteFactory.create(slug='branch')
 
         with self.assertNumQueries(1):
-            node = Node.objects.best_match_for_path('/branch/absent-leaf/')
+            route = Route.objects.best_match_for_path('/branch/absent-leaf/')
 
-        self.assertEqual(node, branch)
+        self.assertEqual(route, branch)
 
 
-class NodeGetHandlerClassTest(TestCase):
-    """Check the behaviour of Node().get_handler_class()."""
+class RouteGetHandlerClassTest(TestCase):
+    """Check the behaviour of Route().get_handler_class()."""
     def test_get_handler_class(self):
-        """A Node's handler is looked up from the handler's path."""
+        """A Route's handler is looked up from the handler's path."""
         handler_class = handlers.BaseHandler
-        node = NodeFactory.build()
-        node.handler = handler_class.path()
+        route = RouteFactory.build()
+        route.handler = handler_class.path()
 
-        self.assertEqual(node.get_handler_class(), handler_class)
+        self.assertEqual(route.get_handler_class(), handler_class)
 
 
-class NodeGetHandlerTest(TestCase):
-    """Make sure that Node.get_handler acts as expected."""
+class RouteGetHandlerTest(TestCase):
+    """Make sure that Route.get_handler acts as expected."""
     def test_get_handler(self):
-        """We expect an instance of handler instanciated with a Node."""
+        """We expect an instance of handler instanciated with a Route."""
         handler_class = handlers.BaseHandler
-        node = NodeFactory.build()
-        node.handler = handler_class.path()
+        route = RouteFactory.build()
+        route.handler = handler_class.path()
 
-        handler = node.get_handler()
+        handler = route.get_handler()
         self.assertIsInstance(handler, handler_class)
-        self.assertEqual(handler.node, node)
+        self.assertEqual(handler.route, route)
 
     def test_get_handler_again(self):
-        """Make sure we always get the same instance of a handler on a Node."""
+        """Make sure we always get the same instance of a handler on a Route."""
         handler_class = handlers.BaseHandler
-        node = NodeFactory.build()
-        node.handler = handler_class.path()
+        route = RouteFactory.build()
+        route.handler = handler_class.path()
 
-        first_handler = node.get_handler()
-        second_handler = node.get_handler()
+        first_handler = route.get_handler()
+        second_handler = route.get_handler()
 
         self.assertEqual(first_handler, second_handler)
 
 
-class NodeHandleTest(TestCase):
-    """Check the behaviour of Node.handle()."""
+class RouteHandleTest(TestCase):
+    """Check the behaviour of Route.handle()."""
     def test_handle(self):
         """
-        Node delegates requests to its handler.
+        Route delegates requests to its handler.
 
-        The Node's url is stripped from the requested url path.
+        The Route's url is stripped from the requested url path.
         """
-        node = NodeFactory.build(url='/branch/')
-        node.get_handler_class = mock.MagicMock()
+        route = RouteFactory.build(url='/branch/')
+        route.get_handler_class = mock.MagicMock()
         request = mock.Mock()
 
-        result = node.handle(request, '/branch/leaf/')
+        result = route.handle(request, '/branch/leaf/')
 
-        expected = node.get_handler_class()(node).handle(request, '/leaf/')
+        expected = route.get_handler_class()(route).handle(request, '/leaf/')
         self.assertEqual(result, expected)
 
 
-class NodeStrTest(TestCase):
-    """Make sure that we get something nice when Node is cast to string."""
+class RouteStrTest(TestCase):
+    """Make sure that we get something nice when Route is cast to string."""
     def test_root_str(self):
-        """A Root Node has a useful string representation."""
-        node = RootNodeFactory.create()
+        """A Root Route has a useful string representation."""
+        route = RootRouteFactory.create()
 
-        self.assertEqual(str(node), 'Node @ /')
+        self.assertEqual(str(route), 'Route @ /')
 
     def test_child_str(self):
-        """A Child Node has a string representation that includes its url."""
-        leaf = ChildNodeFactory.create(slug='leaf')
+        """A Child Route has a string representation that includes its url."""
+        leaf = ChildRouteFactory.create(slug='leaf')
 
-        self.assertEqual(str(leaf), 'Node @ /leaf/')
+        self.assertEqual(str(leaf), 'Route @ /leaf/')
 
 
-class NodeCheckTest(TestCase):
-    """Ensure that Node.check does useful validation."""
-    def test_node_class(self):
-        """The Node class does not require a handler attribute."""
-        errors = Node.check()
+class RouteCheckTest(TestCase):
+    """Ensure that Route.check does useful validation."""
+    def test_route_class(self):
+        """The Route class does not require a handler attribute."""
+        errors = Route.check()
         self.assertEqual(errors, [])
 
     def test_subclass_with_handler(self):
-        """A subclass of Node must have a handler attribute."""
-        class NodeWithHandler(Node):
+        """A subclass of Route must have a handler attribute."""
+        class RouteWithHandler(Route):
             handler = 'has.been.set'
 
-        errors = NodeWithHandler.check()
+        errors = RouteWithHandler.check()
         self.assertEqual(errors, [])
 
     def test_subclass_without_handler(self):
-        """A subclass of Node without a handler fails Node.check."""
-        class NodeWithoutHandler(Node):
+        """A subclass of Route without a handler fails Route.check."""
+        class RouteWithoutHandler(Route):
             pass  # handler not set
 
-        errors = NodeWithoutHandler.check()
+        errors = RouteWithoutHandler.check()
         self.assertEqual(len(errors), 1)
         error = errors[0]
-        self.assertEqual(error.obj, NodeWithoutHandler)
-        expected_msg = 'Node subclasses must have a `handler` attribute'
+        self.assertEqual(error.obj, RouteWithoutHandler)
+        expected_msg = 'Route subclasses must have a `handler` attribute'
         self.assertEqual(error.msg, expected_msg)

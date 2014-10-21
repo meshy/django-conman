@@ -6,11 +6,11 @@ from .. import models
 
 class PageTest(TestCase):
     def test_fields(self):
-        """Check Page has Node's fields and a few of its own."""
+        """Check Page has Route's fields and a few of its own."""
         expected = (
             'id',
-            'node_ptr',
-            'node_ptr_id',
+            'route_ptr',
+            'route_ptr_id',
             'content',
         ) + NODE_BASE_FIELDS
         fields = models.Page._meta.get_all_field_names()
