@@ -7,6 +7,7 @@ from .. import views
 
 
 class CMSIndexTest(RequestTestCase):
+    """Basic test for the CMSIndex view."""
     def test_get(self):
         """CMSIndex returns a 200."""
         view = views.CMSIndex.as_view()
@@ -26,6 +27,7 @@ class CMSIndexTest(RequestTestCase):
 
 
 class CMSIndexIntegrationTest(TestCase):
+    """Integration test for the CMSIndex view."""
     def test_get(self):
         """CMSIndex uses the correct template."""
         response = self.client.get(reverse('cms:index'))

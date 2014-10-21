@@ -18,6 +18,7 @@ class TestCMSIndexURL(URLTestCase):
 
 
 class TestCMSURLs(TestCase):
+    """Ensure urls are constructed according to the appconfigs."""
     @mock.patch('conman.cms.urls.url')
     @mock.patch('conman.cms.urls.include')
     @mock.patch('django.apps.apps.get_app_config')
