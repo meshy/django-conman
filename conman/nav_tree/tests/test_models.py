@@ -109,8 +109,8 @@ class NodeCachesURLOnCreateTest(TestCase):
     """Make sure Node urls are built correctly on create."""
     def test_create_root(self):
         """Root Node should be at the root url."""
-        self.root = RootNodeFactory.create()
-        self.assertEqual(self.root.url, '/')
+        root = RootNodeFactory.create()
+        self.assertEqual(root.url, '/')
 
     def test_create_leaf_on_root(self):
         """Children of the root should be at /<slug>/."""
