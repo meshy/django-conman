@@ -11,7 +11,7 @@ class BaseHandlerPathTest(TestCase):
     """Test BaseHandler.path()."""
     def test_path(self):
         """Test directly on base class."""
-        base_handler_path = 'conman.nav_tree.handlers.base.BaseHandler'
+        base_handler_path = 'conman.routes.handlers.base.BaseHandler'
         self.assertEqual(BaseHandler.path(), base_handler_path)
 
     def test_path_on_subclass(self):
@@ -37,12 +37,12 @@ class BaseHandlerHandleTest(TestCase):
     """Test BaseHandler.handle()."""
     def setUp(self):
         class TestHandler(BaseHandler):
-            urlconf = 'conman.nav_tree.tests.urls'
+            urlconf = 'conman.routes.tests.urls'
 
         self.node = mock.Mock()
         self.request = mock.Mock()
         self.handler = TestHandler(self.node)
-        self.view = 'conman.nav_tree.tests.urls.dummy_view'
+        self.view = 'conman.routes.tests.urls.dummy_view'
 
     def tearDown(self):
         """Stop tests leaking into each other through the url cache."""

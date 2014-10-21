@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from conman.nav_tree.tests.test_models import NODE_BASE_FIELDS
+from conman.routes.tests.test_models import NODE_BASE_FIELDS
 from .. import models
 
 

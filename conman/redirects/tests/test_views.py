@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from conman.nav_tree.tests.factories import ChildNodeFactory
+from conman.routes.tests.factories import ChildNodeFactory
 from conman.tests.utils import RequestTestCase
 from .factories import ChildNodeRedirectFactory
 from .. import views

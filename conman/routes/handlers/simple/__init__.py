@@ -22,4 +22,4 @@ class SimpleHandler(BaseHandler, metaclass=UnboundViewMeta):
     Subclasses should define a view on the class as `view`. This will be
     called if the `path` passed to `handle` is `/`.
     """
-    urlconf = 'conman.nav_tree.handlers.simple.urls'
+    urlconf = 'conman.routes.handlers.simple.urls'

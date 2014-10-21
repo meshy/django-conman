@@ -1,4 +1,4 @@
-from conman.nav_tree.handlers import SimpleHandler
+from conman.routes.handlers import SimpleHandler
 from . import views
 
 

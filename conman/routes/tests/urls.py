@@ -5,7 +5,7 @@ def dummy_view():
     """A stub view that is always mocked."""
 
 
-view_path = 'conman.nav_tree.tests.urls.dummy_view'
+view_path = 'conman.routes.tests.urls.dummy_view'
 
 
 urlpatterns = [

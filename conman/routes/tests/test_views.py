@@ -14,7 +14,7 @@ class RouterTest(TestCase):
         url = ''
         factories.NodeFactory.create()
         request = mock.MagicMock()
-        handle_path = 'conman.nav_tree.models.Node.handle'
+        handle_path = 'conman.routes.models.Node.handle'
         with mock.patch(handle_path) as handle:
             response = views.node_router(request, url)
 
@@ -26,7 +26,7 @@ class RouterTest(TestCase):
         url = 'slug/42/foo/bar/'
         factories.NodeFactory.create()
         request = mock.MagicMock()
-        handle_path = 'conman.nav_tree.models.Node.handle'
+        handle_path = 'conman.routes.models.Node.handle'
         with mock.patch(handle_path) as handle:
             response = views.node_router(request, url)
 
@@ -40,7 +40,7 @@ class RouterIntegrationTest(TestCase):
         """The Root Node handler is passed the correct request and root url."""
         url = '/'
         factories.NodeFactory.create()
-        handle_path = 'conman.nav_tree.models.Node.handle'
+        handle_path = 'conman.routes.models.Node.handle'
         with mock.patch(handle_path) as handle:
             handle.return_value = HttpResponse()
             response = self.client.get(url)
@@ -51,7 +51,7 @@ class RouterIntegrationTest(TestCase):
         """The correct request and url is passed through to the node's handler."""
         url = '/slug/42/foo/bar/'
         factories.NodeFactory.create()
-        handle_path = 'conman.nav_tree.models.Node.handle'
+        handle_path = 'conman.routes.models.Node.handle'
         with mock.patch(handle_path) as handle:
             handle.return_value = HttpResponse()
             response = self.client.get(url)

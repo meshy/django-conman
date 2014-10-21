@@ -199,9 +199,9 @@ class NodeManagerBestMatchForPathTest(TestCase):
             SELECT
                 (LENGTH(url)) AS "length",
                 <other fields>
-            FROM "nav_tree_node"
+            FROM "routes_node"
             WHERE
-                "nav_tree_node"."url" IN (
+                "routes_node"."url" IN (
                     '/',
                     '/url/',
                     '/url/split/',
@@ -257,9 +257,9 @@ class NodeManagerBestMatchForBrokenPathTest(TestCase):
             SELECT
                 (LENGTH(url)) AS "length",
                 <other fields>
-            FROM "nav_tree_node"
+            FROM "routes_node"
             WHERE
-                "nav_tree_node"."url" IN (
+                "routes_node"."url" IN (
                     '/',
                     '/url/',
                     '/url/split/',

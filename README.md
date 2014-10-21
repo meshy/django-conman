@@ -31,24 +31,24 @@ pip install -e git+https://github.com/meshy/django-conman.git#egg=conman
 ## Configure
 ```python
 # settings.py
-INSTALLED_APPS += ['conman.nav_tree']
+INSTALLED_APPS += ['conman.routes']
 
 # urls.py
 urlpatterns = [
     # All other URLS should go above this catch-all.
-    url(r'', include('conman.nav_tree.urls')),
+    url(r'', include('conman.routes.urls')),
 ]
 ```
 
 ## Basic custom app
 ```python
 # models.py
-class ExampleNode(conman.nav_tree.models.Node):
+class ExampleNode(conman.routes.models.Node):
     handler = ExampleHandler.path()
     # Your data/fields here
 
 # handlers.py
-class ExampleHandler(conman.nav_tree.handlers.SimpleHandler):
+class ExampleHandler(conman.routes.handlers.SimpleHandler):
     view = ExampleNodeDetail.as_view()
 
 # views.py
