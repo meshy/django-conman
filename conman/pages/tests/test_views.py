@@ -6,6 +6,7 @@ from .. import views
 
 
 class TestPageDetail(RequestTestCase):
+    """Unit test PageDetail."""
     def test_get_object(self):
         """PageDetail displays the page instance passed in the node kwarg."""
         request = self.create_request()

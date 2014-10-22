@@ -6,6 +6,7 @@ from ..views import NodeRedirectView
 
 
 class TestNodeRedirectHandler(TestCase):
+    """Test the NodeRedirectHandler."""
     def test_heritage(self):
         """NodeRedirectHandler sublcasses SimpleHandler."""
         self.assertTrue(issubclass(NodeRedirectHandler, SimpleHandler))
