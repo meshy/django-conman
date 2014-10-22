@@ -6,6 +6,7 @@ from ..views import RouteRedirectView
 
 
 class TestRouteRedirectHandler(TestCase):
+    """Test the RouteRedirectHandler."""
     def test_heritage(self):
         """RouteRedirectHandler sublcasses SimpleHandler."""
         self.assertTrue(issubclass(RouteRedirectHandler, SimpleHandler))

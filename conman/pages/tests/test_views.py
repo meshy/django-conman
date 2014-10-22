@@ -6,6 +6,7 @@ from .. import views
 
 
 class TestPageDetail(RequestTestCase):
+    """Unit test PageDetail."""
     def test_get_object(self):
         """PageDetail displays the page instance passed in the route kwarg."""
         request = self.create_request()
@@ -18,8 +19,6 @@ class TestPageDetail(RequestTestCase):
 
 
 class TestPageDetailIntegration(TestCase):
-    view = views.PageDetail
-
     def test_get(self):
         """A page's content is rendered at its url."""
         page = factories.PageFactory.create(content='This is a test')

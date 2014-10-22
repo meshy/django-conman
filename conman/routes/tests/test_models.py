@@ -107,22 +107,20 @@ class RouteSkipUpdateWithoutChange(TestCase):
 
 class RouteCachesURLOnCreateTest(TestCase):
     """Make sure Route urls are built correctly on create."""
-    def setUp(self):
-        self.root = RootRouteFactory.create()
-
     def test_create_root(self):
         """Root Route should be at the root url."""
-        self.assertEqual(self.root.url, '/')
+        root = RootRouteFactory.create()
+        self.assertEqual(root.url, '/')
 
     def test_create_leaf_on_root(self):
         """Children of the root should be at /<slug>/."""
-        leaf = RouteFactory.create(slug='leaf', parent=self.root)
+        leaf = ChildRouteFactory.create(slug='leaf')
 
         self.assertEqual(leaf.url, '/leaf/')
 
     def test_create_child_of_child(self):
         """Children of children should be at /<parent-slug>/<slug>/."""
-        branch = RouteFactory.create(slug='branch', parent=self.root)
+        branch = ChildRouteFactory.create(slug='branch')
         leaf = RouteFactory.create(slug='leaf', parent=branch)
 
         self.assertEqual(leaf.url, '/branch/leaf/')

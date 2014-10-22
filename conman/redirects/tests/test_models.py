@@ -6,6 +6,7 @@ from ..models import RouteRedirect
 
 
 class RouteRedirectTest(TestCase):
+    """Test the RouteRedirect model."""
     def test_fields(self):
         """RouteRedirect has Route's fields and some specific to redirects."""
         expected = (
