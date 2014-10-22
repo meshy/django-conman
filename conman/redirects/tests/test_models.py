@@ -6,6 +6,7 @@ from ..models import NodeRedirect
 
 
 class NodeRedirectTest(TestCase):
+    """Test the NodeRedirect model."""
     def test_fields(self):
         """NodeRedirect has Node's fields and some specific to redirects."""
         expected = (
@@ -19,9 +20,6 @@ class NodeRedirectTest(TestCase):
         fields = NodeRedirect._meta.get_all_field_names()
         self.assertCountEqual(fields, expected)
 
-
-class NodeRedirectUnicodeMethodTest(TestCase):
-    """We should get something nice when RedirectNode is cast to string."""
     def test_str(self):
         """The str of a NodeRedirect identifies it by class and url."""
         leaf = ChildNodeRedirectFactory.create(slug='leaf')
