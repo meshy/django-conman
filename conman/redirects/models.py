@@ -1,15 +1,15 @@
 from django.db import models
 
-from conman.nav_tree.models import Node
+from conman.routes.models import Route
 from . import handlers
 
 
-class NodeRedirect(Node):
+class RouteRedirect(Route):
     """
-    When `node` is browsed to, browser should be redirected to `target`.
+    When `route` is browsed to, browser should be redirected to `target`.
 
     This model holds the data required to make that connection.
     """
-    handler = handlers.NodeRedirectHandler.path()
-    target = models.ForeignKey('nav_tree.Node', related_name='+')
+    handler = handlers.RouteRedirectHandler.path()
+    target = models.ForeignKey('routes.Route', related_name='+')
     permanent = models.BooleanField(default=False, blank=True)

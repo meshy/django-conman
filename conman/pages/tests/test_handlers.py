@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from conman.nav_tree.handlers import SimpleHandler
+from conman.routes.handlers import SimpleHandler
 from .. import handlers, views
 
 

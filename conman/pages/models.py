@@ -1,10 +1,10 @@
 from sirtrevor.fields import SirTrevorField
 
-from conman.nav_tree.models import Node
+from conman.routes.models import Route
 from . import handlers
 
 
-class Page(Node):
+class Page(Route):
     """A basic Page of content provided by Sir Trevor."""
     handler = handlers.PageHandler.path()
     content = SirTrevorField(default='')

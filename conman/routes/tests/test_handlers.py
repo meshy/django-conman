@@ -11,7 +11,7 @@ class BaseHandlerPathTest(TestCase):
     """Test BaseHandler.path()."""
     def test_path(self):
         """Test directly on base class."""
-        base_handler_path = 'conman.nav_tree.handlers.base.BaseHandler'
+        base_handler_path = 'conman.routes.handlers.base.BaseHandler'
         self.assertEqual(BaseHandler.path(), base_handler_path)
 
     def test_path_on_subclass(self):
@@ -25,24 +25,24 @@ class BaseHandlerPathTest(TestCase):
 class BaseHandlerInitTest(TestCase):
     """Test BaseHandler.__init__()."""
     def test_init(self):
-        """Make sure "node" gets saved on the handler."""
-        node = mock.MagicMock()
+        """Make sure "route" gets saved on the handler."""
+        route = mock.MagicMock()
 
-        handler = BaseHandler(node)
+        handler = BaseHandler(route)
 
-        self.assertEqual(handler.node, node)
+        self.assertEqual(handler.route, route)
 
 
 class BaseHandlerHandleTest(TestCase):
     """Test BaseHandler.handle()."""
     def setUp(self):
         class TestHandler(BaseHandler):
-            urlconf = 'conman.nav_tree.tests.urls'
+            urlconf = 'conman.routes.tests.urls'
 
-        self.node = mock.Mock()
+        self.route = mock.Mock()
         self.request = mock.Mock()
-        self.handler = TestHandler(self.node)
-        self.view = 'conman.nav_tree.tests.urls.dummy_view'
+        self.handler = TestHandler(self.route)
+        self.view = 'conman.routes.tests.urls.dummy_view'
 
     def tearDown(self):
         """Stop tests leaking into each other through the url cache."""
@@ -53,8 +53,8 @@ class BaseHandlerHandleTest(TestCase):
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request, '/')
 
-        view.assert_called_with(self.request, node=self.node)
-        self.assertEqual(response, view(self.request, node=self.node))
+        view.assert_called_with(self.request, route=self.route)
+        self.assertEqual(response, view(self.request, route=self.route))
 
     def test_handle_slug(self):
         """Show that url resolving works with slugs."""
@@ -62,9 +62,9 @@ class BaseHandlerHandleTest(TestCase):
         with mock.patch(self.view) as view:
             response = self.handler.handle(self.request, '/slug/')
 
-        view.assert_called_with(self.request, node=self.node, slug=slug)
+        view.assert_called_with(self.request, route=self.route, slug=slug)
 
-        expected = view(self.request, node=self.node, slug=slug)
+        expected = view(self.request, route=self.route, slug=slug)
         self.assertEqual(response, expected)
 
     def test_handle_no_url_match(self):
@@ -82,10 +82,10 @@ class SimpleHandlerHandleTest(TestCase):
         class TestHandler(SimpleHandler):
             view = mock.MagicMock()
 
-        self.node = mock.Mock()
+        self.route = mock.Mock()
         self.request = mock.Mock()
-        self.handler = TestHandler(self.node)
-        self.node.get_handler.return_value = self.handler
+        self.handler = TestHandler(self.route)
+        self.route.get_handler.return_value = self.handler
         self.view = TestHandler.view
 
     def tearDown(self):
@@ -96,8 +96,8 @@ class SimpleHandlerHandleTest(TestCase):
         """Show that SimpleHandler.view is used to process the request."""
         response = self.handler.handle(self.request, '/')
 
-        self.view.assert_called_with(self.request, node=self.node)
-        expected = self.view(self.request, node=self.node)
+        self.view.assert_called_with(self.request, route=self.route)
+        expected = self.view(self.request, route=self.route)
         self.assertEqual(response, expected)
 
     def test_handle_slug(self):
@@ -133,7 +133,7 @@ class SimpleHandlerViewBindingTest(TestCase):
     def test_bound_function(self):
         """Make sure that class based views get the expected args."""
         class TestView(View):
-            def dispatch(self, request, node=None):
+            def dispatch(self, request, route=None):
                 return self, request
 
         class TestHandler(SimpleHandler):

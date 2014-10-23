@@ -1,7 +1,7 @@
-from conman.nav_tree.handlers import SimpleHandler
+from conman.routes.handlers import SimpleHandler
 from . import views
 
 
-class NodeRedirectHandler(SimpleHandler):
-    """Pass a request through to NodeRedirectView."""
-    view = views.NodeRedirectView.as_view()
+class RouteRedirectHandler(SimpleHandler):
+    """Pass a request through to RouteRedirectView."""
+    view = views.RouteRedirectView.as_view()

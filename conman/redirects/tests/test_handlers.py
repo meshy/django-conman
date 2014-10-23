@@ -1,20 +1,20 @@
 from django.test import TestCase
 
-from conman.nav_tree.handlers import SimpleHandler
-from ..handlers import NodeRedirectHandler
-from ..views import NodeRedirectView
+from conman.routes.handlers import SimpleHandler
+from ..handlers import RouteRedirectHandler
+from ..views import RouteRedirectView
 
 
-class TestNodeRedirectHandler(TestCase):
-    """Test the NodeRedirectHandler."""
+class TestRouteRedirectHandler(TestCase):
+    """Test the RouteRedirectHandler."""
     def test_heritage(self):
-        """NodeRedirectHandler sublcasses SimpleHandler."""
-        self.assertTrue(issubclass(NodeRedirectHandler, SimpleHandler))
+        """RouteRedirectHandler sublcasses SimpleHandler."""
+        self.assertTrue(issubclass(RouteRedirectHandler, SimpleHandler))
 
     def test_view(self):
-        """NodeRedirectHandler uses the NodeRedirectView."""
-        view = NodeRedirectHandler.view
-        expected = NodeRedirectView.as_view()
+        """RouteRedirectHandler uses the RouteRedirectView."""
+        view = RouteRedirectHandler.view
+        expected = RouteRedirectView.as_view()
 
         self.assertEqual(view.__name__, expected.__name__)
         self.assertEqual(view.__module__, expected.__module__)
