@@ -4,6 +4,7 @@ from .. import utils
 
 
 class TestSplitPath(TestCase):
+    """Test the split_path util function."""
     def test_split_path(self):
         """split_path returns a list of all sub-paths of a url path."""
         paths = utils.split_path('/a/path/with/many/parts/')
@@ -41,6 +42,7 @@ class TestSplitPath(TestCase):
 
 
 class TestImportFromDottedPath(TestCase):
+    """Test the import_from_dotted_path util function."""
     def assert_error_message(self, exception):
         """Check the exception's message is correct."""
         message = 'An import path with two or more components is required.'

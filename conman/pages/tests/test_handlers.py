@@ -5,6 +5,7 @@ from .. import handlers, views
 
 
 class TestPageHandler(TestCase):
+    """Test the PageHandler class."""
     def test_heritage(self):
         """PageHandler subclasses SimpleHandler."""
         self.assertTrue(issubclass(handlers.PageHandler, SimpleHandler))

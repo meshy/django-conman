@@ -36,6 +36,7 @@ class BaseHandlerInitTest(TestCase):
 class BaseHandlerHandleTest(TestCase):
     """Test BaseHandler.handle()."""
     def setUp(self):
+        """Create a Handler, route, request and view for use in these tests."""
         class TestHandler(BaseHandler):
             urlconf = 'conman.routes.tests.urls'
 
@@ -79,6 +80,7 @@ class BaseHandlerHandleTest(TestCase):
 class SimpleHandlerHandleTest(TestCase):
     """Test SimpleHandler.handle()."""
     def setUp(self):
+        """Create a Handler, route, request, and view for use in this test."""
         class TestHandler(SimpleHandler):
             view = mock.MagicMock()
 
