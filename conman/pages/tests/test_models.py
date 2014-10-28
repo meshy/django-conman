@@ -5,6 +5,7 @@ from .. import models
 
 
 class PageTest(TestCase):
+    """Test the Page model."""
     def test_fields(self):
         """Check Page has Route's fields and a few of its own."""
         expected = (

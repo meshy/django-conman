@@ -5,6 +5,7 @@ from .. import views
 
 
 class TestNavTreeURLRouter(TestCase):
+    """Test the route_router view."""
     def assert_url_uses_router(self, url):
         """Check a url resolves to the route_router view."""
         resolved_view = resolve(url)
