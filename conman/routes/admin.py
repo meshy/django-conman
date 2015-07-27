@@ -23,7 +23,8 @@ class BaseRouteChildAdmin(PolymorphicMPTTChildModelAdmin):
 class RouteParentAdmin(PolymorphicMPTTParentModelAdmin):
     """The master admin class for Route."""
     base_model = Route
-    list_display = ('slug',)
+    list_display = ('__str__', 'actions_column')
+    polymorphic_list = True
 
     class Media:
         css = {
