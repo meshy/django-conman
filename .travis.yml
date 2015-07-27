@@ -8,7 +8,7 @@ env:
   global:
     - DATABASE_URL='postgres://postgres@localhost/conman'
   matrix:
-    - DJANGO='django>=1.7,<1.8'
+    - DJANGO='django>=1.8,<1.9'
 install:
   - pip install python-coveralls
   - psql -c 'CREATE DATABASE conman' -U postgres;
