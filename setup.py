@@ -25,5 +25,6 @@ setup(
         'django-mptt>=0.6.1,<=0.7',
         'django-polymorphic-tree>=1.0b1',
         'django-sirtrevor>=0.2.3,<0.3',
+        'pillow>=2.9.0,<3',
     ],
 )
