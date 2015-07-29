@@ -2,6 +2,7 @@ from unittest import mock
 
 from django.db.utils import IntegrityError
 from django.test import TestCase
+from incuna_test_utils.utils import field_names
 
 from .factories import ChildRouteFactory, RootRouteFactory, RouteFactory
 from .. import handlers
@@ -10,7 +11,6 @@ from ..models import Route
 
 NODE_BASE_FIELDS = (
     'parent',
-    'parent_id',
     'slug',
     'url',
 
@@ -22,7 +22,6 @@ NODE_BASE_FIELDS = (
 
     # Polymorphic fields
     'polymorphic_ctype',
-    'polymorphic_ctype_id',
 
     # Incoming foreign keys
     'children',  # FK from self. The other end of "parent".
@@ -42,7 +41,7 @@ class RouteTest(TestCase):
             'routewithhandler',
             'routewithouthandler',
         ) + NODE_BASE_FIELDS
-        fields = Route._meta.get_all_field_names()
+        fields = field_names(Route)
         self.assertCountEqual(fields, expected)
 
 
