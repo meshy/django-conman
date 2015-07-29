@@ -5,7 +5,7 @@ help:
 	@echo " make test | Run the tests."
 
 test:
-	@coverage run ./conman/tests/run.py
+	@python -Wmodule -m coverage run ./conman/tests/run.py
 	@coverage report --show-missing
 	@flake8
 
