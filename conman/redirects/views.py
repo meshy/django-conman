@@ -3,7 +3,7 @@ from django.views.generic import RedirectView
 
 class RouteRedirectView(RedirectView):
     """Redirect to the target Route."""
-    permanent = True  # Set to django 1.9's default to avoid RemovedInDjango19Warning
+    permanent = False  # Set to django 1.9's default to avoid RemovedInDjango19Warning
 
     def get_redirect_url(self, *args, **kwargs):
         """
