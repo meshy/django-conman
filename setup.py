@@ -22,8 +22,8 @@ setup(
     author_email='charlie@meshy.co.uk',
     url='https://github.com/meshy/django-conman/',
     install_requires=[
-        'django-mptt>=0.6.1,<=0.7',
-        'django-polymorphic-tree>=1.0b1',
-        'django-sirtrevor>=0.2.3,<0.3',
+        'django-mptt>=0.7.4,<=0.8',
+        'django-polymorphic-tree>=1.1,<2',
+        'django-sirtrevor>=0.2.4,<0.3',
     ],
 )
