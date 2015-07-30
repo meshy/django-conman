@@ -11,7 +11,7 @@ Sponsored by [Incuna](http://incuna.com/).
 
 Tested against:
 - Python 3.4
-- Django 1.7
+- Django 1.8
 
 Requires:
 - `django-mptt`
