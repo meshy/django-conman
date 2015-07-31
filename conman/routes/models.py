@@ -1,5 +1,6 @@
 from django.core import checks
 from django.db import models
+from django.db.models.functions import Length
 from polymorphic_tree.managers import PolymorphicMPTTModelManager
 from polymorphic_tree.models import (
     PolymorphicMPTTModel,
@@ -28,8 +29,8 @@ class RouteManager(PolymorphicMPTTModelManager):
         """
         paths = split_path(path)
 
-        extra = {'length': 'LENGTH(url)'}
-        qs = self.filter(url__in=paths).extra(select=extra).order_by('-length')
+        qs = self.filter(url__in=paths)
+        qs = qs.annotate(length=Length('url')).order_by('-length')
         try:
             return qs[0]
         except IndexError:
