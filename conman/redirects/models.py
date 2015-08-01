@@ -16,8 +16,13 @@ class RouteRedirect(Route):
     target = models.ForeignKey('routes.Route', related_name='+')
     permanent = models.BooleanField(default=False, blank=True)
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         """Forbid setting target equal to self."""
         if self.target_id == self.route_ptr_id:
-            raise ValidationError(_('A RouteRedirect cannot redirect to itself.'))
+            error = {'target': _('A RouteRedirect cannot redirect to itself.')}
+            raise ValidationError(error)
+
+    def save(self, *args, **kwargs):
+        """Validate the Redirect before saving."""
+        self.clean()
         return super().save(*args, **kwargs)
