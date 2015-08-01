@@ -37,6 +37,10 @@ class RouteTest(TestCase):
             'id',
             'routeredirect',
             'page',
+
+            # Incoming foreign keys from subclasses in tests
+            'routewithhandler',
+            'routewithouthandler',
         ) + NODE_BASE_FIELDS
         fields = Route._meta.get_all_field_names()
         self.assertCountEqual(fields, expected)
