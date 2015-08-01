@@ -1,6 +1,7 @@
 from django.core import checks
 from django.db import models
 from django.db.models.functions import Length
+from django.utils.translation import ugettext_lazy as _
 from polymorphic_tree.managers import PolymorphicMPTTModelManager
 from polymorphic_tree.models import (
     PolymorphicMPTTModel,
@@ -53,11 +54,12 @@ class Route(PolymorphicMPTTModel):
         null=True,
         related_name='children',
     )
-    slug = models.SlugField(max_length=255, default='', blank=True, help_text='''
-        Used to create the location of the Route. The Root Route needs
-        "slug" to be blank; all other Routes need a value unique to the parent.
-        It can only contain letters, numbers, underscores, or hyphens.
-    ''')
+    slug = models.SlugField(
+        max_length=255,
+        default='',
+        blank=True,
+        help_text=_('The url fragment at this point in the Route hierarchy.'),
+    )
     # Cached location in tree. Reflects parent and slug on self and ancestors.
     url = models.TextField(db_index=True, editable=False, unique=True)
 
