@@ -7,23 +7,22 @@ from django.test import SimpleTestCase
 from .. import checks
 
 
-class TestChecks(SimpleTestCase):
-    """Test checks for conman routes."""
-    def test_registered_checks(self):
-        """The correct checks are registered."""
+class TestPolymorphicInstalled(SimpleTestCase):
+    """Test checks.polymorphic_installed."""
+    def test_registered(self):
+        """checks.polymorphic_installed is a registered check."""
         registered_checks = registry.get_checks()
         self.assertIn(checks.polymorphic_installed, registered_checks)
-        self.assertIn(checks.subclasses_available, registered_checks)
 
-    def test_polymorphic_installed(self):
+    def test_installed(self):
         """The check passes if django polymorphic is installed."""
         with self.settings(INSTALLED_APPS=['conman.routes', 'polymorphic']):
             errors = checks.polymorphic_installed(app_configs=None)
 
         self.assertEqual(errors, [])
 
-    def test_polymorphic_not_installed(self):
-        """A check fails if django polymorphic is not installed."""
+    def test_not_installed(self):
+        """The check fails if django polymorphic is not installed."""
         with self.settings(INSTALLED_APPS=['conman.routes']):
             errors = checks.polymorphic_installed(app_configs=None)
 
@@ -34,14 +33,22 @@ class TestChecks(SimpleTestCase):
         )
         self.assertEqual(errors, [error])
 
-    def test_route_subclasses_exist(self):
+
+class TestSubclassesAvailable(SimpleTestCase):
+    """Test checks.subclasses_available."""
+    def test_registered(self):
+        """checks.subclasses_available is a registered check."""
+        registered_checks = registry.get_checks()
+        self.assertIn(checks.subclasses_available, registered_checks)
+
+    def test_available(self):
         """The check passes if at least one subclass of Route is available."""
         errors = checks.subclasses_available(app_configs=None)
 
         self.assertEqual(errors, [])
 
-    def test_route_subclasses_missing(self):
-        """A check fails if no subclass of Route is available."""
+    def test_unavailable(self):
+        """The check fails if no subclass of Route is available."""
         with mock.patch('conman.routes.models.Route.__subclasses__') as subclasses:
             subclasses.return_value = []
             errors = checks.subclasses_available(app_configs=None)
