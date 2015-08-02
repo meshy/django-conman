@@ -10,7 +10,7 @@ Django ConMan is a lightweight content management library for [Django](https://w
 ```python
 INSTALLED_APPS = (
     'conman.routes',
-    'comnan.redirects',
+    'conman.redirects',
 
     'polymorphic',
 
@@ -28,3 +28,5 @@ urlpatterns = [
     url(r'', include('conman.routes.urls')),
 ]
 ```
+
+* Ensure the ConMan database tables exist: `python manage.py migrate`

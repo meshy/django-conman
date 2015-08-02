@@ -14,3 +14,5 @@ urlpatterns = [
     url(r'', include('conman.routes.urls')),
 ]
 ```
+
+* Run database migrations: `python manage.py migrate`
