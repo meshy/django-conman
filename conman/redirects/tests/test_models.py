@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 from django.test import TestCase
 
 from conman.routes.tests.test_models import NODE_BASE_FIELDS
@@ -19,6 +21,30 @@ class RouteRedirectTest(TestCase):
         ) + NODE_BASE_FIELDS
         fields = RouteRedirect._meta.get_all_field_names()
         self.assertCountEqual(fields, expected)
+
+    def test_target_self(self):
+        """A RouteRedirect's target cannot be itself."""
+        redirect = ChildRouteRedirectFactory.create()
+
+        redirect.target = redirect
+
+        with self.assertRaises(ValidationError):
+            redirect.save()
+
+    def test_target_self_with_form(self):
+        """A form for RouteRedirect is invalid if its target is itself."""
+        class RouteRedirectForm(ModelForm):
+            class Meta:
+                model = RouteRedirect
+                exclude = []
+
+        redirect = ChildRouteRedirectFactory.create()
+
+        data = {'target': redirect.pk}
+        form = RouteRedirectForm(data, instance=redirect)
+        form.is_valid()
+
+        self.assertIn('target', form.errors)
 
 
 class RouteRedirectUnicodeMethodTest(TestCase):
