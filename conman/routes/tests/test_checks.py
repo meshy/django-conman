@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.core.checks import Error
 from django.core.checks.registry import registry
 from django.test import SimpleTestCase
@@ -37,3 +39,16 @@ class TestChecks(SimpleTestCase):
         errors = checks.subclasses_available(app_configs=None)
 
         self.assertEqual(errors, [])
+
+    def test_route_subclasses_missing(self):
+        """A check fails if no subclass of Route is available."""
+        with mock.patch('conman.routes.models.Route.__subclasses__') as subclasses:
+            subclasses.return_value = []
+            errors = checks.subclasses_available(app_configs=None)
+
+        error = Error(
+            'No Route subclasses are available.',
+            hint='Add another conman module to INSTALLED_APPS.',
+            id='conman.routes.E002',
+        )
+        self.assertEqual(errors, [error])
