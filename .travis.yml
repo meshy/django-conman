@@ -1,3 +1,4 @@
+sudo: false
 language: python
 python:
   - 3.4
@@ -10,9 +11,7 @@ env:
   matrix:
     - DJANGO='django>=1.8,<1.9'
 install:
-  - pip install python-coveralls
   - psql -c 'CREATE DATABASE conman' -U postgres;
   - pip install -r requirements.txt
   - pip uninstall flake8-docstrings --yes
   - pip install $DJANGO
-after_success: coveralls
