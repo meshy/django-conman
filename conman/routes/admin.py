@@ -7,8 +7,6 @@ from polymorphic_tree.admin import (
 from .models import Route
 
 
-# The common admin functionality for all derived models:
-
 class BaseRouteChildAdmin(PolymorphicMPTTChildModelAdmin):
     """Common base of all Route subclass admin classes."""
     GENERAL_FIELDSET = (None, {
@@ -19,7 +17,6 @@ class BaseRouteChildAdmin(PolymorphicMPTTChildModelAdmin):
     base_fieldsets = (GENERAL_FIELDSET,)
 
 
-# Create the parent admin that combines it all:
 class RouteParentAdmin(PolymorphicMPTTParentModelAdmin):
     """The master admin class for Route."""
     base_model = Route
