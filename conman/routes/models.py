@@ -1,4 +1,5 @@
 from django.core import checks
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.functions import Length
 from django.utils.translation import ugettext_lazy as _
@@ -116,6 +117,15 @@ class Route(PolymorphicMPTTModel):
         self._original_parent_id = self.parent_id
         self._original_slug = self.slug
 
+    def clean(self):
+        """Ensure the Route has a valid combination of parent and slug."""
+        is_root = self.parent_id is None
+        has_slug = bool(self.slug)
+
+        # Must be one or the other
+        if is_root == has_slug:
+            raise ValidationError('Route can be a root, or have a slug, not both.')
+
     def save(self, *args, **kwargs):
         """
         Update the `url` attribute of this route and all descendants.
@@ -124,12 +134,8 @@ class Route(PolymorphicMPTTModel):
 
         Adapted from feincms/module/page/models.py:248 in FeinCMS v1.9.5.
         """
+        self.clean()
         is_root = self.parent_id is None
-        has_slug = bool(self.slug)
-
-        # Must be one or the other
-        if is_root == has_slug:
-            raise ValueError('Route can be a root, or have a slug, not both.')
 
         def make_url(parent_url, slug):
             return '{}{}/'.format(parent_url, slug)

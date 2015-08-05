@@ -1,6 +1,8 @@
 from unittest import mock
 
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.forms import ModelForm
 from django.test import TestCase
 
 from .factories import ChildRouteFactory, RootRouteFactory, RouteFactory
@@ -52,7 +54,7 @@ class RouteValidateOnSave(TestCase):
         """Root must not have a slug."""
         root_route = RouteFactory.build(slug='slug', parent=None)
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             root_route.save()
 
     def test_create_leaf_without_slug(self):
@@ -60,8 +62,39 @@ class RouteValidateOnSave(TestCase):
         root_route = RootRouteFactory.create()
         leaf = RouteFactory.build(slug='', parent=root_route)
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValidationError):
             leaf.save()
+
+
+class RouteFormValidate(TestCase):
+    """Check validation of Route slugs and ancestry applies to forms."""
+    def setUp(self):
+        """Create a simple Route form."""
+        class RouteForm(ModelForm):
+            class Meta:
+                model = Route
+                exclude = []
+
+        self.form = RouteForm
+
+    def test_validate_root_with_slug(self):
+        """Root must not have a slug."""
+        data = {'slug': 'slug', 'parent': None}
+
+        form = self.form(data)
+        form.is_valid()
+
+        self.assertIn('__all__', form.errors)
+
+    def test_validate_leaf_without_slug(self):
+        """Leaf Routes must have a slug."""
+        root_route = RootRouteFactory.create()
+        data = {'slug': '', 'parent': root_route.pk}
+
+        form = self.form(data)
+        form.is_valid()
+
+        self.assertIn('__all__', form.errors)
 
 
 class RouteUniqueness(TestCase):
