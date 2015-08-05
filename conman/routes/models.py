@@ -135,7 +135,6 @@ class Route(PolymorphicMPTTModel):
         Adapted from feincms/module/page/models.py:248 in FeinCMS v1.9.5.
         """
         self.clean()
-        is_root = self.parent_id is None
 
         def make_url(parent_url, slug):
             return '{}{}/'.format(parent_url, slug)
@@ -145,7 +144,10 @@ class Route(PolymorphicMPTTModel):
         url_changed = parent_changed or slug_changed or not self.url
 
         if url_changed:
-            self.url = '/' if is_root else make_url(self.parent.url, self.slug)
+            if self.parent_id is None:
+                self.url = '/'
+            else:
+                self.url = make_url(self.parent.url, self.slug)
 
         super().save(*args, **kwargs)
         self.reset_originals()
