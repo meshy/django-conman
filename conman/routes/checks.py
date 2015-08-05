@@ -18,6 +18,22 @@ def polymorphic_installed(app_configs, **kwargs):
     return errors
 
 
+def polymorphic_tree_installed(app_configs, **kwargs):
+    """Check that Django Polymorphic Tree is installed correctly."""
+    errors = []
+    try:
+        apps.get_app_config('polymorphic_tree')
+    except LookupError:
+        error = Error(
+            'Django Polymorpic Tree must be in INSTALLED_APPS.',
+            hint="Add 'polymorphic_tree' to INSTALLED_APPS.",
+            id='conman.routes.E003',
+        )
+        errors.append(error)
+
+    return errors
+
+
 def subclasses_available(app_configs, **kwargs):
     """Check that at least one Route subclass is available."""
     errors = []
