@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'conman.redirects',
 
     'polymorphic',
+    'polymorphic_tree',
     'sirtrevor',
 
     'django.contrib.admin',
