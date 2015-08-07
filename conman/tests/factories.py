@@ -17,5 +17,6 @@ class UserFactory(factory.DjangoModelFactory):
 
 
 class AdminFactory(UserFactory):
+    """Create instances of Admin for testing."""
     is_staff = True
     is_superuser = True
