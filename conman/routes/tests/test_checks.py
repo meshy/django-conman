@@ -9,27 +9,58 @@ from .. import checks
 
 class TestPolymorphicInstalled(SimpleTestCase):
     """Test checks.polymorphic_installed."""
+    check = staticmethod(checks.polymorphic_installed)
+
     def test_registered(self):
         """checks.polymorphic_installed is a registered check."""
         registered_checks = registry.get_checks()
-        self.assertIn(checks.polymorphic_installed, registered_checks)
+        self.assertIn(self.check, registered_checks)
 
     def test_installed(self):
-        """The check passes if django polymorphic is installed."""
+        """The check passes if django-polymorphic is installed."""
         with self.settings(INSTALLED_APPS=['conman.routes', 'polymorphic']):
-            errors = checks.polymorphic_installed(app_configs=None)
+            errors = self.check(app_configs=None)
+
+        self.assertEqual(errors, [])
+
+    def test_not_installed(self):
+        """The check fails if django-polymorphic is not installed."""
+        with self.settings(INSTALLED_APPS=['conman.routes']):
+            errors = self.check(app_configs=None)
+
+        error = Error(
+            'Django Polymorpic must be in INSTALLED_APPS.',
+            hint="Add 'polymorphic' to INSTALLED_APPS.",
+            id='conman.routes.E001',
+        )
+        self.assertEqual(errors, [error])
+
+
+class TestPolymorphicTreeInstalled(SimpleTestCase):
+    """Test checks.polymorphic_tree_installed."""
+    check = staticmethod(checks.polymorphic_tree_installed)
+
+    def test_registered(self):
+        """checks.polymorphic_tree_installed is a registered check."""
+        registered_checks = registry.get_checks()
+        self.assertIn(self.check, registered_checks)
+
+    def test_installed(self):
+        """The check passes if django-polymorphic-tree is installed."""
+        with self.settings(INSTALLED_APPS=['conman.routes', 'polymorphic_tree']):
+            errors = self.check(app_configs=None)
 
         self.assertEqual(errors, [])
 
     def test_not_installed(self):
         """The check fails if django polymorphic is not installed."""
         with self.settings(INSTALLED_APPS=['conman.routes']):
-            errors = checks.polymorphic_installed(app_configs=None)
+            errors = self.check(app_configs=None)
 
         error = Error(
-            'Django Polymorpic must be in INSTALLED_APPS.',
-            hint="Add 'polymorphic' to INSTALLED_APPS.",
-            id='conman.routes.E001',
+            'Django Polymorpic Tree must be in INSTALLED_APPS.',
+            hint="Add 'polymorphic_tree' to INSTALLED_APPS.",
+            id='conman.routes.E003',
         )
         self.assertEqual(errors, [error])
 

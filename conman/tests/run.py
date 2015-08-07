@@ -32,7 +32,10 @@ settings.configure(
     PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
     SITE_ID=1,
     ROOT_URLCONF='conman.tests.urls',
-    MIDDLEWARE_CLASSES=(),
+    MIDDLEWARE_CLASSES=(
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+    ),
 )
 
 

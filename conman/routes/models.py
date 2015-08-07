@@ -57,6 +57,7 @@ class Route(PolymorphicMPTTModel):
     slug = models.SlugField(
         max_length=255,
         default='',
+        blank=True,
         help_text=_('The url fragment at this point in the Route hierarchy.'),
     )
     # Cached location in tree. Reflects parent and slug on self and ancestors.
@@ -75,6 +76,17 @@ class Route(PolymorphicMPTTModel):
     def __str__(self):
         """Display a Route's class and url."""
         return '{} @ {}'.format(self.__class__.__name__, self.url)
+
+    @classmethod
+    def get_admin_class(cls):
+        """
+        Return the class to use in the admin.
+
+        This is only used for subclasses of Route. To disable the
+        subclass in the admin, make this method return None.
+        """
+        from .admin import BaseRouteChildAdmin
+        return BaseRouteChildAdmin
 
     def get_handler_class(self):
         """Import a class from the python path string in `self.handler`."""
