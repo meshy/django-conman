@@ -1,4 +1,5 @@
 from django.core import checks
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.functions import Length
 from django.utils.translation import ugettext_lazy as _
@@ -116,6 +117,18 @@ class Route(PolymorphicMPTTModel):
         self._original_parent_id = self.parent_id
         self._original_slug = self.slug
 
+    def clean(self):
+        """Ensure only one Root Route can exist."""
+        is_root = self.parent_id is None
+        if is_root:
+            try:
+                root = Route.objects.get(parent=None)
+            except Route.DoesNotExist:
+                pass
+            else:
+                if root != self:
+                    raise ValidationError('Only one Route can exist.')
+
     def save(self, *args, **kwargs):
         """
         Update the `url` attribute of this route and all descendants.
@@ -124,6 +137,8 @@ class Route(PolymorphicMPTTModel):
 
         Adapted from feincms/module/page/models.py:248 in FeinCMS v1.9.5.
         """
+        self.clean()
+
         is_root = self.parent_id is None
         has_slug = bool(self.slug)
 

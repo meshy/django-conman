@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
@@ -63,6 +64,18 @@ class RouteValidateOnSave(TestCase):
         with self.assertRaises(ValueError):
             leaf.save()
 
+    def test_create_second_root(self):
+        """There can be only one Root Route."""
+        RootRouteFactory.create()
+
+        with self.assertRaises(ValidationError):
+            Route.objects.create()
+
+    def test_resave_root(self):
+        """A Root Route can be resaved."""
+        root = RootRouteFactory.create()
+        root.save()
+
 
 class RouteUniqueness(TestCase):
     """Check uniqueness conditions on Route are enforced in the DB."""
@@ -74,13 +87,6 @@ class RouteUniqueness(TestCase):
 
         with self.assertRaises(IntegrityError):
             RouteFactory.create(slug=slug, parent=root_route)
-
-    def test_unique_root_url(self):
-        """Only one Route can exist with an empty slug."""
-        Route.objects.create(slug='')
-
-        with self.assertRaises(IntegrityError):
-            Route.objects.create(slug='')
 
 
 class RouteSkipUpdateWithoutChange(TestCase):
