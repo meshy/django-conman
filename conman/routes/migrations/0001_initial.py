@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='Route',
             fields=[
                 ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
-                ('slug', models.SlugField(help_text='\n        Used to create the location of the Route. The Root Route needs\n        "slug" to be blank; all other Routes need a value unique to the parent.\n        It can only contain letters, numbers, underscores, or hyphens.\n    ', default='', max_length=255)),
+                ('slug', models.SlugField(max_length=255, default='', help_text='The url fragment at this point in the Route hierarchy.')),
                 ('url', models.TextField(unique=True, editable=False, db_index=True)),
                 ('parent', models.ForeignKey(blank=True, null=True, related_name='children', to='routes.Route')),
                 ('polymorphic_ctype', models.ForeignKey(null=True, related_name='polymorphic_routes.route_set+', editable=False, to='contenttypes.ContentType')),
