@@ -13,9 +13,8 @@ Tested against:
 - Python 3.4
 - Django 1.8
 
-Requires:
-- `django-mptt`
-- `django-polymorphic-tree`
+Requires (should be automatically installed if using `pip`):
+- `django-polymorphic`
 - `django-sirtrevor`
 
 ## Install

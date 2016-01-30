@@ -14,12 +14,6 @@ NODE_BASE_FIELDS = (
     'slug',
     'url',
 
-    # MPTT fields
-    'level',
-    'lft',
-    'rght',
-    'tree_id',
-
     # Polymorphic fields
     'polymorphic_ctype',
     'polymorphic_ctype_id',
@@ -293,6 +287,46 @@ class RouteManagerBestMatchForBrokenPathTest(TestCase):
             route = Route.objects.best_match_for_path('/branch/absent-leaf/')
 
         self.assertEqual(route, branch)
+
+
+class RouteGetDescendantsTest(TestCase):
+    """
+    Test Route().get_descendants().
+
+    All of these tests assert use of only one query:
+        * Get the decendants of a Route:
+
+            SELECT * FROM "routes_route"
+            WHERE (
+                NOT ("routes_route"."id" = <id>)
+                AND "routes_route"."url"::text LIKE '<url>%'
+            )
+            ORDER BY "routes_route.url" DESC
+    """
+    def test_just_created(self):
+        branch = RouteFactory.build()
+
+        with self.assertNumQueries(0):
+            # Descendants presumed nonsense as unsaved, so no query.
+            descendants = list(branch.get_descendants())
+
+        self.assertEqual(descendants, [])
+
+    def test_no_descendants(self):
+        branch = ChildRouteFactory.create()
+
+        with self.assertNumQueries(1):
+            descendants = list(branch.get_descendants())
+
+        self.assertEqual(descendants, [])
+
+    def test_descendants(self):
+        branch = ChildRouteFactory.create()
+
+        with self.assertNumQueries(1):
+            descendants = list(branch.parent.get_descendants())
+
+        self.assertEqual(descendants, [branch])
 
 
 class RouteGetHandlerClassTest(TestCase):

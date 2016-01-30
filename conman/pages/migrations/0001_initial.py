@@ -19,7 +19,6 @@ class Migration(migrations.Migration):
                 ('content', sirtrevor.fields.SirTrevorField(default='')),
             ],
             options={
-                'ordering': ('tree_id', 'lft'),
                 'abstract': False,
             },
             bases=('routes.route',),

@@ -2,16 +2,14 @@ from django.core import checks
 from django.db import models
 from django.db.models.functions import Length
 from django.utils.translation import ugettext_lazy as _
-from polymorphic_tree.managers import PolymorphicMPTTModelManager
-from polymorphic_tree.models import (
-    PolymorphicMPTTModel,
-    PolymorphicTreeForeignKey,
-)
+from polymorphic.managers import PolymorphicManager
+from polymorphic.models import PolymorphicModel
+
 
 from .utils import import_from_dotted_path, split_path
 
 
-class RouteManager(PolymorphicMPTTModelManager):
+class RouteManager(PolymorphicManager):
     """Helpful methods for working with Routes."""
     def best_match_for_path(self, path):
         """
@@ -39,7 +37,7 @@ class RouteManager(PolymorphicMPTTModelManager):
             raise self.model.DoesNotExist(msg)
 
 
-class Route(PolymorphicMPTTModel):
+class Route(PolymorphicModel):
     """
     A Route in a tree of url endpoints.
 
@@ -48,7 +46,7 @@ class Route(PolymorphicMPTTModel):
     A Child Route has a parent Route and a slug unique with the parent.
     A Child Route's url is built from its slug and its parent's url.
     """
-    parent = PolymorphicTreeForeignKey(
+    parent = models.ForeignKey(
         'self',
         blank=True,
         null=True,
@@ -75,6 +73,15 @@ class Route(PolymorphicMPTTModel):
     def __str__(self):
         """Display a Route's class and url."""
         return '{} @ {}'.format(self.__class__.__name__, self.url)
+
+    def get_descendants(self):
+        """Get all the descendants of this Route."""
+        if not self.pk:
+            return Route.objects.none()
+        others = Route.objects.exclude(pk=self.pk)
+        # Use the cached url. It's possible the url changed and we're saving.
+        descendants = others.filter(url__startswith=self._original_url)
+        return descendants.order_by('url')
 
     def get_handler_class(self):
         """Import a class from the python path string in `self.handler`."""
@@ -115,6 +122,7 @@ class Route(PolymorphicMPTTModel):
         """
         self._original_parent_id = self.parent_id
         self._original_slug = self.slug
+        self._original_url = self.url
 
     def save(self, *args, **kwargs):
         """
@@ -139,6 +147,7 @@ class Route(PolymorphicMPTTModel):
         url_changed = parent_changed or slug_changed or not self.url
 
         if url_changed:
+            descendants = list(self.get_descendants())  # Get them before the url changes
             self.url = '/' if is_root else make_url(self.parent.url, self.slug)
 
         super().save(*args, **kwargs)
@@ -151,10 +160,8 @@ class Route(PolymorphicMPTTModel):
         if not url_changed:
             return
 
-        routes = self.get_descendants().order_by('lft')
-
         cached_urls = {self.id: self.url}
-        for route in routes:
+        for route in descendants:
             parent_path = cached_urls[route.parent_id]
             route.url = cached_urls[route.id] = make_url(parent_path, route.slug)
 
