@@ -1,6 +1,6 @@
 # django-conman changelog
 
-## 0.0.2
+## Upcoming release
 
 ### Backwards incompatible
 
