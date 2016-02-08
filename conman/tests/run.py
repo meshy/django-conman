@@ -19,9 +19,7 @@ settings.configure(
         'conman.pages',
         'conman.redirects',
 
-        'mptt',
         'polymorphic',
-        'polymorphic_tree',
 
         'django.contrib.admin',
         'django.contrib.auth',

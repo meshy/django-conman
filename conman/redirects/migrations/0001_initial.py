@@ -19,7 +19,6 @@ class Migration(migrations.Migration):
                 ('target', models.ForeignKey(to='routes.Route', related_name='+')),
             ],
             options={
-                'ordering': ('tree_id', 'lft'),
                 'abstract': False,
             },
             bases=('routes.route',),
