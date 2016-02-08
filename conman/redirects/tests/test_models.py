@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.test import TestCase
+from incuna_test_utils.utils import field_names
 
 from conman.routes.tests.test_models import NODE_BASE_FIELDS
 from .factories import ChildRouteRedirectFactory
@@ -14,12 +15,10 @@ class RouteRedirectTest(TestCase):
         expected = (
             'id',
             'route_ptr',
-            'route_ptr_id',
             'target',
-            'target_id',
             'permanent',
         ) + NODE_BASE_FIELDS
-        fields = RouteRedirect._meta.get_all_field_names()
+        fields = field_names(RouteRedirect)
         self.assertCountEqual(fields, expected)
 
     def test_target_self(self):

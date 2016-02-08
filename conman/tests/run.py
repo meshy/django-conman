@@ -29,10 +29,14 @@ settings.configure(
         'django.contrib.sessions',
         'django.contrib.sites',
     ),
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
-    SITE_ID=1,
-    ROOT_URLCONF='conman.tests.urls',
     MIDDLEWARE_CLASSES=(),
+    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
+    ROOT_URLCONF='conman.tests.urls',
+    SITE_ID=1,
+    TEMPLATES=[{
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+    }],
 )
 
 

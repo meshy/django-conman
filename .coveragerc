@@ -1,5 +1,0 @@
-[run]
-source = conman
-omit = *migrations*, *tests*
-[report]
-show_missing = True
