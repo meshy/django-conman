@@ -10,5 +10,5 @@ class RouteConfig(AppConfig):
 
     def ready(self):
         """Register checks for conman routes."""
-        register(checks.polymorphic_installed)
+        register(checks.requirements_installed)
         register(checks.subclasses_available)
