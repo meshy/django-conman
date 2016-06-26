@@ -1,40 +1,10 @@
 from django.core import checks
 from django.db import models
-from django.db.models.functions import Length
 from django.utils.translation import ugettext_lazy as _
-from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 
-
-from .utils import import_from_dotted_path, split_path
-
-
-class RouteManager(PolymorphicManager):
-    """Helpful methods for working with Routes."""
-    def best_match_for_path(self, path):
-        """
-        Return the best match for a path.
-
-        If the path as given is unavailable, continues to search by chopping
-        path components off the end.
-
-        Tries hard to avoid unnecessary database lookups by comparing all
-        possible matching URL prefixes and choosing the longest match.
-
-        Route.objects.best_match_for_path('/photos/album/2008/09') might return
-        the Route with url '/photos/album/'.
-
-        Adapted from feincms/module/page/models.py:71 in FeinCMS v1.9.5.
-        """
-        paths = split_path(path)
-
-        qs = self.filter(url__in=paths)
-        qs = qs.annotate(length=Length('url')).order_by('-length')
-        try:
-            return qs[0]
-        except IndexError:
-            msg = 'No matching Route for URL. (Have you made a root Route?)'
-            raise self.model.DoesNotExist(msg)
+from .managers import RouteManager
+from .utils import import_from_dotted_path
 
 
 class Route(PolymorphicModel):
