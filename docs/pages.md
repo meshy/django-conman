@@ -1,6 +1,6 @@
-# ConMan Pages
+# Pages
 
-ConMan Pages allow adding rich content to your site using [Sir Trevor](https://madebymany.github.io/sir-trevor-js/).
+Pages allow adding rich content to your site using [Sir Trevor](https://madebymany.github.io/sir-trevor-js/).
 
 ## Configuration
 

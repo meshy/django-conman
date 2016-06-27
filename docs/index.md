@@ -1,11 +1,11 @@
-# Django ConMan
+# Django Conman
 
-Django ConMan is a lightweight content management library for [Django](https://www.djangoproject.com/). It has a very modular structure to allow you to pick-and-choose only the features you need for your site.
+Django Conman is a lightweight content management library for [Django](https://www.djangoproject.com/). It has a very modular structure to allow you to pick-and-choose only the features you need for your site.
 
 ## Quick Start
 
-* Install ConMan: `pip install django-conman`
-* Add your chosen ConMan modules and [Django Polymorhpic](https://django-polymorphic.readthedocs.org/en/latest/) to `INSTALLED_APPS`:
+* Install Conman: `pip install django-conman`
+* Add your chosen Conman modules and [Django Polymorhpic](https://django-polymorphic.readthedocs.org/en/latest/) to `INSTALLED_APPS`:
 
 ```python
 INSTALLED_APPS = (
@@ -18,7 +18,7 @@ INSTALLED_APPS = (
 )
 ```
 
-* Add ConMan to your base `urls.py` after all other urls:
+* Add Conman to your base `urls.py` after all other urls:
 
 ```python
 urlpatterns = [
@@ -29,4 +29,4 @@ urlpatterns = [
 ]
 ```
 
-* Ensure the ConMan database tables exist: `python manage.py migrate`
+* Ensure the Conman database tables exist: `python manage.py migrate`
