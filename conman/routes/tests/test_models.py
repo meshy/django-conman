@@ -76,7 +76,7 @@ class RouteGetDescendantsTest(TestCase):
             ORDER BY "routes_route"."url" ASC
     """
     def test_just_created(self):
-        """Before object saved, avoid DB hits, and assume no descendants."""
+        """Until saved, return empty Queryset."""
         branch = RouteFactory.build()
 
         with self.assertNumQueries(0):

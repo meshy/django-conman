@@ -12,7 +12,7 @@ def split_path(path):
     path = path.rstrip('/')
 
     while path:
-        paths.append(path + '/')
+        paths.insert(1, path + '/')
         path = os.path.split(path)[0]
         if path == '/':
             break
