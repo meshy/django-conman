@@ -1,6 +1,5 @@
 from django.core import checks
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
 from .managers import RouteManager
@@ -8,37 +7,10 @@ from .utils import import_from_dotted_path
 
 
 class Route(PolymorphicModel):
-    """
-    A Route in a tree of url endpoints.
-
-    A Route can be a Root Route or a Child Route.
-    A Root Route has no parent and has an empty slug.
-    A Child Route has a parent Route and a slug unique with the parent.
-    A Child Route's url is built from its slug and its parent's url.
-    """
-    parent = models.ForeignKey(
-        'self',
-        blank=True,
-        null=True,
-        related_name='children',
-    )
-    slug = models.SlugField(
-        max_length=255,
-        default='',
-        help_text=_('The url fragment at this point in the Route hierarchy.'),
-    )
-    # Cached location in tree. Reflects parent and slug on self and ancestors.
-    url = models.TextField(db_index=True, editable=False, unique=True)
+    """A Route in a tree of url endpoints."""
+    url = models.TextField(db_index=True, unique=True)
 
     objects = RouteManager()
-
-    class Meta:
-        unique_together = ('parent', 'slug')
-
-    def __init__(self, *args, **kwargs):
-        """Cache the Route's parent_id and slug."""
-        super().__init__(*args, **kwargs)
-        self.reset_originals()
 
     def __str__(self):
         """Display a Route's class and url."""
@@ -49,8 +21,7 @@ class Route(PolymorphicModel):
         if not self.pk:
             return Route.objects.none()
         others = Route.objects.exclude(pk=self.pk)
-        # Use the cached url. It's possible the url changed and we're saving.
-        descendants = others.filter(url__startswith=self._original_url)
+        descendants = others.filter(url__startswith=self.url)
         return descendants.order_by('url')
 
     def get_handler_class(self):
@@ -83,61 +54,6 @@ class Route(PolymorphicModel):
         path = path[len(self.url) - 1:]
         # Deal with the request
         return handler.handle(request, path)
-
-    def reset_originals(self):
-        """
-        Cache a copy of the loaded `url` value.
-
-        This is so we can determine if it has been changed on save.
-        """
-        self._original_parent_id = self.parent_id
-        self._original_slug = self.slug
-        self._original_url = self.url
-
-    def save(self, *args, **kwargs):
-        """
-        Update the `url` attribute of this route and all descendants.
-
-        Quite expensive when called with a route high up in the tree.
-
-        Adapted from feincms/module/page/models.py:248 in FeinCMS v1.9.5.
-        """
-        is_root = self.parent_id is None
-        has_slug = bool(self.slug)
-
-        # Must be one or the other
-        if is_root == has_slug:
-            raise ValueError('Route can be a root, or have a slug, not both.')
-
-        def make_url(parent_url, slug):
-            return '{}{}/'.format(parent_url, slug)
-
-        parent_changed = self._original_parent_id != self.parent_id
-        slug_changed = self._original_slug != self.slug
-        url_changed = parent_changed or slug_changed or not self.url
-
-        if url_changed:
-            descendants = list(self.get_descendants())  # Get them before the url changes
-            self.url = '/' if is_root else make_url(self.parent.url, self.slug)
-
-        super().save(*args, **kwargs)
-        self.reset_originals()
-
-        # If the URL changed we need to update all descendants to
-        # reflect the changes. Since this is a very expensive operation
-        # on large sites we'll check whether our `url` actually changed
-        # or if the updates weren't navigation related:
-        if not url_changed:
-            return
-
-        cached_urls = {self.id: self.url}
-        for route in descendants:
-            parent_path = cached_urls[route.parent_id]
-            route.url = cached_urls[route.id] = make_url(parent_path, route.slug)
-
-            # Skip this logic on save so we do not recurse.
-            super(Route, route).save()
-    save.alters_data = True
 
     @classmethod
     def check(cls, **kwargs):
