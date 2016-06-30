@@ -3,6 +3,7 @@ from polymorphic.models import PolymorphicModel
 
 from .handlers import RouteViewHandler
 from .managers import RouteManager
+from .utils import split_path
 from .validators import (
     validate_end_in_slash,
     validate_no_dotty_subpaths,
@@ -39,6 +40,17 @@ class Route(PolymorphicModel):
     def check(cls):
         """Delegate model checks to the handler."""
         return cls.handler_class.check(cls)
+
+    def get_ancestors(self):
+        """Get all the ancestors of this Route."""
+        paths = split_path(self.url)[:-1]
+
+        return (
+            Route.objects
+            .exclude(pk=self.pk)
+            .filter(url__in=paths)
+            .order_by('url')
+        )
 
     def get_descendants(self):
         """Get all the descendants of this Route."""

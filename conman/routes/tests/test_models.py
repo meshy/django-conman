@@ -60,6 +60,71 @@ class RouteCheckTest(TestCase):
         self.assertEqual(errors, handler.check(Route))
 
 
+class RouteGetAncestorsTest(TestCase):
+    """
+    Test Route().get_ancestors().
+
+    All of these tests assert use of only one query:
+        * Get the ancestors of a Route:
+
+            SELECT "routes_route"."id",
+                   "routes_route"."polymorphic_ctype_id",
+                   "routes_route"."url"
+              FROM "routes_route"
+             WHERE (NOT ("routes_route"."id" = 42)
+                    AND "routes_route"."url" IN ('/', '/route43/'))
+          ORDER BY "routes_route"."url" ASC
+    """
+    def test_just_created(self):
+        """Until saved, return empty Queryset."""
+        route = RouteFactory.build()
+
+        with self.assertNumQueries(0):
+            # Presumed nonsense as unsaved, so no query.
+            ancestors = list(route.get_ancestors())
+
+        self.assertEqual(ancestors, [])
+
+    def test_no_ancestors(self):
+        """Without ancestors, we get an empty result."""
+        branch = ChildRouteFactory.create()
+
+        with self.assertNumQueries(1):
+            ancestors = list(branch.get_ancestors())
+
+        self.assertEqual(ancestors, [])
+
+    def test_with_ancestors(self):
+        """Return ancestors, furthest first."""
+        root = RouteFactory.create()
+        branch = ChildRouteFactory.create(parent=root)
+        leaf = ChildRouteFactory.create(parent=branch)
+
+        with self.assertNumQueries(1):
+            ancestors = list(leaf.get_ancestors())
+
+        self.assertEqual(ancestors, [root, branch])
+
+    def test_with_descendants(self):
+        """Do not return descendants."""
+        branch = ChildRouteFactory.create()
+        ChildRouteFactory.create(parent=branch)
+
+        with self.assertNumQueries(1):
+            ancestors = list(branch.get_ancestors())
+
+        self.assertEqual(ancestors, [])
+
+    def test_at_root(self):
+        """Don't bother looking for ancestors when root Route."""
+        root = RouteFactory.create()
+
+        with self.assertNumQueries(0):
+            ancestors = list(root.get_ancestors())
+
+        self.assertEqual(ancestors, [])
+
+
 class RouteGetDescendantsTest(TestCase):
     """
     Test Route().get_descendants().
