@@ -4,11 +4,24 @@ from polymorphic.models import PolymorphicModel
 
 from .managers import RouteManager
 from .utils import import_from_dotted_path
+from .validators import (
+    validate_end_in_slash,
+    validate_no_questionmark,
+    validate_start_in_slash,
+)
 
 
 class Route(PolymorphicModel):
     """A Route in a tree of url endpoints."""
-    url = models.TextField(db_index=True, unique=True)
+    url = models.TextField(
+        db_index=True,
+        validators=[
+            validate_end_in_slash,
+            validate_start_in_slash,
+            validate_no_questionmark,
+        ],
+        unique=True,
+    )
 
     objects = RouteManager()
 
