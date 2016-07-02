@@ -7,28 +7,63 @@ from django.test import SimpleTestCase
 from .. import checks
 
 
-class TestPolymorphicInstalled(SimpleTestCase):
-    """Test checks.polymorphic_installed."""
+class TestRequirementsInstalled(SimpleTestCase):
+    """Test checks.requirements_installed."""
+    def setUp(self):
+        self.installed = [
+            'conman.routes',
+            'polymorphic',
+            'django.contrib.sites',
+        ]
+
     def test_registered(self):
-        """checks.polymorphic_installed is a registered check."""
+        """checks.requirements_installed is a registered check."""
         registered_checks = registry.get_checks()
-        self.assertIn(checks.polymorphic_installed, registered_checks)
+        self.assertIn(checks.requirements_installed, registered_checks)
 
     def test_installed(self):
-        """The check passes if django polymorphic is installed."""
-        with self.settings(INSTALLED_APPS=['conman.routes', 'polymorphic']):
-            errors = checks.polymorphic_installed(app_configs=None)
+        """The check passes if all requirements are installed."""
+        with self.settings(INSTALLED_APPS=self.installed):
+            errors = checks.requirements_installed(app_configs=None)
 
         self.assertEqual(errors, [])
 
-    def test_not_installed(self):
+    def test_polymorphic_not_installed(self):
         """The check fails if django polymorphic is not installed."""
-        with self.settings(INSTALLED_APPS=['conman.routes']):
-            errors = checks.polymorphic_installed(app_configs=None)
+        self.installed.remove('polymorphic')
+        with self.settings(INSTALLED_APPS=self.installed):
+            errors = checks.requirements_installed(app_configs=None)
 
         error = Error(
-            'Django Polymorpic must be in INSTALLED_APPS.',
-            hint="Add 'polymorphic' to INSTALLED_APPS.",
+            'Missing requirements must be installed.',
+            hint='Add polymorphic to INSTALLED_APPS.',
+            id='conman.routes.E001',
+        )
+        self.assertEqual(errors, [error])
+
+    def test_sites_not_installed(self):
+        """The check fails if django sites are not installed."""
+        self.installed.remove('django.contrib.sites')
+        with self.settings(INSTALLED_APPS=self.installed):
+            errors = checks.requirements_installed(app_configs=None)
+
+        error = Error(
+            'Missing requirements must be installed.',
+            hint='Add django.contrib.sites to INSTALLED_APPS.',
+            id='conman.routes.E001',
+        )
+        self.assertEqual(errors, [error])
+
+    def test_multiple_not_installed(self):
+        """The check fails if multiple requirements are not installed."""
+        self.installed.remove('django.contrib.sites')
+        self.installed.remove('polymorphic')
+        with self.settings(INSTALLED_APPS=self.installed):
+            errors = checks.requirements_installed(app_configs=None)
+
+        error = Error(
+            'Missing requirements must be installed.',
+            hint='Add django.contrib.sites, polymorphic to INSTALLED_APPS.',
             id='conman.routes.E001',
         )
         self.assertEqual(errors, [error])

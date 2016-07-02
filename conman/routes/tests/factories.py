@@ -1,12 +1,32 @@
 import factory
+from django.contrib.sites.models import Site
 
 from .. import models
 
 
+class SiteFactory(factory.DjangoModelFactory):
+    """Create instance of Site for testing."""
+    domain = factory.Sequence('{}.example.com'.format)
+    name = factory.Sequence('Site {}'.format)
+
+    class Meta:
+        django_get_or_create = ('domain',)
+        model = Site
+
+
 class RouteFactory(factory.DjangoModelFactory):
     """Create instances of Route for testing."""
+    site = factory.SubFactory(SiteFactory)
+
     class Meta:
         model = models.Route
+
+    @classmethod
+    def build(cls, *args, **kwargs):
+        """Ensure even "built" Routes have a Site."""
+        if 'site' not in kwargs:
+            kwargs['site'] = SiteFactory.create()
+        return super().build(*args, **kwargs)
 
 
 class RootRouteFactory(RouteFactory):

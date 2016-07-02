@@ -4,7 +4,12 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from incuna_test_utils.utils import field_names
 
-from .factories import ChildRouteFactory, RootRouteFactory, RouteFactory
+from .factories import (
+    ChildRouteFactory,
+    RootRouteFactory,
+    RouteFactory,
+    SiteFactory,
+)
 from .. import handlers
 from ..models import Route
 
@@ -12,6 +17,7 @@ from ..models import Route
 NODE_BASE_FIELDS = (
     'parent',
     'slug',
+    'site',
     'url',
 
     # Polymorphic fields
@@ -70,10 +76,11 @@ class RouteUniqueness(TestCase):
 
     def test_unique_root_url(self):
         """Only one Route can exist with an empty slug."""
-        Route.objects.create(slug='')
+        site = SiteFactory.create()
+        Route.objects.create(slug='', site=site)
 
         with self.assertRaises(IntegrityError):
-            Route.objects.create(slug='')
+            Route.objects.create(slug='', site=site)
 
 
 class RouteSkipUpdateWithoutChange(TestCase):

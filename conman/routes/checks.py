@@ -2,20 +2,26 @@ from django.apps import apps
 from django.core.checks import Error
 
 
-def polymorphic_installed(app_configs, **kwargs):
-    """Check that Django Polymorphic is installed correctly."""
-    errors = []
-    try:
-        apps.get_app_config('polymorphic')
-    except LookupError:
-        error = Error(
-            'Django Polymorpic must be in INSTALLED_APPS.',
-            hint="Add 'polymorphic' to INSTALLED_APPS.",
-            id='conman.routes.E001',
-        )
-        errors.append(error)
+def requirements_installed(app_configs, **kwargs):
+    """Check that requirements are installed correctly."""
+    missing_apps = []
+    required_apps = [
+        'django.contrib.sites',
+        'polymorphic',
+    ]
 
-    return errors
+    for app in required_apps:
+        if not apps.is_installed(app):
+            missing_apps.append(app)
+
+    if not missing_apps:
+        return []
+
+    return [Error(
+        'Missing requirements must be installed.',
+        hint='Add {} to INSTALLED_APPS.'.format(', '.join(missing_apps)),
+        id='conman.routes.E001',
+    )]
 
 
 def subclasses_available(app_configs, **kwargs):

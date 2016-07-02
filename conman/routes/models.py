@@ -27,6 +27,7 @@ class Route(PolymorphicModel):
         default='',
         help_text=_('The url fragment at this point in the Route hierarchy.'),
     )
+    site = models.ForeignKey('sites.Site')
     # Cached location in tree. Reflects parent and slug on self and ancestors.
     url = models.TextField(db_index=True, editable=False, unique=True)
 
