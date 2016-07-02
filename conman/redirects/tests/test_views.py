@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from conman.compat import DJANGO_LT_19
 from conman.routes.tests.factories import ChildRouteFactory
 from conman.tests.utils import RequestTestCase
 from .factories import ChildRouteRedirectFactory
@@ -44,5 +45,7 @@ class TestRouteRedirectViewIntegration(TestCase):
         route = ChildRouteRedirectFactory.create(target=target)
         response = self.client.get(route.url)
 
-        expected = 'http://testserver' + target.url
+        expected = target.url
+        if DJANGO_LT_19:
+            expected = 'http://testserver' + expected
         self.assertEqual(response['Location'], expected)
