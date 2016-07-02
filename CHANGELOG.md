@@ -4,11 +4,13 @@
 
 ### Backwards incompatible
 
+* Removed `slug` and `parent` fields.
 * Removed dependency upon `django-polymorphic-tree`.
 * Destroyed and recreated migrations.
 
 ### Changed
 
+* `url` is now editable, rather than generated in `Route.save()`.
 * Moved `RouteManager` into `routes.managers`.
 
 ## 0.0.1a1
