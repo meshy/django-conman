@@ -2,6 +2,7 @@ sudo: false
 language: python
 python:
   - 3.4
+  - 3.5
 script: make test
 notifications:
   email: false
@@ -9,7 +10,9 @@ env:
   global:
     - DATABASE_URL='postgres://postgres@localhost/conman'
   matrix:
-    - DJANGO='django>=1.8,<1.9'
+    - DJANGO='django~=1.8.0'
+    - DJANGO='django~=1.9.0'
+    - DJANGO='django==1.10b1'
 install:
   - psql -c 'CREATE DATABASE conman' -U postgres;
   - pip install -r requirements.txt
