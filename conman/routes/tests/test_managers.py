@@ -1,3 +1,4 @@
+from django.db import IntegrityError, transaction
 from django.test import TestCase
 
 from .factories import ChildRouteFactory, RouteFactory
@@ -106,3 +107,73 @@ class RouteManagerBestMatchForBrokenPathTest(TestCase):
             route = Route.objects.best_match_for_path('/branch/absent-leaf/')
 
         self.assertEqual(route, branch)
+
+
+class RouteManagerMoveBranchTest(TestCase):
+    """
+    Route.objects.move_branch() moves branches of urls.
+
+    All of these tests assert use of only one query:
+
+        * Replace old url fragment with new one.
+            UPDATE "routes_route"
+            SET "url" = CONCAT(
+                '/destination/',
+                SUBSTRING("routes_route"."url", 11))
+            WHERE "routes_route"."url"::text LIKE '/original/%'
+    """
+    def test_destination_vacant(self):
+        """A single item can move to an unoccupied URL."""
+        route = RouteFactory.create(url='/original/')
+        destination = '/target/'
+
+        with self.assertNumQueries(1):
+            Route.objects.move_branch(route.url, destination)
+
+        route.refresh_from_db()
+        self.assertEqual(route.url, destination)
+
+    def test_destination_occupied(self):
+        """A single item cannot move to an occupied URL."""
+        original_url = '/original/'
+        route = RouteFactory.create(url=original_url)
+        occupied = RouteFactory.create(url='/occupied/')
+
+        with transaction.atomic():
+            with self.assertNumQueries(1):
+                with self.assertRaises(IntegrityError):
+                    Route.objects.move_branch(route.url, occupied.url)
+
+        route.refresh_from_db()
+        self.assertEqual(route.url, original_url)
+
+    def test_descendant_destination_vacant(self):
+        """A branch can move to an unoccupied URL."""
+        route = RouteFactory.create(url='/original/')
+        child = RouteFactory.create(url='/original/child/')
+        destination = '/target/'
+
+        with self.assertNumQueries(1):
+            Route.objects.move_branch(route.url, destination)
+
+        route.refresh_from_db()
+        self.assertEqual(route.url, destination)
+        child.refresh_from_db()
+        self.assertEqual(child.url, destination + 'child/')
+
+    def test_descendant_destination_occupied(self):
+        """A branch cannot move over an occupied URL."""
+        original_url = '/original/'
+        route = RouteFactory.create(url=original_url)
+        child = RouteFactory.create(url='/original/child/')
+        occupied = RouteFactory.create(url='/occupied/child/')
+
+        with transaction.atomic():
+            with self.assertNumQueries(1):
+                with self.assertRaises(IntegrityError):
+                    Route.objects.move_branch(route.url, occupied.url)
+
+        route.refresh_from_db()
+        self.assertEqual(route.url, original_url)
+        child.refresh_from_db()
+        self.assertEqual(child.url, original_url + 'child/')

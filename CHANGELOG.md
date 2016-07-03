@@ -28,6 +28,11 @@
   `Route`). One might expect this to be a URL on an external site.
 * Allow `Route` to delegate model checks to the associated handler.
 
+### Added
+
+* `Route.objects.move_branch()` can be used to move a `Route` and its
+  descendants to another location.
+
 ### Changed
 
 * `url` is now editable, rather than generated in `Route.save()`.
