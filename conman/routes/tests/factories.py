@@ -12,7 +12,7 @@ class RouteFactory(factory.DjangoModelFactory):
 
 
 class ChildRouteFactory(RouteFactory):
-    """Create a Route with a url dependant on a slug or parent."""
+    """Create a Route with a url dependent on a slug or parent."""
     @classmethod
     def create(cls, *args, parent=None, slug=None, **kwargs):
         """Calculate a url based on a slug or parent."""

@@ -4,7 +4,7 @@
 
 ### Backwards incompatible
 
-* Removed dependancy upon `django-polymorphic-tree`.
+* Removed dependency upon `django-polymorphic-tree`.
 * Destroyed and recreated migrations.
 
 ### Changed
