@@ -4,6 +4,8 @@ from django.test import TestCase
 from ..models import Route
 from ..validators import (
     validate_end_in_slash,
+    validate_no_double_slashes,
+    validate_no_hash_symbol,
     validate_no_questionmark,
     validate_start_in_slash,
 )
@@ -45,11 +47,37 @@ class TestValidateNoQuestionmark(TestCase):
             validate_no_questionmark(path)
 
 
+class TestValidateNoDoubleSlashes(TestCase):
+    """Tests for the validate_no_double_slashes validator."""
+
+    def test_has_double_slashes(self):
+        """Two consecutive slashes is not acceptable."""
+        path = '/is/this/ok//nope/'
+
+        expected = 'Consecutive slashes ("//") are not allowed.'
+        with self.assertRaisesMessage(ValidationError, expected):
+            validate_no_double_slashes(path)
+
+
+class TestValidateNoHashSymbol(TestCase):
+    """Tests for the validate_no_hash_symbol validator."""
+
+    def test_has_double_slashes(self):
+        """A hash (pound) sign ("#") is not acceptable."""
+        path = '/this/contains/a/#fragment/'
+
+        expected = 'Hash symbol (AKA "pound", "#") is not allowed.'
+        with self.assertRaisesMessage(ValidationError, expected):
+            validate_no_hash_symbol(path)
+
+
 class TestAllValidators(TestCase):
     """Tests all validators."""
     validators = [
         validate_end_in_slash,
         validate_start_in_slash,
+        validate_no_double_slashes,
+        validate_no_hash_symbol,
         validate_no_questionmark,
     ]
 

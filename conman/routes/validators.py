@@ -16,6 +16,24 @@ def validate_start_in_slash(path):
         raise ValidationError(msg)
 
 
+def validate_no_double_slashes(path):
+    """URL path fragments are not allowed to contain consecutive slashes."""
+    if '//' in path:
+        msg = _('Consecutive slashes ("//") are not allowed.')
+        raise ValidationError(msg)
+
+
+def validate_no_hash_symbol(path):
+    """
+    URL path fragments do not contain hash (#) symbols.
+
+    Hash symbols are also sometimes known as "pound" symbols.
+    """
+    if '#' in path:
+        msg = _('Hash symbol (AKA "pound", "#") is not allowed.')
+        raise ValidationError(msg)
+
+
 def validate_no_questionmark(path):
     """URL path fragments do not contain question marks."""
     if '?' in path:
