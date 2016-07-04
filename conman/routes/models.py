@@ -6,6 +6,7 @@ from .managers import RouteManager
 from .utils import import_from_dotted_path
 from .validators import (
     validate_end_in_slash,
+    validate_no_dotty_subpaths,
     validate_no_double_slashes,
     validate_no_hash_symbol,
     validate_no_questionmark,
@@ -20,6 +21,7 @@ class Route(PolymorphicModel):
         validators=[
             validate_end_in_slash,
             validate_start_in_slash,
+            validate_no_dotty_subpaths,
             validate_no_double_slashes,
             validate_no_hash_symbol,
             validate_no_questionmark,

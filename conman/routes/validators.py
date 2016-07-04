@@ -23,6 +23,15 @@ def validate_no_double_slashes(path):
         raise ValidationError(msg)
 
 
+def validate_no_dotty_subpaths(path):
+    """URL subpaths cannot contain only dots."""
+    subpaths = path.split('/')
+    msg = _('Subpaths cannot contain only full stops (AKA "periods", ".").')
+    for subpath in subpaths:
+        if set(subpath) == {'.'}:
+            raise ValidationError(msg)
+
+
 def validate_no_hash_symbol(path):
     """
     URL path fragments do not contain hash (#) symbols.

@@ -4,6 +4,7 @@ from django.test import TestCase
 from ..models import Route
 from ..validators import (
     validate_end_in_slash,
+    validate_no_dotty_subpaths,
     validate_no_double_slashes,
     validate_no_hash_symbol,
     validate_no_questionmark,
@@ -33,6 +34,31 @@ class TestValidateStartInSlash(TestCase):
         expected = 'First character must be "/".'
         with self.assertRaisesMessage(ValidationError, expected):
             validate_start_in_slash(path)
+
+
+class TestValidateNoDottySubpaths(TestCase):
+    """Tests for the validate_no_dotty_subpaths validator."""
+    expected = 'Subpaths cannot contain only full stops (AKA "periods", ".").'
+
+    def test_has_single_lone_dot(self):
+        """A lone full stop is not acceptable."""
+        path = '/./'
+
+        with self.assertRaisesMessage(ValidationError, self.expected):
+            validate_no_dotty_subpaths(path)
+
+    def test_has_double_dot(self):
+        """A pair of full stops is not acceptable."""
+        path = '/../'
+
+        with self.assertRaisesMessage(ValidationError, self.expected):
+            validate_no_dotty_subpaths(path)
+
+    def test_accompanied_dot(self):
+        """Accompanied full stops are acceptable."""
+        path = '/.dotfiles/'
+
+        self.assertIsNone(validate_no_dotty_subpaths(path))
 
 
 class TestValidateNoQuestionmark(TestCase):
@@ -75,10 +101,11 @@ class TestAllValidators(TestCase):
     """Tests all validators."""
     validators = [
         validate_end_in_slash,
-        validate_start_in_slash,
+        validate_no_dotty_subpaths,
         validate_no_double_slashes,
         validate_no_hash_symbol,
         validate_no_questionmark,
+        validate_start_in_slash,
     ]
 
     def test_root(self):
