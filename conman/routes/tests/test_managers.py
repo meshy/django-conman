@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .factories import ChildRouteFactory, RootRouteFactory, RouteFactory
+from .factories import ChildRouteFactory, RouteFactory
 from ..models import Route
 
 
@@ -26,7 +26,7 @@ class RouteManagerBestMatchForPathTest(TestCase):
     """
     def test_get_root(self):
         """Check a Root Route matches a simple '/' path."""
-        root = RootRouteFactory.create()
+        root = RouteFactory.create(url='/')
         with self.assertNumQueries(1):
             route = Route.objects.best_match_for_path('/')
 
@@ -44,7 +44,7 @@ class RouteManagerBestMatchForPathTest(TestCase):
     def test_get_leaf_on_branch(self):
         """Check a Route matches a path containing its slug and parent's slug."""
         branch = ChildRouteFactory.create(slug='branch')
-        leaf = RouteFactory.create(slug='leaf', parent=branch)
+        leaf = ChildRouteFactory.create(slug='leaf', parent=branch)
 
         with self.assertNumQueries(1):
             route = Route.objects.best_match_for_path('/branch/leaf/')
@@ -54,7 +54,7 @@ class RouteManagerBestMatchForPathTest(TestCase):
     def test_get_branch_with_leaf(self):
         """Check a Branch Route matches a path of its slug even if a Leaf exists."""
         branch = ChildRouteFactory.create(slug='branch')
-        RouteFactory.create(slug='leaf', parent=branch)
+        ChildRouteFactory.create(slug='leaf', parent=branch)
 
         with self.assertNumQueries(1):
             route = Route.objects.best_match_for_path('/branch/')
@@ -90,7 +90,7 @@ class RouteManagerBestMatchForBrokenPathTest(TestCase):
 
     def test_fall_back_to_root(self):
         """Check the Root Route matches when no better Route is available."""
-        root = RootRouteFactory.create()
+        root = RouteFactory.create(url='/')
 
         with self.assertNumQueries(1):
             route = Route.objects.best_match_for_path('/absent-branch/')

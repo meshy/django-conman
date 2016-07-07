@@ -4,21 +4,16 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from incuna_test_utils.utils import field_names
 
-from .factories import ChildRouteFactory, RootRouteFactory, RouteFactory
+from .factories import ChildRouteFactory, RouteFactory
 from .. import handlers
 from ..models import Route
 
 
 NODE_BASE_FIELDS = (
-    'parent',
-    'slug',
     'url',
 
     # Polymorphic fields
     'polymorphic_ctype',
-
-    # Incoming foreign keys
-    'children',  # FK from self. The other end of "parent".
 )
 
 
@@ -39,150 +34,14 @@ class RouteTest(TestCase):
         self.assertCountEqual(fields, expected)
 
 
-class RouteValidateOnSave(TestCase):
-    """Check validation of Route slugs and ancestry on save."""
-    def test_create_root_with_slug(self):
-        """Root must not have a slug."""
-        root_route = RouteFactory.build(slug='slug', parent=None)
-
-        with self.assertRaises(ValueError):
-            root_route.save()
-
-    def test_create_leaf_without_slug(self):
-        """Leaf Routes must have a slug."""
-        root_route = RootRouteFactory.create()
-        leaf = RouteFactory.build(slug='', parent=root_route)
-
-        with self.assertRaises(ValueError):
-            leaf.save()
-
-
 class RouteUniqueness(TestCase):
     """Check uniqueness conditions on Route are enforced in the DB."""
-    def test_unique_slug_per_parent(self):
-        """Two Routes cannot share the same slug and parent Route."""
-        slug = 'slug'
-        root_route = RootRouteFactory.create()
-        RouteFactory.create(slug=slug, parent=root_route)
+    def test_unique_url(self):
+        """Only one Route can exist with a particular url."""
+        Route.objects.create(url='/')
 
         with self.assertRaises(IntegrityError):
-            RouteFactory.create(slug=slug, parent=root_route)
-
-    def test_unique_root_url(self):
-        """Only one Route can exist with an empty slug."""
-        Route.objects.create(slug='')
-
-        with self.assertRaises(IntegrityError):
-            Route.objects.create(slug='')
-
-
-class RouteSkipUpdateWithoutChange(TestCase):
-    """Be frugal with DB hits when saving unmodified Routes."""
-    def test_no_update_without_changes(self):
-        """Saving unchanged Route shouldn't query parent to rebuild the url."""
-        branch = ChildRouteFactory.create(slug='branch')
-        branch = Route.objects.get(pk=branch.pk)
-        # Prove that no attempt is made to update descendants.
-        with self.assertNumQueries(1):
-            # One query:
-            # * Update the root.
-            branch.save()
-
-    def test_no_update_on_resave(self):
-        """Resaving changed Route should only update descendants once."""
-        branch = ChildRouteFactory.create(slug='branch')
-        RouteFactory.create(slug='leaf', parent=branch)
-        branch.slug = 'new_slug'
-        branch.save()
-
-        # Prove that no attempt is made to update descendants.
-        with self.assertNumQueries(1):
-            # One query:
-            # * Update the root.
-            branch.save()
-
-
-class RouteCachesURLOnCreateTest(TestCase):
-    """Make sure Route urls are built correctly on create."""
-    def test_create_root(self):
-        """Root Route should be at the root url."""
-        root = RootRouteFactory.create()
-        self.assertEqual(root.url, '/')
-
-    def test_create_leaf_on_root(self):
-        """Children of the root should be at /<slug>/."""
-        leaf = ChildRouteFactory.create(slug='leaf')
-
-        self.assertEqual(leaf.url, '/leaf/')
-
-    def test_create_child_of_child(self):
-        """Children of children should be at /<parent-slug>/<slug>/."""
-        branch = ChildRouteFactory.create(slug='branch')
-        leaf = RouteFactory.create(slug='leaf', parent=branch)
-
-        self.assertEqual(leaf.url, '/branch/leaf/')
-
-
-class RouteCachesURLOnRenameTest(TestCase):
-    """Make sure Route urls are updated correctly when a slug changes."""
-    def test_rename_leaf(self):
-        """Changing slug on a leaf should update the cached url."""
-        leaf = ChildRouteFactory.create(slug='foo')
-
-        leaf.slug = 'bar'
-        leaf.save()
-
-        self.assertEqual(leaf.url, '/bar/')
-
-    def test_rename_branch(self):
-        """Changing a branch slug should update the child url."""
-        branch = ChildRouteFactory.create(slug='foo')
-        leaf = RouteFactory.create(slug='leaf', parent=branch)
-
-        branch.slug = 'bar'
-        branch.save()
-
-        leaf = Route.objects.get(pk=leaf.pk)
-        self.assertEqual(leaf.url, '/bar/leaf/')
-
-    def test_rename_trunk(self):
-        """Changing a trunk slug should update the grandchild url."""
-        trunk = ChildRouteFactory.create(slug='foo')
-        branch = RouteFactory.create(slug='branch', parent=trunk)
-        leaf = RouteFactory.create(slug='leaf', parent=branch)
-
-        trunk.slug = 'bar'
-        trunk.save()
-
-        leaf = Route.objects.get(pk=leaf.pk)
-        self.assertEqual(leaf.url, '/bar/branch/leaf/')
-
-
-class RouteCachesURLOnMoveTest(TestCase):
-    """Make sure Route urls are updated correctly when moved in the tree."""
-    def test_move_leaf(self):
-        """Moving a leaf onto a new branch should update the cached url."""
-        branch = ChildRouteFactory.create(slug='foo')
-        leaf = RouteFactory.create(slug='leaf', parent=branch)
-
-        new_branch = ChildRouteFactory.create(slug='bar')
-        leaf.parent = new_branch
-        leaf.save()
-
-        self.assertEqual(leaf.url, '/bar/leaf/')
-
-    def test_move_branch(self):
-        """Moving a branch onto a new trunk should update the leaf urls."""
-        trunk = ChildRouteFactory.create(slug='foo')
-        branch = RouteFactory.create(slug='branch', parent=trunk)
-        leaf = RouteFactory.create(slug='leaf', parent=branch)
-
-        new_trunk = ChildRouteFactory.create(slug='bar')
-        branch.parent = new_trunk
-        branch.save()
-
-        leaf = Route.objects.get(pk=leaf.pk)
-        self.assertEqual(leaf.url, '/bar/branch/leaf/')
+            Route.objects.create(url='/')
 
 
 class RouteGetDescendantsTest(TestCase):
@@ -217,10 +76,11 @@ class RouteGetDescendantsTest(TestCase):
         self.assertEqual(descendants, [])
 
     def test_descendants(self):
-        branch = ChildRouteFactory.create()
+        root = RouteFactory.create()
+        branch = ChildRouteFactory.create(parent=root)
 
         with self.assertNumQueries(1):
-            descendants = list(branch.parent.get_descendants())
+            descendants = list(root.get_descendants())
 
         self.assertEqual(descendants, [branch])
 
@@ -282,7 +142,7 @@ class RouteStrTest(TestCase):
     """Make sure that we get something nice when Route is cast to string."""
     def test_root_str(self):
         """A Root Route has a useful string representation."""
-        route = RootRouteFactory.create()
+        route = RouteFactory.create()
 
         self.assertEqual(str(route), 'Route @ /')
 
