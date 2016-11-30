@@ -32,6 +32,8 @@
 
 * `Route.objects.move_branch()` can be used to move a `Route` and its
   descendants to another location.
+* `Route().move_to(new_url, *, move_children)` can be used to move a `Route`
+  and (optionally) it's descendants to another location.
 
 ### Changed
 

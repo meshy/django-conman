@@ -1,6 +1,6 @@
 from unittest import mock
 
-from django.db.utils import IntegrityError
+from django.db import IntegrityError, transaction
 from django.test import TestCase
 from incuna_test_utils.utils import field_names
 
@@ -214,6 +214,77 @@ class RouteHandleTest(TestCase):
 
         expected = route.handler_class(route).handle(request, '/leaf/')
         self.assertEqual(result, expected)
+
+
+class RouteMoveTo(TestCase):
+    """Tests for moving a Route to a new location."""
+    def test_without_children(self):
+        """When move_children is False, children stay put."""
+        branch = RouteFactory.create(url='/old-branch/')
+        leaf = ChildRouteFactory.create(slug='leaf', parent=branch)
+        new_url = '/new-branch/'
+
+        with self.assertNumQueries(1):
+            # UPDATE "routes_route"
+            #    SET "polymorphic_ctype_id" = 1,
+            #        "url" = '/new-branch/'
+            #  WHERE "routes_route"."id" = 42
+            branch.move_to(new_url, move_children=False)
+
+        self.assertEqual(branch.url, new_url)
+        leaf.refresh_from_db()
+        self.assertEqual(leaf.url, '/old-branch/leaf/')
+
+    def test_with_children(self):
+        """When move_children is True, children move too."""
+        parent = RouteFactory.create(url='/old-branch/')
+        child = ChildRouteFactory.create(slug='leaf', parent=parent)
+        new_url = '/new-branch/'
+
+        with self.assertNumQueries(1):
+            # UPDATE "routes_route"
+            #    SET "url" = CONCAT('/new-branch/', SUBSTRING("routes_route"."url", 13))
+            #  WHERE "routes_route"."url"::text LIKE '/old-branch/%'
+            parent.move_to(new_url, move_children=True)
+
+        # Because the branch object was available, we'd expect it to update.
+        self.assertEqual(parent.url, new_url)
+        # ...but it's impractical to expect all in-memory objects to update.
+        self.assertEqual(child.url, '/old-branch/leaf/')
+        # Once refreshed from the db, however, leaf should have updated.
+        child.refresh_from_db()
+        self.assertEqual(child.url, '/new-branch/leaf/')
+
+    def test_clashing_without_children(self):
+        """When clashing without children, don't update to new url."""
+        old_url = '/old-url/'
+        parent = RouteFactory.create(url=old_url)
+        child = ChildRouteFactory.create(slug='leaf', parent=parent)
+        occupied_url = '/occupied/'
+        RouteFactory.create(url=occupied_url)
+
+        with transaction.atomic():
+            with self.assertRaises(IntegrityError):
+                parent.move_to(occupied_url, move_children=False)
+
+        self.assertEqual(parent.url, old_url)
+        child.refresh_from_db()
+        self.assertEqual(child.url, '/old-url/leaf/')
+
+    def test_clashing_with_children(self):
+        """When clashing with children, don't update urls."""
+        old_url = '/old-url/'
+        parent = RouteFactory.create(url=old_url)
+        child = ChildRouteFactory.create(slug='leaf', parent=parent)
+        RouteFactory.create(url='/occupied/leaf/')
+
+        with transaction.atomic():
+            with self.assertRaises(IntegrityError):
+                parent.move_to('/occupied/', move_children=True)
+
+        self.assertEqual(parent.url, old_url)
+        child.refresh_from_db()
+        self.assertEqual(child.url, '/old-url/leaf/')
 
 
 class RouteStrTest(TestCase):

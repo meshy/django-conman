@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import IntegrityError, models
 from polymorphic.models import PolymorphicModel
 
 from .handlers import RouteViewHandler
@@ -86,3 +86,27 @@ class Route(PolymorphicModel):
         path = path[len(self.url) - 1:]
         # Deal with the request
         return handler.handle(request, path)
+
+    def move_to(self, new_url, *, move_children):
+        """
+        Move this Route to a new url.
+
+        Requires `move_children` as a keyword argument. If True, all child
+        Routes will be moved along with this parent. Otherwise, when False, any
+        and all children will remain where they are.
+
+        In the event of a clash, an IntegrityError will be raised.
+        """
+        if move_children:
+            # Delegate movement to manager method.
+            Route.objects.move_branch(self.url, new_url)
+            # Update URL of this object before returning.
+            # (No need to save, the DB value has already changed.)
+            self.url = new_url
+        else:
+            old_url, self.url = self.url, new_url
+            try:
+                self.save()
+            except IntegrityError:
+                self.url = old_url
+                raise
