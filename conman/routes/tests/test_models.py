@@ -287,6 +287,175 @@ class RouteMoveTo(TestCase):
         self.assertEqual(child.url, '/old-url/leaf/')
 
 
+class TestRouteSwapWith(TestCase):
+    """Tests for Route.swap_with()."""
+    def test_peer_with_different_children(self):
+        """Test swapping route branches with children."""
+        parent_1 = RouteFactory.create(url='/a/')
+        child_1 = ChildRouteFactory(parent=parent_1, slug='1')
+        parent_2 = RouteFactory.create(url='/b/')
+        child_2 = ChildRouteFactory(parent=parent_2, slug='2')
+
+        with self.assertNumQueries(3):
+            # # Move /a/ aside to a UUID
+            # UPDATE "routes_route"
+            #    SET "url" = CONCAT(
+            #                'a-uuid',
+            #                SUBSTRING("routes_route"."url", 4))
+            #  WHERE "routes_route"."url"::text LIKE '/a/%'
+            #
+            # # Move /b/ to /a/
+            # UPDATE "routes_route"
+            #    SET "url" = CONCAT(
+            #                '/a/',
+            #                SUBSTRING("routes_route"."url", 4))
+            #  WHERE "routes_route"."url"::text LIKE '/b/%'
+            #
+            # # Move original /a/ (now at UUID) to /b/
+            # UPDATE "routes_route"
+            #    SET "url" = CONCAT(
+            #                '/b/',
+            #                SUBSTRING("routes_route"."url", 37))
+            #  WHERE "routes_route"."url"::text LIKE 'a-uuid%'
+            parent_1.swap_with(parent_2, move_children=True)
+
+        # It's unreasonable to expect the children in memory to update.
+        self.assertEqual(child_1.url, '/a/1/')
+        self.assertEqual(child_2.url, '/b/2/')
+
+        # ...but once fetched from the DB, we should see the new URLs.
+        child_1.refresh_from_db()
+        child_2.refresh_from_db()
+        self.assertEqual(child_1.url, '/b/1/')
+        self.assertEqual(child_2.url, '/a/2/')
+
+    def test_peer_with_similar_children(self):
+        """Test swapping route branches where children may clash."""
+        parent_1 = RouteFactory.create(url='/a/')
+        child_1 = ChildRouteFactory(parent=parent_1, slug='child')
+        parent_2 = RouteFactory.create(url='/b/')
+        child_2 = ChildRouteFactory(parent=parent_2, slug='child')
+
+        with self.assertNumQueries(3):
+            # # Move /a/ aside to a UUID
+            # UPDATE "routes_route"
+            #    SET "url" = CONCAT(
+            #                'a-uuid',
+            #                SUBSTRING("routes_route"."url", 4))
+            #  WHERE "routes_route"."url"::text LIKE '/a/%'
+            #
+            # # Move /b/ to /a/
+            # UPDATE "routes_route"
+            #    SET "url" = CONCAT(
+            #                '/a/',
+            #                SUBSTRING("routes_route"."url", 4))
+            #  WHERE "routes_route"."url"::text LIKE '/b/%'
+            #
+            # # Move original /a/ (now at UUID) to /b/
+            # UPDATE "routes_route"
+            #    SET "url" = CONCAT(
+            #                '/b/',
+            #                SUBSTRING("routes_route"."url", 37))
+            #  WHERE "routes_route"."url"::text LIKE 'a-uuid%'
+            parent_1.swap_with(parent_2, move_children=True)
+
+        # Once fetched from the DB, the new URLs should have been applied.
+        child_1.refresh_from_db()
+        child_2.refresh_from_db()
+        self.assertEqual(child_1.url, '/b/child/')
+        self.assertEqual(child_2.url, '/a/child/')
+
+    def test_peer_without_children(self):
+        """Test swapping route branches without children."""
+        route_1 = RouteFactory.create(url='/a/')
+        route_2 = RouteFactory.create(url='/b/')
+
+        with self.assertNumQueries(3):
+            # UPDATE "routes_route"
+            #    SET "polymorphic_ctype_id" = 1,
+            #        "url" = 'a-uuid'
+            #  WHERE "routes_route"."id" = 1
+            #
+            # UPDATE "routes_route"
+            #    SET "polymorphic_ctype_id" = 1,
+            #        "url" = '/a/'
+            #  WHERE "routes_route"."id" = 2
+            #
+            # UPDATE "routes_route"
+            #    SET "polymorphic_ctype_id" = 1,
+            #        "url" = '/b/'
+            #  WHERE "routes_route"."id" = 1
+            route_1.swap_with(route_2, move_children=False)
+
+        # The URLs of the objects in memory have changed.
+        self.assertEqual(route_1.url, '/b/')
+        self.assertEqual(route_2.url, '/a/')
+
+        # The URLs of the objects in the DB have changed.
+        route_1.refresh_from_db()
+        route_2.refresh_from_db()
+        self.assertEqual(route_1.url, '/b/')
+        self.assertEqual(route_2.url, '/a/')
+
+    def test_descendant_with_children(self):
+        """An ancestor cannot swap with a descendant if children are included."""
+        branch = RouteFactory.create(url='/branch/')
+        leaf = ChildRouteFactory.create(parent=branch, slug='leaf')
+
+        msg = 'Cannot move children when swapping ancestors with descendants.'
+        with self.assertNumQueries(0):
+            with self.assertRaisesMessage(ValueError, msg):
+                branch.swap_with(leaf, move_children=True)
+
+        # The URLs of the objects in memory remain unchanged.
+        self.assertEqual(branch.url, '/branch/')
+        self.assertEqual(leaf.url, '/branch/leaf/')
+
+    def test_descendant_without_children(self):
+        """An ancestor can swap with a descendant if children are excluded."""
+        branch = RouteFactory.create(url='/branch/')
+        leaf = ChildRouteFactory.create(parent=branch, slug='leaf')
+
+        with self.assertNumQueries(3):
+            # UPDATE "routes_route"
+            #    SET "polymorphic_ctype_id" = 1,
+            #        "url" = 'a-uuid'
+            #  WHERE "routes_route"."id" = 1
+            #
+            # UPDATE "routes_route"
+            #    SET "polymorphic_ctype_id" = 1,
+            #        "url" = '/branch/'
+            #  WHERE "routes_route"."id" = 2
+            #
+            # UPDATE "routes_route"
+            #    SET "polymorphic_ctype_id" = 1,
+            #        "url" = '/branch/leaf/'
+            #  WHERE "routes_route"."id" = 1
+            branch.swap_with(leaf, move_children=False)
+
+        # The URLs of the objects in memory have changed.
+        self.assertEqual(branch.url, '/branch/leaf/')
+        self.assertEqual(leaf.url, '/branch/')
+
+        # The URLs of the objects in the DB have changed.
+        branch.refresh_from_db()
+        leaf.refresh_from_db()
+        self.assertEqual(branch.url, '/branch/leaf/')
+        self.assertEqual(leaf.url, '/branch/')
+
+    def test_unsaved_routes(self):
+        """If either route is unsaved, raise an exception."""
+        route_1 = RouteFactory.create(url='/a/')
+        route_2 = RouteFactory.build(url='/b/')
+
+        msg = 'Cannot move unsaved Routes.'
+        with self.assertNumQueries(0):
+            with self.assertRaisesMessage(ValueError, msg):
+                route_1.swap_with(route_2, move_children=True)
+            with self.assertRaisesMessage(ValueError, msg):
+                route_2.swap_with(route_1, move_children=True)
+
+
 class RouteStrTest(TestCase):
     """Make sure that we get something nice when Route is cast to string."""
     def test_root_str(self):

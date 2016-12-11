@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import IntegrityError, models
 from polymorphic.models import PolymorphicModel
 
@@ -110,3 +112,44 @@ class Route(PolymorphicModel):
             except IntegrityError:
                 self.url = old_url
                 raise
+
+    def swap_with(self, other_route, *, move_children):
+        """
+        Swap this Route's URL with that of another Route.
+
+        Requires `move_children` as a keyword argument. When `True`, all
+        descendant routes will be moved along with the parents. When `False`,
+        they will remain where they are, and only the parents will be swapped.
+
+        When one of the `Routes` is a descendant of the other, `move_children`
+        must be `False`.
+
+        If DEFERRED unique contrstraints get supported in django, we might
+        benefit from revisiting how this works (ie: dropping the UUID).
+
+        See https://code.djangoproject.com/ticket/20581.
+        """
+        if not (self.pk and other_route.pk):
+            raise ValueError('Cannot move unsaved Routes.')
+
+        urls = sorted((self.url, other_route.url))
+        if move_children and urls[1].startswith(urls[0]):
+            msg = 'Cannot move children when swapping ancestors with descendants.'
+            raise ValueError(msg)
+
+        tmp_path = str(uuid.uuid4())
+        if move_children:
+            # Delegate movement to manager method. A UUID is used as an
+            # intermediary URL to avoid unique constraints.
+            Route.objects.move_branch(self.url, tmp_path)
+            Route.objects.move_branch(other_route.url, self.url)
+            Route.objects.move_branch(tmp_path, other_route.url)
+            # Update URL of these objects before returning.
+            # (No need to save, the DB value has already changed.)
+            other_route.url, self.url = self.url, other_route.url
+        else:
+            original_url, self.url = self.url, tmp_path
+            self.save()
+            self.url, other_route.url = other_route.url, original_url
+            other_route.save()
+            self.save()
