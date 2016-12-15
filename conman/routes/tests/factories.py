@@ -20,6 +20,8 @@ class ChildRouteFactory(RouteFactory):
 
         base = '/' if parent is None else parent.url
         if slug is None:
+            if cls._counter is None:
+                cls._setup_counter()
             slug = 'slug{}'.format(cls._counter.seq)
         kwargs['url'] = base + slug + '/'
 
