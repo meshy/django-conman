@@ -4,6 +4,7 @@
 
 ### Backwards incompatible
 
+* Removed `conman.pages` app.
 * Removed `slug` and `parent` fields.
 * Removed dependency upon `django-polymorphic-tree`.
 * Destroyed and recreated migrations.
