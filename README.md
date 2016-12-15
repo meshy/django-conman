@@ -15,7 +15,6 @@ Tested against:
 
 Requires (should be automatically installed if using `pip`):
 - `django-polymorphic`
-- `django-sirtrevor`
 
 ## Install
 

@@ -23,6 +23,5 @@ setup(
     url='https://github.com/meshy/django-conman/',
     install_requires=[
         'django-polymorphic>=0.8.1,<0.9',
-        'django-sirtrevor>=0.2.4,<0.3',
     ],
 )
