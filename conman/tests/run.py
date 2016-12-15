@@ -16,7 +16,6 @@ settings.configure(
     DEFAULT_FILE_STORAGE='inmemorystorage.InMemoryStorage',
     INSTALLED_APPS=(
         'conman.routes',
-        'conman.pages',
         'conman.redirects',
 
         'polymorphic',
