@@ -24,7 +24,6 @@ class RouteTest(TestCase):
         expected = (
             'id',
             'routeredirect',
-            'page',
 
             # Incoming foreign keys from subclasses in tests
             'routewithhandler',
