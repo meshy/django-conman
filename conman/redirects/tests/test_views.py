@@ -22,7 +22,7 @@ class TestRouteRedirectView(RequestTestCase):
 
     def test_permanent(self):
         """A permanent redirect has status_code 301."""
-        route = ChildRouteRedirectFactory.create(permanent=True)
+        route = ChildRouteRedirectFactory.build(permanent=True)
         view = self.get_view()
         response = view(self.create_request(), route=route)
 
@@ -30,7 +30,7 @@ class TestRouteRedirectView(RequestTestCase):
 
     def test_temporary(self):
         """A temporary redirect has status_code 302."""
-        route = ChildRouteRedirectFactory.create(permanent=False)
+        route = ChildRouteRedirectFactory.build(permanent=False)
         view = self.get_view()
         response = view(self.create_request(), route=route)
 
@@ -58,7 +58,7 @@ class TestURLRedirectView(RequestTestCase):
     def test_target(self):
         """URLRedirect redirects to the target url."""
         target = 'https://example.com/'
-        route = URLRedirectFactory.create(target=target)
+        route = URLRedirectFactory.build(target=target)
         view = self.get_view()
         response = view(self.create_request(), route=route)
 
@@ -66,7 +66,7 @@ class TestURLRedirectView(RequestTestCase):
 
     def test_permanent(self):
         """A permanent redirect has status_code 301."""
-        route = URLRedirectFactory.create(permanent=True)
+        route = URLRedirectFactory.build(permanent=True)
         view = self.get_view()
         response = view(self.create_request(), route=route)
 
@@ -74,7 +74,7 @@ class TestURLRedirectView(RequestTestCase):
 
     def test_temporary(self):
         """A temporary redirect has status_code 302."""
-        route = URLRedirectFactory.create(permanent=False)
+        route = URLRedirectFactory.build(permanent=False)
         view = self.get_view()
         response = view(self.create_request(), route=route)
 
