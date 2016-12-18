@@ -19,6 +19,9 @@
   `view` attribute of the `Route`.
 * Added `URLConfHandler`. A handler that resolves the provided `path` to a view
   based on the `urlconf` attribute of the `Route`.
+* `URLRedirect` has been added to `routes.redirects`. This model can be used to
+  represent a URL that redirects to another URL (that is not represented by a
+  `Route`). One might expect this to be a URL on an external site.
 
 ### Changed
 
