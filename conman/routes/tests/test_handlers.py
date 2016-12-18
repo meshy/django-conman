@@ -4,6 +4,7 @@ from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.test import TestCase
 from django.views.generic import View
 
+from .urls import dummy_view
 from ..handlers import BaseHandler, SimpleHandler
 
 
@@ -48,33 +49,31 @@ class BaseHandlerHandleTest(TestCase):
     def tearDown(self):
         """Stop tests leaking into each other through the url cache."""
         clear_url_caches()
+        dummy_view.reset_mock()
 
     def test_handle_basic(self):
         """Show that url resolving works at the root of the urlconf."""
-        with mock.patch(self.view) as view:
-            response = self.handler.handle(self.request, '/')
+        response = self.handler.handle(self.request, '/')
 
-        view.assert_called_with(self.request, route=self.route)
-        self.assertEqual(response, view(self.request, route=self.route))
+        dummy_view.assert_called_with(self.request, route=self.route)
+        self.assertEqual(response, dummy_view(self.request, route=self.route))
 
     def test_handle_slug(self):
         """Show that url resolving works with slugs."""
         slug = 'slug'
-        with mock.patch(self.view) as view:
-            response = self.handler.handle(self.request, '/slug/')
+        response = self.handler.handle(self.request, '/slug/')
 
-        view.assert_called_with(self.request, route=self.route, slug=slug)
+        dummy_view.assert_called_with(self.request, route=self.route, slug=slug)
 
-        expected = view(self.request, route=self.route, slug=slug)
+        expected = dummy_view(self.request, route=self.route, slug=slug)
         self.assertEqual(response, expected)
 
     def test_handle_no_url_match(self):
         """Show that an error is thrown when the url does not match."""
         with self.assertRaises(Resolver404):
-            with mock.patch(self.view) as view:
-                self.handler.handle(self.request, '/no/match/')
+            self.handler.handle(self.request, '/no/match/')
 
-        self.assertFalse(view.called)
+        self.assertFalse(dummy_view.called)
 
 
 class SimpleHandlerHandleTest(TestCase):
