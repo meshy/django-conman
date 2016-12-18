@@ -17,6 +17,7 @@ class RouteRedirectView(RedirectView):
 
 
 class URLRedirectView(RedirectView):
+    """Redirect to a URLRedirect Route's target URL."""
     permanent = False  # Set to django 1.9's default to avoid RemovedInDjango19Warning
 
     def get_redirect_url(self, *args, **kwargs):
