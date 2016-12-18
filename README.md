@@ -10,8 +10,8 @@ Sponsored by [Incuna](http://incuna.com/).
 ## Requirements
 
 Tested against:
-- Python 3.4
-- Django 1.8
+- Python 3.4, 3.5
+- Django >=1.8
 
 Requires (should be automatically installed if using `pip`):
 - `django-polymorphic`

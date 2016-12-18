@@ -9,6 +9,10 @@
 * Removed dependency upon `django-polymorphic-tree`.
 * Destroyed and recreated migrations.
 
+### Added
+
+* Added support for django 1.10 (thanks to @Ian-Foote).
+
 ### Changed
 
 * `url` is now editable, rather than generated in `Route.save()`.
