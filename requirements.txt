@@ -1,12 +1,12 @@
 -e .
-colour-runner==0.0.4
-coverage==4.0.3
-dj-database-url==0.3
-django==1.8.3
-factory_boy==2.5.2
-flake8==2.2.3
-flake8-docstrings==0.2.1
+colour-runner==0.0.5
+coverage==4.2
+dj-database-url==0.4.1
+django~=1.10.4
+factory_boy==2.8.1
+flake8==2.2.5
+flake8-docstrings==0.2.8
 flake8-import-order==0.5.1
-incuna-test-utils==6.3.1
-mkdocs==0.14.0
-psycopg2==2.6.1
+incuna-test-utils==6.6.0
+mkdocs==0.16.0
+psycopg2==2.6.2
