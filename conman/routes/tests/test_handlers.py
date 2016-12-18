@@ -1,6 +1,7 @@
 from unittest import mock
 
 from django.core.urlresolvers import clear_url_caches, Resolver404
+from django.db.models import Manager
 from django.test import TestCase
 
 from .urls import dummy_view
@@ -65,6 +66,7 @@ class URLConfHandlerHandleTest(TestCase):
         class URLConfRoute(Route):
             handler = URLConfHandler.path()
             urlconf = 'conman.routes.tests.urls'
+            base_objects = Manager()
 
         self.route = URLConfRoute()
         self.request = mock.Mock()
@@ -107,6 +109,7 @@ class RouteViewHandlerHandleTest(TestCase):
         """Create a route, request, and view for use in this test."""
         class MockViewRoute(Route):
             view = mock.MagicMock()
+            base_objects = Manager()
 
         self.route = MockViewRoute()
         self.request = mock.Mock()

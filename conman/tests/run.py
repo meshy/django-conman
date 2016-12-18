@@ -26,7 +26,7 @@ settings.configure(
         'django.contrib.sessions',
         'django.contrib.sites',
     ),
-    MIDDLEWARE_CLASSES=(),
+    MIDDLEWARE=(),
     PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
     ROOT_URLCONF='conman.tests.urls',
     SITE_ID=1,

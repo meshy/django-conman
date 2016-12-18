@@ -12,10 +12,12 @@ class RouteRedirect(Route):
 
     This model holds the data required to make that connection.
     """
-    target = models.ForeignKey('routes.Route', related_name='+')
+    target = models.ForeignKey('routes.Route', related_name='+', on_delete=models.CASCADE)
     permanent = models.BooleanField(default=False)
 
     view = views.RouteRedirectView.as_view()
+
+    base_objects = models.Manager()
 
     def clean(self):
         """Forbid setting target equal to self."""
@@ -35,3 +37,5 @@ class URLRedirect(Route):
     permanent = models.BooleanField(default=False)
 
     view = views.URLRedirectView.as_view()
+
+    base_objects = models.Manager()

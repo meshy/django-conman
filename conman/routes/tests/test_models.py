@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django.db.models import Manager
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.views.generic import View
@@ -167,6 +168,7 @@ class RouteViewBindingTest(TestCase):
 
         class FunctionViewRoute(Route):
             view = unbound_function
+            base_objects = Manager()
 
         route = FunctionViewRoute()
         request = mock.Mock()
@@ -181,6 +183,7 @@ class RouteViewBindingTest(TestCase):
 
         class ClassViewRoute(Route):
             view = TestView.as_view()
+            base_objects = Manager()
 
         route = ClassViewRoute()
         request = mock.Mock()
