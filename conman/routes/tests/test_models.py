@@ -59,6 +59,7 @@ class RouteGetDescendantsTest(TestCase):
             ORDER BY "routes_route"."url" ASC
     """
     def test_just_created(self):
+        """Before object saved, avoid DB hits, and assume no descendants."""
         branch = RouteFactory.build()
 
         with self.assertNumQueries(0):
@@ -68,6 +69,7 @@ class RouteGetDescendantsTest(TestCase):
         self.assertEqual(descendants, [])
 
     def test_no_descendants(self):
+        """When an Route has no descendants, return no objects."""
         branch = ChildRouteFactory.create()
 
         with self.assertNumQueries(1):
@@ -76,6 +78,7 @@ class RouteGetDescendantsTest(TestCase):
         self.assertEqual(descendants, [])
 
     def test_descendants(self):
+        """When a Route has descendants, return them."""
         root = RouteFactory.create()
         branch = ChildRouteFactory.create(parent=root)
 
