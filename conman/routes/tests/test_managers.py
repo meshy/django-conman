@@ -10,19 +10,20 @@ class RouteManagerBestMatchForPathTest(TestCase):
 
     All of these tests assert use of only one query:
         * Get the best Route based on url:
-            SELECT
-                (LENGTH(url)) AS "length",
-                <other fields>
-            FROM "routes_route"
-            WHERE
-                "routes_route"."url" IN (
-                    '/',
-                    '/url/',
-                    '/url/split/',
-                    '/url/split/into/',
-                    '/url/split/into/bits/')
+
+              SELECT "routes_route"."id",
+                     "routes_route"."polymorphic_ctype_id",
+                     "routes_route"."url",
+                     LENGTH("routes_route"."url") AS "length"
+                FROM "routes_route"
+               WHERE "routes_route"."url"
+                  IN ('/',
+                      '/url/',
+                      '/url/split/',
+                      '/url/split/into/',
+                      '/url/split/into/bits/')
             ORDER BY "length" DESC
-            LIMIT 1
+               LIMIT 1
     """
     def test_get_root(self):
         """Check a Root Route matches a simple '/' path."""
@@ -68,19 +69,19 @@ class RouteManagerBestMatchForBrokenPathTest(TestCase):
 
     All of these tests assert use of only one query:
         * Get the best Route based on url:
-            SELECT
-                (LENGTH(url)) AS "length",
-                <other fields>
-            FROM "routes_route"
-            WHERE
-                "routes_route"."url" IN (
-                    '/',
-                    '/url/',
-                    '/url/split/',
-                    '/url/split/into/',
-                    '/url/split/into/bits/')
+              SELECT "routes_route"."id",
+                     "routes_route"."polymorphic_ctype_id",
+                     "routes_route"."url",
+                     LENGTH("routes_route"."url") AS "length"
+                FROM "routes_route"
+               WHERE "routes_route"."url"
+                  IN ('/',
+                      '/url/',
+                      '/url/split/',
+                      '/url/split/into/',
+                      '/url/split/into/bits/')
             ORDER BY "length" DESC
-            LIMIT 1
+               LIMIT 1
     """
     def test_throw_error_without_match(self):
         """Check Route.DoesNotExist is raised if no Root Route exists."""

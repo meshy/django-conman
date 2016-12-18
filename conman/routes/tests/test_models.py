@@ -50,12 +50,13 @@ class RouteGetDescendantsTest(TestCase):
     All of these tests assert use of only one query:
         * Get the decendants of a Route:
 
-            SELECT * FROM "routes_route"
-            WHERE (
-                NOT ("routes_route"."id" = <id>)
-                AND "routes_route"."url"::text LIKE '<url>%'
-            )
-            ORDER BY "routes_route.url" DESC
+              SELECT "routes_route"."id",
+                     "routes_route"."polymorphic_ctype_id",
+                     "routes_route"."url"
+                FROM "routes_route"
+               WHERE (NOT ("routes_route"."id" = 25)
+                      AND "routes_route"."url"::text LIKE '/slug25/%')
+            ORDER BY "routes_route"."url" ASC
     """
     def test_just_created(self):
         branch = RouteFactory.build()
