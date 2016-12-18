@@ -1,6 +1,6 @@
 import factory
 
-from conman.routes.tests.factories import ChildRouteFactory
+from conman.routes.tests.factories import ChildRouteFactory, RouteFactory
 from .. import models
 
 
@@ -10,3 +10,11 @@ class ChildRouteRedirectFactory(ChildRouteFactory):
 
     class Meta:
         model = models.RouteRedirect
+
+
+class URLRedirectFactory(RouteFactory):
+    """Create a URLRedirect with a target url."""
+    target = factory.Sequence('https://example.com/{}'.format)
+
+    class Meta:
+        model = models.URLRedirect

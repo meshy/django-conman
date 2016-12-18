@@ -3,7 +3,7 @@ from django.test import TestCase
 from conman.compat import DJANGO_LT_19
 from conman.routes.tests.factories import ChildRouteFactory
 from conman.tests.utils import RequestTestCase
-from .factories import ChildRouteRedirectFactory
+from .factories import ChildRouteRedirectFactory, URLRedirectFactory
 from .. import views
 
 
@@ -49,3 +49,33 @@ class TestRouteRedirectViewIntegration(TestCase):
         if DJANGO_LT_19:
             expected = 'http://testserver' + expected
         self.assertEqual(response['Location'], expected)
+
+
+class TestURLRedirectView(RequestTestCase):
+    """Verify behaviour of URLRedirectView."""
+    view = views.URLRedirectView
+
+    def test_target(self):
+        """URLRedirect redirects to the target url."""
+        target = 'https://example.com/'
+        route = URLRedirectFactory.create(target=target)
+        view = self.get_view()
+        response = view(self.create_request(), route=route)
+
+        self.assertEqual(response['Location'], target)
+
+    def test_permanent(self):
+        """A permanent redirect has status_code 301."""
+        route = URLRedirectFactory.create(permanent=True)
+        view = self.get_view()
+        response = view(self.create_request(), route=route)
+
+        self.assertEqual(response.status_code, 301)
+
+    def test_temporary(self):
+        """A temporary redirect has status_code 302."""
+        route = URLRedirectFactory.create(permanent=False)
+        view = self.get_view()
+        response = view(self.create_request(), route=route)
+
+        self.assertEqual(response.status_code, 302)
