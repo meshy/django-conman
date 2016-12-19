@@ -2,6 +2,7 @@ from unittest import mock
 
 from django.db.utils import IntegrityError
 from django.test import TestCase
+from django.views.generic import View
 from incuna_test_utils.utils import field_names
 
 from .factories import ChildRouteFactory, RouteFactory
@@ -26,8 +27,8 @@ class RouteTest(TestCase):
             'routeredirect',
 
             # Incoming foreign keys from subclasses in tests
-            'routewithhandler',
-            'routewithouthandler',
+            'mockviewroute',
+            'urlconfroute',
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)
         self.assertCountEqual(fields, expected)
@@ -156,29 +157,32 @@ class RouteStrTest(TestCase):
         self.assertEqual(str(leaf), 'Route @ /leaf/')
 
 
-class RouteCheckTest(TestCase):
-    """Ensure that Route.check does useful validation."""
-    def test_route_class(self):
-        """The Route class does not require a handler attribute."""
-        errors = Route.check()
-        self.assertEqual(errors, [])
+class RouteViewBindingTest(TestCase):
+    """Views should not unexpectedly "bind" to Route subclasses."""
+    def test_unbound_function(self):
+        """Make sure that the handler is not bound to self on the view."""
+        def unbound_function(request, **kwargs):
+            return request
 
-    def test_subclass_with_handler(self):
-        """A subclass of Route must have a handler attribute."""
-        class RouteWithHandler(Route):
-            handler = 'has.been.set'
+        class FunctionViewRoute(Route):
+            view = unbound_function
 
-        errors = RouteWithHandler.check()
-        self.assertEqual(errors, [])
+        route = FunctionViewRoute()
+        request = mock.Mock()
+        response = route.view(request)
+        self.assertIs(response, request)
 
-    def test_subclass_without_handler(self):
-        """A subclass of Route without a handler fails Route.check."""
-        class RouteWithoutHandler(Route):
-            pass  # handler not set
+    def test_bound_function(self):
+        """Make sure that class based views get the expected args."""
+        class TestView(View):
+            def dispatch(self, request, route=None):
+                return self, request
 
-        errors = RouteWithoutHandler.check()
-        self.assertEqual(len(errors), 1)
-        error = errors[0]
-        self.assertEqual(error.obj, RouteWithoutHandler)
-        expected_msg = 'Route subclasses must have a `handler` attribute'
-        self.assertEqual(error.msg, expected_msg)
+        class ClassViewRoute(Route):
+            view = TestView.as_view()
+
+        route = ClassViewRoute()
+        request = mock.Mock()
+        self_arg, request_arg = route.view(request)
+        self.assertIsInstance(self_arg, TestView)
+        self.assertIs(request_arg, request)

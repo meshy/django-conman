@@ -1,7 +1,8 @@
-from django.core import checks
 from django.db import models
+from polymorphic.base import PolymorphicModelBase
 from polymorphic.models import PolymorphicModel
 
+from .handlers import RouteViewHandler
 from .managers import RouteManager
 from .utils import import_from_dotted_path
 from .validators import (
@@ -14,7 +15,25 @@ from .validators import (
 )
 
 
-class Route(PolymorphicModel):
+class UnboundViewMeta(PolymorphicModelBase):
+    """
+    Metaclass that wraps the `view` attribute with `staticmethod`.
+
+    This ensures that the view does not bind to the class unintentionally.
+    """
+    def __new__(cls, name, bases, attrs):
+        """
+        Create the new class.
+
+        Ensure any `view` attribute is a staticmethod is unbound to the class.
+        """
+        view = attrs.get('view')
+        if view:
+            attrs['view'] = staticmethod(view)
+        return super().__new__(cls, name, bases, attrs)
+
+
+class Route(PolymorphicModel, metaclass=UnboundViewMeta):
     """A Route in a tree of url endpoints."""
     url = models.TextField(
         db_index=True,
@@ -30,6 +49,7 @@ class Route(PolymorphicModel):
     )
 
     objects = RouteManager()
+    handler = RouteViewHandler.path()
 
     def __str__(self):
         """Display a Route's class and url."""
@@ -73,15 +93,3 @@ class Route(PolymorphicModel):
         path = path[len(self.url) - 1:]
         # Deal with the request
         return handler.handle(request, path)
-
-    @classmethod
-    def check(cls, **kwargs):
-        """Check that the `handler` attribute exists."""
-        errors = super().check(**kwargs)
-        if cls != Route and not hasattr(cls, 'handler'):
-            errors.append(checks.Error(
-                'Route subclasses must have a `handler` attribute',
-                hint='`handler` must resolve to a dotted python path',
-                obj=cls,
-            ))
-        return errors

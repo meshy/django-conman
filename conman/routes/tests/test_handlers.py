@@ -2,10 +2,10 @@ from unittest import mock
 
 from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.test import TestCase
-from django.views.generic import View
 
 from .urls import dummy_view
-from ..handlers import BaseHandler, SimpleHandler
+from ..handlers import BaseHandler, RouteViewHandler, URLConfHandler
+from ..models import Route
 
 
 class BaseHandlerPathTest(TestCase):
@@ -34,16 +34,41 @@ class BaseHandlerInitTest(TestCase):
         self.assertEqual(handler.route, route)
 
 
-class BaseHandlerHandleTest(TestCase):
-    """Test BaseHandler.handle()."""
+class SubclassHandleTest(TestCase):
+    """Test a subclass of BaseHandler's `.handle()` method."""
+    def test_not_implemented(self):
+        """An error is raised when `handle()` is not implemented."""
+        class TestHandler(BaseHandler):
+            pass
+
+        msg = 'Subclasses of `BaseHandler` must implement `handle()`.'
+        with self.assertRaisesMessage(NotImplementedError, msg):
+            # Arguments are unused, so using None here.
+            TestHandler(None).handle(None, None)
+
+    def test_implemented(self):
+        """No error is raised when `handle()` is implemented."""
+        expected = 'a webpage'
+
+        class TestHandler(BaseHandler):
+            def handle(self, request, path):
+                return expected
+
+        # Arguments are unused, so using None here.
+        self.assertEqual(TestHandler(None).handle(None, None), expected)
+
+
+class URLConfHandlerHandleTest(TestCase):
+    """Test URLConfHandler.handle()."""
     def setUp(self):
         """Create a Handler, route, request and view for use in these tests."""
-        class TestHandler(BaseHandler):
+        class URLConfRoute(Route):
+            handler = URLConfHandler.path()
             urlconf = 'conman.routes.tests.urls'
 
-        self.route = mock.Mock()
+        self.route = URLConfRoute()
         self.request = mock.Mock()
-        self.handler = TestHandler(self.route)
+        self.handler = URLConfHandler(self.route)
         self.view = 'conman.routes.tests.urls.dummy_view'
 
     def tearDown(self):
@@ -76,25 +101,24 @@ class BaseHandlerHandleTest(TestCase):
         self.assertFalse(dummy_view.called)
 
 
-class SimpleHandlerHandleTest(TestCase):
-    """Test SimpleHandler.handle()."""
+class RouteViewHandlerHandleTest(TestCase):
+    """Test RouteViewHandler.handle()."""
     def setUp(self):
-        """Create a Handler, route, request, and view for use in this test."""
-        class TestHandler(SimpleHandler):
+        """Create a route, request, and view for use in this test."""
+        class MockViewRoute(Route):
             view = mock.MagicMock()
 
-        self.route = mock.Mock()
+        self.route = MockViewRoute()
         self.request = mock.Mock()
-        self.handler = TestHandler(self.route)
-        self.route.get_handler.return_value = self.handler
-        self.view = TestHandler.view
+        self.handler = RouteViewHandler(self.route)
+        self.view = MockViewRoute.view
 
     def tearDown(self):
         """Stop tests leaking into each other through the url cache."""
         clear_url_caches()
 
     def test_handle_basic(self):
-        """Show that SimpleHandler.view is used to process the request."""
+        """Show that Route.view is used to process the request."""
         response = self.handler.handle(self.request, '/')
 
         self.view.assert_called_with(self.request, route=self.route)
@@ -114,34 +138,3 @@ class SimpleHandlerHandleTest(TestCase):
             self.handler.handle(self.request, '/42/')
 
         self.assertFalse(self.view.called)
-
-
-class SimpleHandlerViewBindingTest(TestCase):
-    """Views should not unexpectedly "bind" to SimpleHandler subclasses."""
-    def test_unbound_function(self):
-        """Make sure that the handler is not bound to self on the view."""
-        def unbound_function(request, **kwargs):
-            return request
-
-        class TestHandler(SimpleHandler):
-            view = unbound_function
-
-        handler = TestHandler(None)  # First arg here not used
-        request = mock.Mock()
-        response = handler.view(request)
-        self.assertIs(response, request)
-
-    def test_bound_function(self):
-        """Make sure that class based views get the expected args."""
-        class TestView(View):
-            def dispatch(self, request, route=None):
-                return self, request
-
-        class TestHandler(SimpleHandler):
-            view = TestView.as_view()
-
-        handler = TestHandler(None)  # First arg here not used
-        request = mock.Mock()
-        self_arg, request_arg = handler.view(request)
-        self.assertIsInstance(self_arg, TestView)
-        self.assertIs(request_arg, request)

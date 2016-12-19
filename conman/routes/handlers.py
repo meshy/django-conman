@@ -1,15 +1,11 @@
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, Resolver404
 
 
 class BaseHandler:
     """
     Abstract base class for `Route` handlers.
 
-    Subclasses should define a `urlconf` property as a dotted path. This will
-    be used to resolve a view when handling requests.
-
-    Views referenced in the `urlconf` will receive `route` as a kwarg, as
-    well as the other args and kwargs they would expect given their urlpattern.
+    Subclasses should define `handle`.
     """
     @classmethod
     def path(cls):
@@ -21,6 +17,22 @@ class BaseHandler:
         self.route = route
 
     def handle(self, request, path):
+        """Raise an error if a subclass calls handle without defining how.."""
+        msg = 'Subclasses of `BaseHandler` must implement `handle()`.'
+        raise NotImplementedError(msg)
+
+
+class URLConfHandler(BaseHandler):
+    """
+    Abstract handler for Routes that resolve views through a urlconf.
+
+    Routes using this handler should define a `urlconf` attribute as a dotted
+    path. This will be used to resolve a view when handling requests.
+
+    Views referenced in the `urlconf` will receive `route`, as well as the args
+    and kwargs they would expect given their urlpattern.
+    """
+    def handle(self, request, path):
         """
         Resolve `path` to a view, and get it to handle the `request`.
 
@@ -28,29 +40,31 @@ class BaseHandler:
 
         Raises `django.core.urlresolvers.Resolver404` if `path` isn't found.
         """
-        view, args, kwargs = resolve(path, urlconf=self.urlconf)
+        view, args, kwargs = resolve(path, urlconf=self.route.urlconf)
         return view(request, *args, route=self.route, **kwargs)
 
 
-class UnboundViewMeta(type):
+class RouteViewHandler(BaseHandler):
     """
-    Metaclass that wraps the `view` attribute with `staticmethod`.
+    Delegates handling to the `view` attribute of the assocated Route.
 
-    This ensures that the method does not bind to the class unintentionally.
+    Routes using this handler should define a `view` attribute. This will be
+    used to handle requests.
+
+    Views will receive `route` as a keyword arg.
     """
-    def __new__(cls, name, bases, attrs):
-        """Create the new class with a staticmethod view attribute."""
-        view = attrs.get('view')
-        if view:
-            attrs['view'] = staticmethod(view)
-        return super().__new__(cls, name, bases, attrs)
+    def handle(self, request, path):
+        """
+        Handle the request using the `view` attribute of the associated route.
 
+        Returns the `HttpResponse` returned by the view.
 
-class SimpleHandler(BaseHandler, metaclass=UnboundViewMeta):
-    """
-    Abstract handler for Routes that have one url: `/` relative to the Route.
-
-    Subclasses should define a view on the class as `view`. This will be
-    called if the `path` passed to `handle` is `/`.
-    """
-    urlconf = 'conman.routes.simple.urls'
+        `path` is trimmed by `Route.handle()` before it is passed in.
+        This means that when `path != '/'`, the url of the request does not
+        correctly match that of the `Route`. In this case, we will raise
+        `django.core.urlresolvers.Resolver404`.
+        """
+        if path != '/':
+            raise Resolver404
+        view = self.route.view
+        return view(request, route=self.route)
