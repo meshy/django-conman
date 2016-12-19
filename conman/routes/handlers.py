@@ -48,6 +48,9 @@ class RouteViewHandler(BaseHandler):
     """
     Delegates handling to the `view` attribute of the assocated Route.
 
+    Routes using this handler should define a `view` attribute. This will be
+    used to handle requests.
+
     Views will receive `route` as a keyword arg.
     """
     def handle(self, request, path):
@@ -57,7 +60,6 @@ class RouteViewHandler(BaseHandler):
         Returns the `HttpResponse` returned by the view.
 
         Raises `django.core.urlresolvers.Resolver404` if `path` isn't '/'.
-
         """
         if path != '/':
             raise Resolver404
