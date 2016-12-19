@@ -59,7 +59,10 @@ class RouteViewHandler(BaseHandler):
 
         Returns the `HttpResponse` returned by the view.
 
-        Raises `django.core.urlresolvers.Resolver404` if `path` isn't '/'.
+        `path` is trimmed by `Route.handle()` before it is passed in.
+        This means that when `path != '/'`, the url of the request does not
+        correctly match that of the `Route`. In this case, we will raise
+        `django.core.urlresolvers.Resolver404`.
         """
         if path != '/':
             raise Resolver404
