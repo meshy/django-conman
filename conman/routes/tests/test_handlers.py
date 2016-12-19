@@ -9,21 +9,6 @@ from ..handlers import BaseHandler, RouteViewHandler, URLConfHandler
 from ..models import Route
 
 
-class BaseHandlerPathTest(TestCase):
-    """Test BaseHandler.path()."""
-    def test_path(self):
-        """Test directly on base class."""
-        base_handler_path = 'conman.routes.handlers.BaseHandler'
-        self.assertEqual(BaseHandler.path(), base_handler_path)
-
-    def test_path_on_subclass(self):
-        """Test on subclass."""
-        class TestHandler(BaseHandler):
-            __module__ = 'does_not_exist'
-
-        self.assertEqual(TestHandler.path(), 'does_not_exist.TestHandler')
-
-
 class BaseHandlerInitTest(TestCase):
     """Test BaseHandler.__init__()."""
     def test_init(self):
@@ -64,7 +49,7 @@ class URLConfHandlerHandleTest(TestCase):
     def setUp(self):
         """Create a Handler, route, request and view for use in these tests."""
         class URLConfRoute(Route):
-            handler = URLConfHandler.path()
+            handler_class = URLConfHandler
             urlconf = 'conman.routes.tests.urls'
             base_objects = Manager()
 

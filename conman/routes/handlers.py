@@ -7,11 +7,6 @@ class BaseHandler:
 
     Subclasses should define `handle`.
     """
-    @classmethod
-    def path(cls):
-        """Get dotted-path of this class."""
-        return '{}.{}'.format(cls.__module__, cls.__name__)
-
     def __init__(self, route):
         """Store the Route so that we know what we're handling."""
         self.route = route

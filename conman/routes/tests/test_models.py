@@ -91,34 +91,27 @@ class RouteGetDescendantsTest(TestCase):
         self.assertEqual(descendants, [branch])
 
 
-class RouteGetHandlerClassTest(TestCase):
-    """Check the behaviour of Route().get_handler_class()."""
-    def test_get_handler_class(self):
-        """A Route's handler is looked up from the handler's path."""
-        handler_class = handlers.BaseHandler
-        route = RouteFactory.build()
-        route.handler = handler_class.path()
-
-        self.assertEqual(route.get_handler_class(), handler_class)
-
-
 class RouteGetHandlerTest(TestCase):
     """Make sure that Route.get_handler acts as expected."""
     def test_get_handler(self):
         """We expect an instance of handler instanciated with a Route."""
-        handler_class = handlers.BaseHandler
+        class DummyHandler(handlers.BaseHandler):
+            pass
+
         route = RouteFactory.build()
-        route.handler = handler_class.path()
+        route.handler_class = DummyHandler
 
         handler = route.get_handler()
-        self.assertIsInstance(handler, handler_class)
+        self.assertIsInstance(handler, DummyHandler)
         self.assertEqual(handler.route, route)
 
     def test_get_handler_again(self):
         """Make sure we always get the same instance of a handler on a Route."""
-        handler_class = handlers.BaseHandler
+        class DummyHandler(handlers.BaseHandler):
+            pass
+
         route = RouteFactory.build()
-        route.handler = handler_class.path()
+        route.handler_class = DummyHandler
 
         first_handler = route.get_handler()
         second_handler = route.get_handler()
@@ -135,12 +128,12 @@ class RouteHandleTest(TestCase):
         The Route's url is stripped from the requested url path.
         """
         route = RouteFactory.build(url='/branch/')
-        route.get_handler_class = mock.MagicMock()
+        route.handler_class = mock.MagicMock()
         request = mock.Mock()
 
         result = route.handle(request, '/branch/leaf/')
 
-        expected = route.get_handler_class()(route).handle(request, '/leaf/')
+        expected = route.handler_class(route).handle(request, '/leaf/')
         self.assertEqual(result, expected)
 
 

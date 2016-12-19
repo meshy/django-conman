@@ -12,6 +12,9 @@
 * Removed logic from `conman.routes.handlers.BaseHandler.handle`. Unless
   overridden, this method will now raise a `NotImplementedError`.
 * Dropped support for django < 1.10
+* Replace `Route.handler` dotted path with `Route.handler_class`.
+* Remove `conman.routes.handlers.BaseHandler.path()`.
+* Remove `conman.routes.utils.import_from_dotted_path()`.
 
 ### Added
 
