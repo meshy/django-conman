@@ -17,8 +17,8 @@
 * Added support for django 1.10 (thanks to @Ian-Foote).
 * Added `RouteViewHandler`. A handler that delegates request handling to the
   `view` attribute of the `Route`.
-* Added `URLConfHandler`. A handler that resolves a view based on its `urlconf`
-  attribute and the `path` provided.
+* Added `URLConfHandler`. A handler that resolves the provided `path` to a view
+  based on the `urlconf` attribute of the `Route`.
 
 ### Changed
 

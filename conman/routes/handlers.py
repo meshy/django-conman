@@ -26,8 +26,8 @@ class URLConfHandler(BaseHandler):
     """
     Abstract handler for Routes that resolve views through a urlconf.
 
-    Subclasses should define a `urlconf` property as a dotted path. This will
-    be used to resolve a view when handling requests.
+    Routes using this handler should define a `urlconf` attribute as a dotted
+    path. This will be used to resolve a view when handling requests.
 
     Views referenced in the `urlconf` will receive `route`, as well as the args
     and kwargs they would expect given their urlpattern.
@@ -40,7 +40,7 @@ class URLConfHandler(BaseHandler):
 
         Raises `django.core.urlresolvers.Resolver404` if `path` isn't found.
         """
-        view, args, kwargs = resolve(path, urlconf=self.urlconf)
+        view, args, kwargs = resolve(path, urlconf=self.route.urlconf)
         return view(request, *args, route=self.route, **kwargs)
 
 

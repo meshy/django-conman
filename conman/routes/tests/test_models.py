@@ -28,6 +28,7 @@ class RouteTest(TestCase):
 
             # Incoming foreign keys from subclasses in tests
             'mockviewroute',
+            'urlconfroute',
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)
         self.assertCountEqual(fields, expected)

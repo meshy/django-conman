@@ -62,12 +62,13 @@ class URLConfHandlerHandleTest(TestCase):
     """Test URLConfHandler.handle()."""
     def setUp(self):
         """Create a Handler, route, request and view for use in these tests."""
-        class TestHandler(URLConfHandler):
+        class URLConfRoute(Route):
+            handler = URLConfHandler.path()
             urlconf = 'conman.routes.tests.urls'
 
-        self.route = mock.Mock()
+        self.route = URLConfRoute()
         self.request = mock.Mock()
-        self.handler = TestHandler(self.route)
+        self.handler = URLConfHandler(self.route)
         self.view = 'conman.routes.tests.urls.dummy_view'
 
     def tearDown(self):
