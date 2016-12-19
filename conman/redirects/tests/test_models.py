@@ -5,7 +5,7 @@ from incuna_test_utils.utils import field_names
 
 from conman.routes.tests.test_models import NODE_BASE_FIELDS
 from .factories import ChildRouteRedirectFactory
-from ..models import RouteRedirect
+from ..models import RouteRedirect, URLRedirect
 from ..views import RouteRedirectView
 
 
@@ -65,3 +65,17 @@ class RouteRedirectUnicodeMethodTest(TestCase):
         leaf = ChildRouteRedirectFactory.create(slug='leaf')
 
         self.assertEqual(str(leaf), 'RouteRedirect @ /leaf/')
+
+
+class URLRedirectTest(TestCase):
+    """Test the URLRedirect model."""
+    def test_fields(self):
+        """URLRedirect has Route's fields and some specific to redirects."""
+        expected = (
+            'id',
+            'route_ptr',
+            'target',
+            'permanent',
+        ) + NODE_BASE_FIELDS
+        fields = field_names(URLRedirect)
+        self.assertCountEqual(fields, expected)

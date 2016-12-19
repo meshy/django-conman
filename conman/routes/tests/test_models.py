@@ -25,6 +25,7 @@ class RouteTest(TestCase):
         expected = (
             'id',
             'routeredirect',
+            'urlredirect',
 
             # Incoming foreign keys from subclasses in tests
             'mockviewroute',

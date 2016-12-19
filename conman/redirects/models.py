@@ -13,7 +13,7 @@ class RouteRedirect(Route):
     This model holds the data required to make that connection.
     """
     target = models.ForeignKey('routes.Route', related_name='+')
-    permanent = models.BooleanField(default=False, blank=True)
+    permanent = models.BooleanField(default=False)
 
     view = views.RouteRedirectView.as_view()
 
@@ -27,3 +27,11 @@ class RouteRedirect(Route):
         """Validate the Redirect before saving."""
         self.clean()
         return super().save(*args, **kwargs)
+
+
+class URLRedirect(Route):
+    """A `Route` that redirects to an arbitrary URL."""
+    target = models.URLField(max_length=2000)
+    permanent = models.BooleanField(default=False)
+
+    view = views.URLRedirectView.as_view()
