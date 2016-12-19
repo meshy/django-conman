@@ -6,6 +6,7 @@ from incuna_test_utils.utils import field_names
 from conman.routes.tests.test_models import NODE_BASE_FIELDS
 from .factories import ChildRouteRedirectFactory
 from ..models import RouteRedirect
+from ..views import RouteRedirectView
 
 
 class RouteRedirectTest(TestCase):
@@ -44,6 +45,17 @@ class RouteRedirectTest(TestCase):
         form.is_valid()
 
         self.assertIn('target', form.errors)
+
+
+class TestRouteRedirectView(TestCase):
+    """Test RouteRedirect.view."""
+    def test_view(self):
+        """RouteRedirect uses the RouteRedirectView."""
+        view = RouteRedirect.view
+        expected = RouteRedirectView.as_view()
+
+        self.assertEqual(view.__name__, expected.__name__)
+        self.assertEqual(view.__module__, expected.__module__)
 
 
 class RouteRedirectUnicodeMethodTest(TestCase):

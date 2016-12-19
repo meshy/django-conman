@@ -42,11 +42,8 @@ urlpatterns = [
 ```python
 # models.py
 class ExampleRoute(conman.routes.models.Route):
-    handler = ExampleHandler.path()
     # Your data/fields here
-
-# handlers.py
-class ExampleHandler(conman.routes.handlers.SimpleHandler):
+    ...
     view = ExampleRouteDetail.as_view()
 
 # views.py

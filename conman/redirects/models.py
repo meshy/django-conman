@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from conman.routes.models import Route
-from . import handlers
+from . import views
 
 
 class RouteRedirect(Route):
@@ -12,9 +12,10 @@ class RouteRedirect(Route):
 
     This model holds the data required to make that connection.
     """
-    handler = handlers.RouteRedirectHandler.path()
     target = models.ForeignKey('routes.Route', related_name='+')
     permanent = models.BooleanField(default=False, blank=True)
+
+    view = views.RouteRedirectView.as_view()
 
     def clean(self):
         """Forbid setting target equal to self."""
