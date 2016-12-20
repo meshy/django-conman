@@ -166,7 +166,6 @@ class RouteViewHandlerHandleTest(TestCase):
             base_objects = Manager()
 
         self.route = MockViewRoute()
-        self.request = mock.Mock()
         self.handler = RouteViewHandler(self.route)
         self.view = MockViewRoute.view
 
@@ -176,22 +175,23 @@ class RouteViewHandlerHandleTest(TestCase):
 
     def test_handle_basic(self):
         """Show that Route.view is used to process the request."""
-        response = self.handler.handle(self.request, '/')
+        request = mock.Mock()
+        response = self.handler.handle(request, '/')
 
-        self.view.assert_called_with(self.request, route=self.route)
-        expected = self.view(self.request, route=self.route)
+        self.view.assert_called_with(request, route=self.route)
+        expected = self.view(request, route=self.route)
         self.assertEqual(response, expected)
 
     def test_handle_slug(self):
         """Show that slugs are not accepted."""
         with self.assertRaises(Resolver404):
-            self.handler.handle(self.request, '/slug/')
+            self.handler.handle(mock.Mock(), '/slug/')
 
         self.assertFalse(self.view.called)
 
     def test_handle_pk(self):
         """Show that pks are not accepted."""
         with self.assertRaises(Resolver404):
-            self.handler.handle(self.request, '/42/')
+            self.handler.handle(mock.Mock(), '/42/')
 
         self.assertFalse(self.view.called)
