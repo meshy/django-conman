@@ -41,10 +41,9 @@ class URLConfHandler(BaseHandler):
     @classmethod
     def check(cls, route):
         """Ensure route has a sensible urlconf attribute."""
-        route_name = route.__name__
         if not hasattr(route, 'urlconf'):
             return [checks.Error(
-                '{} must have a `urlconf` attribute.'.format(route_name),
+                '{} must have a `urlconf` attribute.'.format(route.__name__),
                 hint=(
                     'The urlconf must be a dotted path. ' +
                     'This is a requirement of {}.'.format(cls.__name__)
