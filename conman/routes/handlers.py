@@ -92,5 +92,4 @@ class RouteViewHandler(BaseHandler):
         """
         if path != '/':
             raise Resolver404
-        view = self.route.view
-        return view(request, route=self.route)
+        return self.route.view(request, route=self.route)
