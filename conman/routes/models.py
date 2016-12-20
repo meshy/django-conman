@@ -35,6 +35,11 @@ class Route(PolymorphicModel):
         """Display a Route's class and url."""
         return '{} @ {}'.format(self.__class__.__name__, self.url)
 
+    @classmethod
+    def check(cls):
+        """Delegate model checks to the handler."""
+        return cls.handler_class.check(cls)
+
     def get_descendants(self):
         """Get all the descendants of this Route."""
         if not self.pk:

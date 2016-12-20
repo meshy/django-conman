@@ -11,6 +11,16 @@ class BaseHandler:
         """Store the Route so that we know what we're handling."""
         self.route = route
 
+    @classmethod
+    def check(cls, route):
+        """
+        Model-level checks for a Route type delegated to its Handler.
+
+        Custom classes can override this to perform checks on the Routes they
+        are attached to.
+        """
+        return []
+
     def handle(self, request, path):
         """Raise an error if a subclass calls handle without defining how.."""
         msg = 'Subclasses of `BaseHandler` must implement `handle()`.'

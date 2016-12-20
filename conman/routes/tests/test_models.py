@@ -44,6 +44,16 @@ class RouteUniqueness(TestCase):
             Route.objects.create(url='/')
 
 
+class RouteCheckTest(TestCase):
+    """Test Route.check()."""
+    def test_defer_to_handler(self):
+        """Route.check returns the result of Route.handler_class().check()."""
+        with mock.patch('conman.routes.models.Route.handler_class') as handler:
+            errors = Route.check()
+
+        self.assertEqual(errors, handler.check(Route))
+
+
 class RouteGetDescendantsTest(TestCase):
     """
     Test Route().get_descendants().

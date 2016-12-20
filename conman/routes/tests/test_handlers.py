@@ -20,6 +20,19 @@ class BaseHandlerInitTest(TestCase):
         self.assertEqual(handler.route, route)
 
 
+class BaseHandlerCheckTest(TestCase):
+    """Test BaseHandler.check()."""
+    def test_classmethod(self):
+        """Ensure check() is a classmethod."""
+        self.assertIsInstance(vars(BaseHandler)['check'], classmethod)
+
+    def test_default(self):
+        """By default, no errors are returned."""
+        # None passed in place of a `Route` because it should be unused here.
+        errors = BaseHandler.check(None)
+        self.assertEqual(errors, [])
+
+
 class SubclassHandleTest(TestCase):
     """Test a subclass of BaseHandler's `.handle()` method."""
     def test_not_implemented(self):

@@ -26,6 +26,7 @@
 * `URLRedirect` has been added to `routes.redirects`. This model can be used to
   represent a URL that redirects to another URL (that is not represented by a
   `Route`). One might expect this to be a URL on an external site.
+* Allow `Route` to delegate model checks to the associated handler.
 
 ### Changed
 
