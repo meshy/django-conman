@@ -1,5 +1,4 @@
 from django.db import models
-from polymorphic.base import PolymorphicModelBase
 from polymorphic.models import PolymorphicModel
 
 from .handlers import RouteViewHandler
@@ -14,25 +13,7 @@ from .validators import (
 )
 
 
-class UnboundViewMeta(PolymorphicModelBase):
-    """
-    Metaclass that wraps the `view` attribute with `staticmethod`.
-
-    This ensures that the view does not bind to the class unintentionally.
-    """
-    def __new__(cls, name, bases, attrs):
-        """
-        Create the new class.
-
-        Ensure any `view` attribute is a staticmethod is unbound to the class.
-        """
-        view = attrs.get('view')
-        if view:
-            attrs['view'] = staticmethod(view)
-        return super().__new__(cls, name, bases, attrs)
-
-
-class Route(PolymorphicModel, metaclass=UnboundViewMeta):
+class Route(PolymorphicModel):
     """A Route in a tree of url endpoints."""
     url = models.TextField(
         db_index=True,

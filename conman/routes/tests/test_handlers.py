@@ -93,7 +93,7 @@ class RouteViewHandlerHandleTest(TestCase):
     def setUp(self):
         """Create a route, request, and view for use in this test."""
         class MockViewRoute(Route):
-            view = mock.MagicMock()
+            view = staticmethod(mock.MagicMock())
             base_objects = Manager()
 
         self.route = MockViewRoute()

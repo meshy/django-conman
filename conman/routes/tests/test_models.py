@@ -1,9 +1,7 @@
 from unittest import mock
 
-from django.db.models import Manager
 from django.db.utils import IntegrityError
 from django.test import TestCase
-from django.views.generic import View
 from incuna_test_utils.utils import field_names
 
 from .factories import ChildRouteFactory, RouteFactory
@@ -150,36 +148,3 @@ class RouteStrTest(TestCase):
         leaf = ChildRouteFactory.create(slug='leaf')
 
         self.assertEqual(str(leaf), 'Route @ /leaf/')
-
-
-class RouteViewBindingTest(TestCase):
-    """Views should not unexpectedly "bind" to Route subclasses."""
-    def test_unbound_function(self):
-        """Make sure that the handler is not bound to self on the view."""
-        def unbound_function(request, **kwargs):
-            return request
-
-        class FunctionViewRoute(Route):
-            view = unbound_function
-            base_objects = Manager()
-
-        route = FunctionViewRoute()
-        request = mock.Mock()
-        response = route.view(request)
-        self.assertIs(response, request)
-
-    def test_bound_function(self):
-        """Make sure that class based views get the expected args."""
-        class TestView(View):
-            def dispatch(self, request, route=None):
-                return self, request
-
-        class ClassViewRoute(Route):
-            view = TestView.as_view()
-            base_objects = Manager()
-
-        route = ClassViewRoute()
-        request = mock.Mock()
-        self_arg, request_arg = route.view(request)
-        self.assertIsInstance(self_arg, TestView)
-        self.assertIs(request_arg, request)
