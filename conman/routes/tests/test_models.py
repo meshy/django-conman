@@ -28,6 +28,9 @@ class RouteTest(TestCase):
 
             # Incoming foreign keys from subclasses in tests
             'mockviewroute',
+            'routewithbadview',
+            'routewithnoview',
+            'routewithview',
             'urlconfroute',
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)

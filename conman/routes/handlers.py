@@ -1,3 +1,4 @@
+from django.core import checks
 from django.urls import resolve, Resolver404
 
 
@@ -58,6 +59,26 @@ class RouteViewHandler(BaseHandler):
 
     Views will receive `route` as a keyword arg.
     """
+    @classmethod
+    def check(cls, route):
+        """Ensure route has a sensible view attribute."""
+        route_name = route.__name__
+        if not hasattr(route, 'view'):
+            return [checks.Error(
+                '{} must have a `view` attribute.'.format(route_name),
+                hint='This is a requirement of {}.'.format(cls.__name__),
+                obj=route,
+            )]
+
+        if not isinstance(vars(route)['view'], staticmethod):
+            return [checks.Error(
+                '{}.view must be a staticmethod.'.format(route_name),
+                hint='Try `view = staticmethod(myview)`.'.format(cls),
+                obj=route,
+            )]
+
+        return []
+
     def handle(self, request, path):
         """
         Handle the request using the `view` attribute of the associated route.

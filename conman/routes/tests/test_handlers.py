@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django.core.checks import Error
 from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.db.models import Manager
 from django.test import TestCase
@@ -99,6 +100,50 @@ class URLConfHandlerHandleTest(TestCase):
             self.handler.handle(self.request, '/no/match/')
 
         self.assertFalse(dummy_view.called)
+
+
+class RouteViewHandlerCheckTest(TestCase):
+    """Tests for RouteViewHandler.check()."""
+    def test_function(self):
+        """When the Route's view isn't a staticmethod, return error."""
+        class RouteWithBadView(Route):
+            handler_class = RouteViewHandler
+
+            def view(self, request):
+                return
+
+        errors = RouteViewHandler.check(RouteWithBadView)
+        expected = Error(
+            'RouteWithBadView.view must be a staticmethod.',
+            hint='Try `view = staticmethod(myview)`.',
+            obj=RouteWithBadView,
+        )
+        self.assertEqual(errors, [expected])
+
+    def test_no_view(self):
+        """When the route has no view, return an error."""
+        class RouteWithNoView(Route):
+            handler_class = RouteViewHandler
+
+        errors = RouteViewHandler.check(RouteWithNoView)
+        expected = Error(
+            'RouteWithNoView must have a `view` attribute.',
+            hint='This is a requirement of RouteViewHandler.',
+            obj=RouteWithNoView,
+        )
+        self.assertEqual(errors, [expected])
+
+    def test_static_view(self):
+        """When the Route has a staticmethod view, all's well."""
+        class RouteWithView(Route):
+            handler_class = RouteViewHandler
+
+            @staticmethod
+            def view(request):
+                return
+
+        errors = RouteViewHandler.check(RouteWithView)
+        self.assertEqual(errors, [])
 
 
 class RouteViewHandlerHandleTest(TestCase):
