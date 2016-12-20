@@ -78,18 +78,10 @@ class RouteViewHandler(BaseHandler):
     @classmethod
     def check(cls, route):
         """Ensure route has a sensible view attribute."""
-        route_name = route.__name__
         if not hasattr(route, 'view'):
             return [checks.Error(
-                '{} must have a `view` attribute.'.format(route_name),
+                '{} must have a `view` attribute.'.format(route.__name__),
                 hint='This is a requirement of {}.'.format(cls.__name__),
-                obj=route,
-            )]
-
-        if not isinstance(vars(route)['view'], staticmethod):
-            return [checks.Error(
-                '{}.view must be a staticmethod.'.format(route_name),
-                hint='Try `view = staticmethod(myview)`.'.format(cls),
                 obj=route,
             )]
 
@@ -108,4 +100,6 @@ class RouteViewHandler(BaseHandler):
         """
         if path != '/':
             raise Resolver404
-        return self.route.view(request, route=self.route)
+        # We use `type` here to ensure that we don't access the view as a bound
+        # method of the Route, but instead get the view as a function.
+        return type(self.route).view(request, route=self.route)

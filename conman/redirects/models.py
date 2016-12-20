@@ -15,7 +15,7 @@ class RouteRedirect(Route):
     target = models.ForeignKey('routes.Route', related_name='+', on_delete=models.CASCADE)
     permanent = models.BooleanField(default=False)
 
-    view = staticmethod(views.RouteRedirectView.as_view())
+    view = views.RouteRedirectView.as_view()
 
     base_objects = models.Manager()
 

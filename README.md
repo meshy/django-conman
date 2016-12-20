@@ -44,7 +44,7 @@ urlpatterns = [
 class ExampleRoute(conman.routes.models.Route):
     # Your data/fields here
     ...
-    view = staticmethod(ExampleRouteDetail.as_view())
+    view = ExampleRouteDetail.as_view()
 
 # views.py
 class ExampleRouteDetail(django.views.generic.DetailView):

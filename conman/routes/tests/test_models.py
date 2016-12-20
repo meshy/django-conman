@@ -28,7 +28,6 @@ class RouteTest(TestCase):
 
             # Incoming foreign keys from subclasses in tests
             'mockviewroute',
-            'routewithbadview',
             'routewithnoview',
             'routewithview',
             'routewithurlconf',
