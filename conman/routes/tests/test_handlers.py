@@ -169,10 +169,6 @@ class RouteViewHandlerHandleTest(TestCase):
         self.handler = RouteViewHandler(self.route)
         self.view = MockViewRoute.view
 
-    def tearDown(self):
-        """Stop tests leaking into each other through the url cache."""
-        clear_url_caches()
-
     def test_handle_basic(self):
         """Show that Route.view is used to process the request."""
         request = mock.Mock()
