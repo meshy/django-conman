@@ -31,6 +31,8 @@ class RouteTest(TestCase):
             'routewithbadview',
             'routewithnoview',
             'routewithview',
+            'routewithurlconf',
+            'routewithnourlconf',
             'urlconfroute',
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)

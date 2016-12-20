@@ -38,6 +38,22 @@ class URLConfHandler(BaseHandler):
     Views referenced in the `urlconf` will receive `route`, as well as the args
     and kwargs they would expect given their urlpattern.
     """
+    @classmethod
+    def check(cls, route):
+        """Ensure route has a sensible urlconf attribute."""
+        route_name = route.__name__
+        if not hasattr(route, 'urlconf'):
+            return [checks.Error(
+                '{} must have a `urlconf` attribute.'.format(route_name),
+                hint=(
+                    'The urlconf must be a dotted path. ' +
+                    'This is a requirement of {}.'.format(cls.__name__)
+                ),
+                obj=route,
+            )]
+
+        return []
+
     def handle(self, request, path):
         """
         Resolve `path` to a view, and get it to handle the `request`.

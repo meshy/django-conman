@@ -102,6 +102,34 @@ class URLConfHandlerHandleTest(TestCase):
         self.assertFalse(dummy_view.called)
 
 
+class URLConfHandlerCheckTest(TestCase):
+    """Tests for URLConfHandler.check()."""
+    def test_no_urlconf(self):
+        """When the route has no urlconf, return an error."""
+        class RouteWithNoURLConf(Route):
+            handler_class = URLConfHandler
+
+        errors = URLConfHandler.check(RouteWithNoURLConf)
+        expected = Error(
+            'RouteWithNoURLConf must have a `urlconf` attribute.',
+            hint=(
+                'The urlconf must be a dotted path. ' +
+                'This is a requirement of URLConfHandler.'
+            ),
+            obj=RouteWithNoURLConf,
+        )
+        self.assertEqual(errors, [expected])
+
+    def test_static_view(self):
+        """When the Route has a staticmethod view, all's well."""
+        class RouteWithURLConf(Route):
+            handler_class = URLConfHandler
+            urlconf = 'a.dotted.path'
+
+        errors = URLConfHandler.check(RouteWithURLConf)
+        self.assertEqual(errors, [])
+
+
 class RouteViewHandlerCheckTest(TestCase):
     """Tests for RouteViewHandler.check()."""
     def test_function(self):
