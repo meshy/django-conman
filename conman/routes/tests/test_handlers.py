@@ -120,8 +120,8 @@ class URLConfHandlerCheckTest(TestCase):
         )
         self.assertEqual(errors, [expected])
 
-    def test_static_view(self):
-        """When the Route has a staticmethod view, all's well."""
+    def test_has_urlconf(self):
+        """When the Route has a urlconf, all's well."""
         class RouteWithURLConf(Route):
             handler_class = URLConfHandler
             urlconf = 'a.dotted.path'
