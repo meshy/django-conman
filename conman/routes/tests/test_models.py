@@ -55,6 +55,9 @@ class RouteCheckTest(TestCase):
         with mock.patch('conman.routes.models.Route.handler_class') as handler:
             errors = Route.check()
 
+        # Ensure the handler's check method is called...
+        handler.check.assert_called_once_with(Route)
+        # ... and that the return value is passed back through.
         self.assertEqual(errors, handler.check(Route))
 
 
