@@ -171,41 +171,37 @@ class RouteViewHandlerCheckTest(TestCase):
 
 class RouteViewHandlerHandleTest(TestCase):
     """Test RouteViewHandler.handle()."""
-    def setUp(self):
-        """Create a route, request, and view for use in this test."""
-        class MockViewRoute(Route):
-            # FIXME: I don't know why this fails without staticmethod.
-            # I must be doing something wrong somewhere, but without the
-            # staticmethod, MockViewRoute.view doesn't appear to exist on the
-            # class at all! This fails:
-            #     assert hasattr(MockViewroute, 'view')
-            view = staticmethod(mock.MagicMock())
-            # Silence RemovedInDjango20Warning about manager inheritance.
-            base_objects = Manager()
-
-        self.route = MockViewRoute()
-        self.handler = RouteViewHandler(self.route)
-        self.view = MockViewRoute.view
-
     def test_handle_basic(self):
         """Show that Route.view is used to process the request."""
-        request = mock.Mock()
-        response = self.handler.handle(request, '/')
+        class MockRoute:
+            view = mock.Mock()
 
-        self.view.assert_called_with(request, route=self.route)
-        expected = self.view(request, route=self.route)
+        route = MockRoute()
+        handler = RouteViewHandler(route)
+        request = mock.Mock()
+
+        response = handler.handle(request, '/')
+
+        route.view.assert_called_with(request, route=route)
+        expected = route.view(request, route=route)
         self.assertEqual(response, expected)
 
     def test_handle_slug(self):
         """Show that slugs are not accepted."""
-        with self.assertRaises(Resolver404):
-            self.handler.handle(mock.Mock(), '/slug/')
+        route = mock.Mock()
+        handler = RouteViewHandler(route)
 
-        self.assertFalse(self.view.called)
+        with self.assertRaises(Resolver404):
+            handler.handle(mock.Mock(), '/slug/')
+
+        self.assertFalse(route.view.called)
 
     def test_handle_pk(self):
         """Show that pks are not accepted."""
-        with self.assertRaises(Resolver404):
-            self.handler.handle(mock.Mock(), '/42/')
+        route = mock.Mock()
+        handler = RouteViewHandler(route)
 
-        self.assertFalse(self.view.called)
+        with self.assertRaises(Resolver404):
+            handler.handle(mock.Mock(), '/42/')
+
+        self.assertFalse(route.view.called)

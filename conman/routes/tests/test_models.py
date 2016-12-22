@@ -27,7 +27,6 @@ class RouteTest(TestCase):
             'urlredirect',
 
             # Incoming foreign keys from subclasses in tests
-            'mockviewroute',
             'routewithnoview',
             'routewithview',
             'routewithurlconf',
