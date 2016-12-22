@@ -65,6 +65,7 @@ class URLConfHandlerHandleTest(TestCase):
         class URLConfRoute(Route):
             handler_class = URLConfHandler
             urlconf = 'conman.routes.tests.urls'
+            # Silence RemovedInDjango20Warning about manager inheritance.
             base_objects = Manager()
 
         self.route = URLConfRoute()
@@ -108,6 +109,8 @@ class URLConfHandlerCheckTest(TestCase):
         """When the route has no urlconf, return an error."""
         class RouteWithNoURLConf(Route):
             handler_class = URLConfHandler
+            # Silence RemovedInDjango20Warning about manager inheritance.
+            base_objects = Manager()
 
         errors = URLConfHandler.check(RouteWithNoURLConf)
         expected = Error(
@@ -125,6 +128,8 @@ class URLConfHandlerCheckTest(TestCase):
         class RouteWithURLConf(Route):
             handler_class = URLConfHandler
             urlconf = 'a.dotted.path'
+            # Silence RemovedInDjango20Warning about manager inheritance.
+            base_objects = Manager()
 
         errors = URLConfHandler.check(RouteWithURLConf)
         self.assertEqual(errors, [])
@@ -136,6 +141,8 @@ class RouteViewHandlerCheckTest(TestCase):
         """When the route has no view, return an error."""
         class RouteWithNoView(Route):
             handler_class = RouteViewHandler
+            # Silence RemovedInDjango20Warning about manager inheritance.
+            base_objects = Manager()
 
         errors = RouteViewHandler.check(RouteWithNoView)
         expected = Error(
@@ -149,6 +156,8 @@ class RouteViewHandlerCheckTest(TestCase):
         """When the Route has a view function, all's well."""
         class RouteWithView(Route):
             handler_class = RouteViewHandler
+            # Silence RemovedInDjango20Warning about manager inheritance.
+            base_objects = Manager()
 
             def view(request):
                 return
@@ -168,6 +177,7 @@ class RouteViewHandlerHandleTest(TestCase):
             # class at all! This fails:
             #     assert hasattr(MockViewroute, 'view')
             view = staticmethod(mock.MagicMock())
+            # Silence RemovedInDjango20Warning about manager inheritance.
             base_objects = Manager()
 
         self.route = MockViewRoute()
