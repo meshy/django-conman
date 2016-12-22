@@ -162,6 +162,11 @@ class RouteViewHandlerHandleTest(TestCase):
     def setUp(self):
         """Create a route, request, and view for use in this test."""
         class MockViewRoute(Route):
+            # FIXME: I don't know why this fails without staticmethod.
+            # I must be doing something wrong somewhere, but without the
+            # staticmethod, MockViewRoute.view doesn't appear to exist on the
+            # class at all! This fails:
+            #     assert hasattr(MockViewroute, 'view')
             view = staticmethod(mock.MagicMock())
             base_objects = Manager()
 
