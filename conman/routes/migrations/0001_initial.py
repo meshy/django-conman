@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('slug', models.SlugField(max_length=255, default='', help_text='The url fragment at this point in the Route hierarchy.')),
                 ('url', models.TextField(unique=True, editable=False, db_index=True)),
-                ('parent', models.ForeignKey(blank=True, null=True, related_name='children', to='routes.Route')),
-                ('polymorphic_ctype', models.ForeignKey(null=True, related_name='polymorphic_routes.route_set+', editable=False, to='contenttypes.ContentType')),
+                ('parent', models.ForeignKey(blank=True, null=True, related_name='children', to='routes.Route', on_delete=models.CASCADE)),
+                ('polymorphic_ctype', models.ForeignKey(null=True, related_name='polymorphic_routes.route_set+', editable=False, to='contenttypes.ContentType', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AlterUniqueTogether(

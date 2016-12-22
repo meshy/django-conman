@@ -6,6 +6,8 @@ from .utils import split_path
 
 class RouteManager(PolymorphicManager):
     """Helpful methods for working with Routes."""
+    silence_use_for_related_fields_deprecation = True
+
     def best_match_for_path(self, path):
         """
         Return the best match for a path.

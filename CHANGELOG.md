@@ -11,6 +11,7 @@
 * Removed `conman.routes.handlers.SimpleHandler`.
 * Removed logic from `conman.routes.handlers.BaseHandler.handle`. Unless
   overridden, this method will now raise a `NotImplementedError`.
+* Dropped support for django < 1.10
 
 ### Added
 

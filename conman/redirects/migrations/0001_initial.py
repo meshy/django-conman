@@ -14,9 +14,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RouteRedirect',
             fields=[
-                ('route_ptr', models.OneToOneField(serialize=False, auto_created=True, to='routes.Route', parent_link=True, primary_key=True)),
+                ('route_ptr', models.OneToOneField(serialize=False, auto_created=True, to='routes.Route', parent_link=True, primary_key=True, on_delete=models.CASCADE)),
                 ('permanent', models.BooleanField(default=False)),
-                ('target', models.ForeignKey(to='routes.Route', related_name='+')),
+                ('target', models.ForeignKey(to='routes.Route', related_name='+', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
