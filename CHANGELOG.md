@@ -27,9 +27,6 @@
   represent a URL that redirects to another URL (that is not represented by a
   `Route`). One might expect this to be a URL on an external site.
 * Allow `Route` to delegate model checks to the associated handler.
-
-### Added
-
 * `Route.objects.move_branch()` can be used to move a `Route` and its
   descendants to another location.
 * `Route().move_to(new_url, *, move_children)` can be used to move a `Route`
