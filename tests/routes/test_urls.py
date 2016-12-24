@@ -4,7 +4,7 @@ from django.test import TestCase
 from conman.routes import views
 
 
-class NavTreeURLRouterTest(TestCase):
+class RouteRouterViewTest(TestCase):
     """Test the route_router view."""
     def assert_url_uses_router(self, url):
         """Check a url resolves to the route_router view."""
