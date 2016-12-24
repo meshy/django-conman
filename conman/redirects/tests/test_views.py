@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from conman.routes.tests.factories import ChildRouteFactory
-from conman.tests.utils import RequestTestCase
+from tests.utils import RequestTestCase
 from .factories import ChildRouteRedirectFactory, URLRedirectFactory
 from .. import views
 

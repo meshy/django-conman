@@ -28,7 +28,7 @@ settings.configure(
     ),
     MIDDLEWARE=(),
     PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
-    ROOT_URLCONF='conman.tests.urls',
+    ROOT_URLCONF='tests.urls',
     SITE_ID=1,
     TEMPLATES=[{
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
