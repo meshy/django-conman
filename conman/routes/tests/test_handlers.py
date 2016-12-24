@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django.core.checks import Error
 from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.db.models import Manager
 from django.test import TestCase
@@ -7,21 +8,6 @@ from django.test import TestCase
 from .urls import dummy_view
 from ..handlers import BaseHandler, RouteViewHandler, URLConfHandler
 from ..models import Route
-
-
-class BaseHandlerPathTest(TestCase):
-    """Test BaseHandler.path()."""
-    def test_path(self):
-        """Test directly on base class."""
-        base_handler_path = 'conman.routes.handlers.BaseHandler'
-        self.assertEqual(BaseHandler.path(), base_handler_path)
-
-    def test_path_on_subclass(self):
-        """Test on subclass."""
-        class TestHandler(BaseHandler):
-            __module__ = 'does_not_exist'
-
-        self.assertEqual(TestHandler.path(), 'does_not_exist.TestHandler')
 
 
 class BaseHandlerInitTest(TestCase):
@@ -33,6 +19,21 @@ class BaseHandlerInitTest(TestCase):
         handler = BaseHandler(route)
 
         self.assertEqual(handler.route, route)
+
+
+class BaseHandlerCheckTest(TestCase):
+    """Test BaseHandler.check()."""
+    def test_classmethod(self):
+        """Ensure check() is a classmethod."""
+        # vars() used here because BaseHandler.check is a boundmethod,
+        # not a classmethod.
+        self.assertIsInstance(vars(BaseHandler)['check'], classmethod)
+
+    def test_default(self):
+        """By default, no errors are returned."""
+        # None passed in place of a `Route` because it should be unused here.
+        errors = BaseHandler.check(None)
+        self.assertEqual(errors, [])
 
 
 class SubclassHandleTest(TestCase):
@@ -61,17 +62,19 @@ class SubclassHandleTest(TestCase):
 
 class URLConfHandlerHandleTest(TestCase):
     """Test URLConfHandler.handle()."""
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         """Create a Handler, route, request and view for use in these tests."""
+        super().setUpClass()
+
         class URLConfRoute(Route):
-            handler = URLConfHandler.path()
+            handler_class = URLConfHandler
             urlconf = 'conman.routes.tests.urls'
+            # Silence RemovedInDjango20Warning about manager inheritance.
             base_objects = Manager()
 
-        self.route = URLConfRoute()
-        self.request = mock.Mock()
-        self.handler = URLConfHandler(self.route)
-        self.view = 'conman.routes.tests.urls.dummy_view'
+        cls.route = URLConfRoute()
+        cls.handler = URLConfHandler(cls.route)
 
     def tearDown(self):
         """Stop tests leaking into each other through the url cache."""
@@ -80,64 +83,127 @@ class URLConfHandlerHandleTest(TestCase):
 
     def test_handle_basic(self):
         """Show that url resolving works at the root of the urlconf."""
-        response = self.handler.handle(self.request, '/')
+        request = mock.Mock()
+        response = self.handler.handle(request, '/')
 
-        dummy_view.assert_called_with(self.request, route=self.route)
-        self.assertEqual(response, dummy_view(self.request, route=self.route))
+        dummy_view.assert_called_with(request, route=self.route)
+        self.assertEqual(response, dummy_view(request, route=self.route))
 
     def test_handle_slug(self):
         """Show that url resolving works with slugs."""
         slug = 'slug'
-        response = self.handler.handle(self.request, '/slug/')
+        request = mock.Mock()
+        response = self.handler.handle(request, '/slug/')
 
-        dummy_view.assert_called_with(self.request, route=self.route, slug=slug)
+        dummy_view.assert_called_with(request, route=self.route, slug=slug)
 
-        expected = dummy_view(self.request, route=self.route, slug=slug)
+        expected = dummy_view(request, route=self.route, slug=slug)
         self.assertEqual(response, expected)
 
     def test_handle_no_url_match(self):
         """Show that an error is thrown when the url does not match."""
         with self.assertRaises(Resolver404):
-            self.handler.handle(self.request, '/no/match/')
+            self.handler.handle(mock.Mock(), '/no/match/')
 
         self.assertFalse(dummy_view.called)
 
 
-class RouteViewHandlerHandleTest(TestCase):
-    """Test RouteViewHandler.handle()."""
-    def setUp(self):
-        """Create a route, request, and view for use in this test."""
-        class MockViewRoute(Route):
-            view = mock.MagicMock()
+class URLConfHandlerCheckTest(TestCase):
+    """Tests for URLConfHandler.check()."""
+    def test_no_urlconf(self):
+        """When the route has no urlconf, return an error."""
+        class RouteWithNoURLConf(Route):
+            handler_class = URLConfHandler
+            # Silence RemovedInDjango20Warning about manager inheritance.
             base_objects = Manager()
 
-        self.route = MockViewRoute()
-        self.request = mock.Mock()
-        self.handler = RouteViewHandler(self.route)
-        self.view = MockViewRoute.view
+        errors = URLConfHandler.check(RouteWithNoURLConf)
+        expected = Error(
+            'RouteWithNoURLConf must have a `urlconf` attribute.',
+            hint=(
+                'The urlconf must be a dotted path. ' +
+                'This is a requirement of URLConfHandler.'
+            ),
+            obj=RouteWithNoURLConf,
+        )
+        self.assertEqual(errors, [expected])
 
-    def tearDown(self):
-        """Stop tests leaking into each other through the url cache."""
-        clear_url_caches()
+    def test_has_urlconf(self):
+        """When the Route has a urlconf, all's well."""
+        class RouteWithURLConf(Route):
+            handler_class = URLConfHandler
+            urlconf = 'a.dotted.path'
+            # Silence RemovedInDjango20Warning about manager inheritance.
+            base_objects = Manager()
 
+        errors = URLConfHandler.check(RouteWithURLConf)
+        self.assertEqual(errors, [])
+
+
+class RouteViewHandlerCheckTest(TestCase):
+    """Tests for RouteViewHandler.check()."""
+    def test_no_view(self):
+        """When the route has no view, return an error."""
+        class RouteWithNoView(Route):
+            handler_class = RouteViewHandler
+            # Silence RemovedInDjango20Warning about manager inheritance.
+            base_objects = Manager()
+
+        errors = RouteViewHandler.check(RouteWithNoView)
+        expected = Error(
+            'RouteWithNoView must have a `view` attribute.',
+            hint='This is a requirement of RouteViewHandler.',
+            obj=RouteWithNoView,
+        )
+        self.assertEqual(errors, [expected])
+
+    def test_function(self):
+        """When the Route has a view function, all's well."""
+        class RouteWithView(Route):
+            handler_class = RouteViewHandler
+            # Silence RemovedInDjango20Warning about manager inheritance.
+            base_objects = Manager()
+
+            def view(request):
+                return
+
+        errors = RouteViewHandler.check(RouteWithView)
+        self.assertEqual(errors, [])
+
+
+class RouteViewHandlerHandleTest(TestCase):
+    """Test RouteViewHandler.handle()."""
     def test_handle_basic(self):
         """Show that Route.view is used to process the request."""
-        response = self.handler.handle(self.request, '/')
+        class MockRoute:
+            view = mock.Mock()
 
-        self.view.assert_called_with(self.request, route=self.route)
-        expected = self.view(self.request, route=self.route)
+        route = MockRoute()
+        handler = RouteViewHandler(route)
+        request = mock.Mock()
+
+        response = handler.handle(request, '/')
+
+        route.view.assert_called_with(request, route=route)
+        expected = route.view(request, route=route)
         self.assertEqual(response, expected)
 
     def test_handle_slug(self):
         """Show that slugs are not accepted."""
-        with self.assertRaises(Resolver404):
-            self.handler.handle(self.request, '/slug/')
+        route = mock.Mock()
+        handler = RouteViewHandler(route)
 
-        self.assertFalse(self.view.called)
+        with self.assertRaises(Resolver404):
+            handler.handle(mock.Mock(), '/slug/')
+
+        self.assertFalse(route.view.called)
 
     def test_handle_pk(self):
         """Show that pks are not accepted."""
-        with self.assertRaises(Resolver404):
-            self.handler.handle(self.request, '/42/')
+        route = mock.Mock()
+        handler = RouteViewHandler(route)
 
-        self.assertFalse(self.view.called)
+        with self.assertRaises(Resolver404):
+            handler.handle(mock.Mock(), '/42/')
+
+        self.assertFalse(route.view.called)

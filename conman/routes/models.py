@@ -1,10 +1,8 @@
 from django.db import models
-from polymorphic.base import PolymorphicModelBase
 from polymorphic.models import PolymorphicModel
 
 from .handlers import RouteViewHandler
 from .managers import RouteManager
-from .utils import import_from_dotted_path
 from .validators import (
     validate_end_in_slash,
     validate_no_dotty_subpaths,
@@ -15,25 +13,7 @@ from .validators import (
 )
 
 
-class UnboundViewMeta(PolymorphicModelBase):
-    """
-    Metaclass that wraps the `view` attribute with `staticmethod`.
-
-    This ensures that the view does not bind to the class unintentionally.
-    """
-    def __new__(cls, name, bases, attrs):
-        """
-        Create the new class.
-
-        Ensure any `view` attribute is a staticmethod is unbound to the class.
-        """
-        view = attrs.get('view')
-        if view:
-            attrs['view'] = staticmethod(view)
-        return super().__new__(cls, name, bases, attrs)
-
-
-class Route(PolymorphicModel, metaclass=UnboundViewMeta):
+class Route(PolymorphicModel):
     """A Route in a tree of url endpoints."""
     url = models.TextField(
         db_index=True,
@@ -49,11 +29,16 @@ class Route(PolymorphicModel, metaclass=UnboundViewMeta):
     )
 
     objects = RouteManager()
-    handler = RouteViewHandler.path()
+    handler_class = RouteViewHandler
 
     def __str__(self):
         """Display a Route's class and url."""
         return '{} @ {}'.format(self.__class__.__name__, self.url)
+
+    @classmethod
+    def check(cls):
+        """Delegate model checks to the handler."""
+        return cls.handler_class.check(cls)
 
     def get_descendants(self):
         """Get all the descendants of this Route."""
@@ -62,10 +47,6 @@ class Route(PolymorphicModel, metaclass=UnboundViewMeta):
         others = Route.objects.exclude(pk=self.pk)
         descendants = others.filter(url__startswith=self.url)
         return descendants.order_by('url')
-
-    def get_handler_class(self):
-        """Import a class from the python path string in `self.handler`."""
-        return import_from_dotted_path(self.handler)
 
     def get_handler(self):
         """
@@ -77,7 +58,7 @@ class Route(PolymorphicModel, metaclass=UnboundViewMeta):
         try:
             return self._handler
         except AttributeError:
-            self._handler = self.get_handler_class()(self)
+            self._handler = self.handler_class(self)
             return self._handler
 
     def handle(self, request, path):

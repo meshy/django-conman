@@ -39,34 +39,3 @@ class TestSplitPath(TestCase):
             '/path/../',
         ]
         self.assertCountEqual(paths, expected)
-
-
-class TestImportFromDottedPath(TestCase):
-    """Test the import_from_dotted_path util function."""
-    def assert_error_message(self, exception):
-        """Check the exception's message is correct."""
-        message = 'An import path with two or more components is required.'
-        self.assertEqual(exception.args[0], message)
-
-    def test_empty(self):
-        """An empty path cannot be imported."""
-        with self.assertRaises(ValueError) as cm:
-            utils.import_from_dotted_path('')
-        self.assert_error_message(cm.exception)
-
-    def test_too_short(self):
-        """A path with only one component cannot be imported."""
-        with self.assertRaises(ValueError) as cm:
-            utils.import_from_dotted_path('antigravity')
-        self.assert_error_message(cm.exception)
-
-    def test_import_module(self):
-        """A module can be imported by dotted path."""
-        result = utils.import_from_dotted_path('conman.routes.utils')
-        self.assertEqual(result, utils)
-
-    def test_import_class(self):
-        """A class can be imported by dotted path."""
-        this_test = 'conman.routes.tests.test_utils.TestImportFromDottedPath'
-        result = utils.import_from_dotted_path(this_test)
-        self.assertEqual(result, self.__class__)

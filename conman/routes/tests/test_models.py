@@ -1,9 +1,7 @@
 from unittest import mock
 
-from django.db.models import Manager
 from django.db.utils import IntegrityError
 from django.test import TestCase
-from django.views.generic import View
 from incuna_test_utils.utils import field_names
 
 from .factories import ChildRouteFactory, RouteFactory
@@ -29,7 +27,10 @@ class RouteTest(TestCase):
             'urlredirect',
 
             # Incoming foreign keys from subclasses in tests
-            'mockviewroute',
+            'routewithnoview',
+            'routewithview',
+            'routewithurlconf',
+            'routewithnourlconf',
             'urlconfroute',
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)
@@ -44,6 +45,19 @@ class RouteUniqueness(TestCase):
 
         with self.assertRaises(IntegrityError):
             Route.objects.create(url='/')
+
+
+class RouteCheckTest(TestCase):
+    """Test Route.check()."""
+    def test_defer_to_handler(self):
+        """Route.check returns the result of Route.handler_class().check()."""
+        with mock.patch('conman.routes.models.Route.handler_class') as handler:
+            errors = Route.check()
+
+        # Ensure the handler's check method is called...
+        handler.check.assert_called_once_with(Route)
+        # ... and that the return value is passed back through.
+        self.assertEqual(errors, handler.check(Route))
 
 
 class RouteGetDescendantsTest(TestCase):
@@ -91,34 +105,27 @@ class RouteGetDescendantsTest(TestCase):
         self.assertEqual(descendants, [branch])
 
 
-class RouteGetHandlerClassTest(TestCase):
-    """Check the behaviour of Route().get_handler_class()."""
-    def test_get_handler_class(self):
-        """A Route's handler is looked up from the handler's path."""
-        handler_class = handlers.BaseHandler
-        route = RouteFactory.build()
-        route.handler = handler_class.path()
-
-        self.assertEqual(route.get_handler_class(), handler_class)
-
-
 class RouteGetHandlerTest(TestCase):
     """Make sure that Route.get_handler acts as expected."""
     def test_get_handler(self):
         """We expect an instance of handler instanciated with a Route."""
-        handler_class = handlers.BaseHandler
+        class DummyHandler(handlers.BaseHandler):
+            pass
+
         route = RouteFactory.build()
-        route.handler = handler_class.path()
+        route.handler_class = DummyHandler
 
         handler = route.get_handler()
-        self.assertIsInstance(handler, handler_class)
+        self.assertIsInstance(handler, DummyHandler)
         self.assertEqual(handler.route, route)
 
     def test_get_handler_again(self):
         """Make sure we always get the same instance of a handler on a Route."""
-        handler_class = handlers.BaseHandler
+        class DummyHandler(handlers.BaseHandler):
+            pass
+
         route = RouteFactory.build()
-        route.handler = handler_class.path()
+        route.handler_class = DummyHandler
 
         first_handler = route.get_handler()
         second_handler = route.get_handler()
@@ -135,12 +142,12 @@ class RouteHandleTest(TestCase):
         The Route's url is stripped from the requested url path.
         """
         route = RouteFactory.build(url='/branch/')
-        route.get_handler_class = mock.MagicMock()
+        route.handler_class = mock.MagicMock()
         request = mock.Mock()
 
         result = route.handle(request, '/branch/leaf/')
 
-        expected = route.get_handler_class()(route).handle(request, '/leaf/')
+        expected = route.handler_class(route).handle(request, '/leaf/')
         self.assertEqual(result, expected)
 
 
@@ -157,36 +164,3 @@ class RouteStrTest(TestCase):
         leaf = ChildRouteFactory.create(slug='leaf')
 
         self.assertEqual(str(leaf), 'Route @ /leaf/')
-
-
-class RouteViewBindingTest(TestCase):
-    """Views should not unexpectedly "bind" to Route subclasses."""
-    def test_unbound_function(self):
-        """Make sure that the handler is not bound to self on the view."""
-        def unbound_function(request, **kwargs):
-            return request
-
-        class FunctionViewRoute(Route):
-            view = unbound_function
-            base_objects = Manager()
-
-        route = FunctionViewRoute()
-        request = mock.Mock()
-        response = route.view(request)
-        self.assertIs(response, request)
-
-    def test_bound_function(self):
-        """Make sure that class based views get the expected args."""
-        class TestView(View):
-            def dispatch(self, request, route=None):
-                return self, request
-
-        class ClassViewRoute(Route):
-            view = TestView.as_view()
-            base_objects = Manager()
-
-        route = ClassViewRoute()
-        request = mock.Mock()
-        self_arg, request_arg = route.view(request)
-        self.assertIsInstance(self_arg, TestView)
-        self.assertIs(request_arg, request)

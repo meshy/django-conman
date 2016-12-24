@@ -12,6 +12,9 @@
 * Removed logic from `conman.routes.handlers.BaseHandler.handle`. Unless
   overridden, this method will now raise a `NotImplementedError`.
 * Dropped support for django < 1.10
+* Replace `Route.handler` dotted path with `Route.handler_class`.
+* Remove `conman.routes.handlers.BaseHandler.path()`.
+* Remove `conman.routes.utils.import_from_dotted_path()`.
 
 ### Added
 
@@ -23,6 +26,7 @@
 * `URLRedirect` has been added to `routes.redirects`. This model can be used to
   represent a URL that redirects to another URL (that is not represented by a
   `Route`). One might expect this to be a URL on an external site.
+* Allow `Route` to delegate model checks to the associated handler.
 
 ### Changed
 
