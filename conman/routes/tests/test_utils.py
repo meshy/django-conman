@@ -16,7 +16,7 @@ class TestSplitPath(TestCase):
             '/a/path/with/many/',
             '/a/path/with/many/parts/',
         ]
-        self.assertCountEqual(paths, expected)  # Order does not matter
+        self.assertEqual(paths, expected)
 
     def test_split_empty_path(self):
         """An empty path has sub-path '/'."""

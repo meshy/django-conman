@@ -1,4 +1,5 @@
-from django.db.models.functions import Length
+from django.db.models import Value
+from django.db.models.functions import Concat, Length, Substr
 from polymorphic.managers import PolymorphicManager
 
 from .utils import split_path
@@ -32,3 +33,30 @@ class RouteManager(PolymorphicManager):
         except IndexError:
             msg = 'No matching Route for URL. (Have you made a root Route?)'
             raise self.model.DoesNotExist(msg)
+
+    def move_branch(self, old_url, new_url):
+        """
+        Move a Route and all descendants to a new URL.
+
+        eg: Given:
+
+            Route(url='/blog/')
+            Route(url='/blog/conman/')
+
+        We can do:
+
+            >>> Route.objects.move_branch('/blog/', '/articles/')
+
+        Now we have:
+
+            Route(url='/articles/')
+            Route(url='/articles/conman/')
+
+        Movement will be atomic. This means that failure to move any one Route
+        will cause all movement to fail. A conflicting URL will cause an
+        IntegrityError.
+        """
+        self.filter(url__startswith=old_url).update(url=Concat(
+            Value(new_url),
+            Substr('url', len(old_url) + 1),  # 1 indexed
+        ))

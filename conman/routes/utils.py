@@ -1,4 +1,4 @@
-import os
+from collections import deque
 
 
 def split_path(path):
@@ -7,13 +7,17 @@ def split_path(path):
 
     A url's sub-paths consist of all substrings ending in / and starting at
     the start of the url.
-    """
-    paths = ['/']
-    path = path.rstrip('/')
 
+    eg: /path/containing/subpaths/ becomes:
+
+        /
+        /path/
+        /path/containing/
+        /path/containing/subpaths/
+    """
+    paths = deque()
+    path = path or '/'
     while path:
-        paths.append(path + '/')
-        path = os.path.split(path)[0]
-        if path == '/':
-            break
-    return paths
+        path = path.rpartition('/')[0]
+        paths.appendleft(path + '/')
+    return list(paths)
