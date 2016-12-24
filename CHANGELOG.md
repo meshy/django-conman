@@ -5,7 +5,7 @@
 ### Backwards incompatible
 
 * Removed `conman.pages` app.
-* Removed `slug` and `parent` fields.
+* Removed `slug` and `parent` fields from Route.
 * Removed dependency upon `django-polymorphic-tree`.
 * Destroyed and recreated migrations.
 * Removed `conman.routes.handlers.SimpleHandler`.
