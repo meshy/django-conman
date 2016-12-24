@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from ..models import Route
-from ..validators import (
+from conman.routes.models import Route
+from conman.routes.validators import (
     validate_end_in_slash,
     validate_no_dotty_subpaths,
     validate_no_double_slashes,

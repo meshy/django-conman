@@ -17,6 +17,7 @@ settings.configure(
     INSTALLED_APPS=(
         'conman.routes',
         'conman.redirects',
+        'tests',
 
         'polymorphic',
 
@@ -45,6 +46,6 @@ class TestRunner(ColourRunnerMixin, DiscoverRunner):
 
 
 test_runner = TestRunner(verbosity=1)
-failures = test_runner.run_tests(['conman'])
+failures = test_runner.run_tests(['tests'])
 if failures:
     sys.exit(1)

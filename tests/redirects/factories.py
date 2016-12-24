@@ -1,7 +1,7 @@
 import factory
 
-from conman.routes.tests.factories import ChildRouteFactory, RouteFactory
-from .. import models
+from conman.redirects import models
+from tests.routes.factories import ChildRouteFactory, RouteFactory
 
 
 class ChildRouteRedirectFactory(ChildRouteFactory):

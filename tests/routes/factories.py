@@ -1,6 +1,6 @@
 import factory
 
-from .. import models
+from conman.routes import models
 
 
 class RouteFactory(factory.DjangoModelFactory):

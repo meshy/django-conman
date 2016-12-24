@@ -5,9 +5,9 @@ from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.db.models import Manager
 from django.test import TestCase
 
+from conman.routes.handlers import BaseHandler, RouteViewHandler, URLConfHandler
+from conman.routes.models import Route
 from .urls import dummy_view
-from ..handlers import BaseHandler, RouteViewHandler, URLConfHandler
-from ..models import Route
 
 
 class BaseHandlerInitTest(TestCase):
@@ -69,7 +69,7 @@ class URLConfHandlerHandleTest(TestCase):
 
         class URLConfRoute(Route):
             handler_class = URLConfHandler
-            urlconf = 'conman.routes.tests.urls'
+            urlconf = 'tests.routes.urls'
             # Silence RemovedInDjango20Warning about manager inheritance.
             base_objects = Manager()
 

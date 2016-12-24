@@ -4,7 +4,7 @@ from django.core.checks import Error
 from django.core.checks.registry import registry
 from django.test import SimpleTestCase
 
-from .. import checks
+from conman.routes import checks
 
 
 class PolymorphicInstalledTest(SimpleTestCase):

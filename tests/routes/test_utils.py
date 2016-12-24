@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .. import utils
+from conman.routes import utils
 
 
 class SplitPathTest(TestCase):

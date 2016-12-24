@@ -1,7 +1,7 @@
 from django.core.urlresolvers import resolve, Resolver404
 from django.test import TestCase
 
-from .. import views
+from conman.routes import views
 
 
 class NavTreeURLRouterTest(TestCase):

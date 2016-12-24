@@ -3,10 +3,10 @@ from django.forms import ModelForm
 from django.test import TestCase
 from incuna_test_utils.utils import field_names
 
-from conman.routes.tests.test_models import NODE_BASE_FIELDS
+from conman.redirects.models import RouteRedirect, URLRedirect
+from conman.redirects.views import RouteRedirectView
+from tests.routes.test_models import NODE_BASE_FIELDS
 from .factories import ChildRouteRedirectFactory
-from ..models import RouteRedirect, URLRedirect
-from ..views import RouteRedirectView
 
 
 class RouteRedirectTest(TestCase):
