@@ -25,6 +25,8 @@ class BaseHandlerCheckTest(TestCase):
     """Test BaseHandler.check()."""
     def test_classmethod(self):
         """Ensure check() is a classmethod."""
+        # vars() used here because BaseHandler.check is a boundmethod,
+        # not a classmethod.
         self.assertIsInstance(vars(BaseHandler)['check'], classmethod)
 
     def test_default(self):
