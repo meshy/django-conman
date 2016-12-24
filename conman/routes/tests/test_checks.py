@@ -7,7 +7,7 @@ from django.test import SimpleTestCase
 from .. import checks
 
 
-class TestPolymorphicInstalled(SimpleTestCase):
+class PolymorphicInstalledTest(SimpleTestCase):
     """Test checks.polymorphic_installed."""
     def test_registered(self):
         """checks.polymorphic_installed is a registered check."""
@@ -34,7 +34,7 @@ class TestPolymorphicInstalled(SimpleTestCase):
         self.assertEqual(errors, [error])
 
 
-class TestSubclassesAvailable(SimpleTestCase):
+class SubclassesAvailableTest(SimpleTestCase):
     """Test checks.subclasses_available."""
     def test_registered(self):
         """checks.subclasses_available is a registered check."""

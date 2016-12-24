@@ -47,7 +47,7 @@ class RouteRedirectTest(TestCase):
         self.assertIn('target', form.errors)
 
 
-class TestRouteRedirectView(TestCase):
+class RouteRedirectViewTest(TestCase):
     """Test RouteRedirect.view."""
     def test_view(self):
         """RouteRedirect uses the RouteRedirectView."""

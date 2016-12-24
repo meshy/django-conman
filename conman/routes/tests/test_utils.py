@@ -3,7 +3,7 @@ from django.test import TestCase
 from .. import utils
 
 
-class TestSplitPath(TestCase):
+class SplitPathTest(TestCase):
     """Test the split_path util function."""
     def test_split_path(self):
         """split_path returns a list of all sub-paths of a url path."""

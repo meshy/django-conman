@@ -37,7 +37,7 @@ class RouteTest(TestCase):
         self.assertCountEqual(fields, expected)
 
 
-class RouteUniqueness(TestCase):
+class RouteUniquenessTest(TestCase):
     """Check uniqueness conditions on Route are enforced in the DB."""
     def test_unique_url(self):
         """Only one Route can exist with a particular url."""
@@ -214,7 +214,7 @@ class RouteHandleTest(TestCase):
         self.assertEqual(result, expected)
 
 
-class RouteMoveTo(TestCase):
+class RouteMoveToTest(TestCase):
     """Tests for moving a Route to a new location."""
     def test_without_children(self):
         """When move_children is False, children stay put."""
@@ -285,7 +285,7 @@ class RouteMoveTo(TestCase):
         self.assertEqual(child.url, '/old-url/leaf/')
 
 
-class TestRouteSwapWith(TestCase):
+class RouteSwapWithTest(TestCase):
     """Tests for Route.swap_with()."""
     def test_peer_with_different_children(self):
         """Test swapping route branches with children."""
