@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import IntegrityError, models
+from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
 from .handlers import RouteViewHandler
@@ -130,11 +131,11 @@ class Route(PolymorphicModel):
         See https://code.djangoproject.com/ticket/20581.
         """
         if not (self.pk and other_route.pk):
-            raise ValueError('Cannot move unsaved Routes.')
+            raise ValueError(_('Cannot move unsaved Routes.'))
 
         urls = sorted((self.url, other_route.url))
         if move_children and urls[1].startswith(urls[0]):
-            msg = 'Cannot move children when swapping ancestors with descendants.'
+            msg = _('Cannot move children when swapping ancestors with descendants.')
             raise ValueError(msg)
 
         tmp_path = str(uuid.uuid4())
