@@ -46,7 +46,7 @@ class Route(PolymorphicModel):
 
     def get_ancestors(self):
         """Get all the ancestors of this Route."""
-        assert self.pk  # Ensure object has been saved.
+        assert self.pk is not None  # Ensure object has been saved.
 
         paths = split_path(self.url)[:-1]
         return (
@@ -58,7 +58,7 @@ class Route(PolymorphicModel):
 
     def get_descendants(self):
         """Get all the descendants of this Route."""
-        assert self.pk  # Ensure object has been saved.
+        assert self.pk is not None  # Ensure object has been saved.
 
         others = Route.objects.exclude(pk=self.pk)
         descendants = others.filter(url__startswith=self.url)
@@ -131,7 +131,8 @@ class Route(PolymorphicModel):
 
         See https://code.djangoproject.com/ticket/20581.
         """
-        assert self.pk and other_route.pk  # Ensure saved to DB.
+        # Ensure saved to DB.
+        assert self.pk is not None and other_route.pk is not None
 
         urls = sorted((self.url, other_route.url))
         if move_children and urls[1].startswith(urls[0]):
