@@ -76,14 +76,13 @@ class RouteGetAncestorsTest(TestCase):
           ORDER BY "routes_route"."url" ASC
     """
     def test_just_created(self):
-        """Until saved, return empty Queryset."""
+        """Until saved, raise an error."""
         route = RouteFactory.build()
 
+        # Presumed nonsense as unsaved, so no query.
         with self.assertNumQueries(0):
-            # Presumed nonsense as unsaved, so no query.
-            ancestors = list(route.get_ancestors())
-
-        self.assertEqual(ancestors, [])
+            with self.assertRaises(AssertionError):
+                route.get_ancestors()
 
     def test_no_ancestors(self):
         """Without ancestors, we get an empty result."""
@@ -144,11 +143,10 @@ class RouteGetDescendantsTest(TestCase):
         """Until saved, return empty Queryset."""
         branch = RouteFactory.build()
 
+        # Descendants presumed nonsense as unsaved, so no query.
         with self.assertNumQueries(0):
-            # Descendants presumed nonsense as unsaved, so no query.
-            descendants = list(branch.get_descendants())
-
-        self.assertEqual(descendants, [])
+            with self.assertRaises(AssertionError):
+                branch.get_descendants()
 
     def test_no_descendants(self):
         """When an Route has no descendants, return no objects."""
@@ -448,11 +446,10 @@ class TestRouteSwapWith(TestCase):
         route_1 = RouteFactory.create(url='/a/')
         route_2 = RouteFactory.build(url='/b/')
 
-        msg = 'Cannot move unsaved Routes.'
         with self.assertNumQueries(0):
-            with self.assertRaisesMessage(ValueError, msg):
+            with self.assertRaises(AssertionError):
                 route_1.swap_with(route_2, move_children=True)
-            with self.assertRaisesMessage(ValueError, msg):
+            with self.assertRaises(AssertionError):
                 route_2.swap_with(route_1, move_children=True)
 
 

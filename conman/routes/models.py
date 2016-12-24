@@ -46,8 +46,9 @@ class Route(PolymorphicModel):
 
     def get_ancestors(self):
         """Get all the ancestors of this Route."""
-        paths = split_path(self.url)[:-1]
+        assert self.pk  # Ensure object has been saved.
 
+        paths = split_path(self.url)[:-1]
         return (
             Route.objects
             .exclude(pk=self.pk)
@@ -57,8 +58,8 @@ class Route(PolymorphicModel):
 
     def get_descendants(self):
         """Get all the descendants of this Route."""
-        if not self.pk:
-            return Route.objects.none()
+        assert self.pk  # Ensure object has been saved.
+
         others = Route.objects.exclude(pk=self.pk)
         descendants = others.filter(url__startswith=self.url)
         return descendants.order_by('url')
@@ -130,8 +131,7 @@ class Route(PolymorphicModel):
 
         See https://code.djangoproject.com/ticket/20581.
         """
-        if not (self.pk and other_route.pk):
-            raise ValueError(_('Cannot move unsaved Routes.'))
+        assert self.pk and other_route.pk  # Ensure saved to DB.
 
         urls = sorted((self.url, other_route.url))
         if move_children and urls[1].startswith(urls[0]):
