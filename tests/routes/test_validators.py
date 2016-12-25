@@ -1,8 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from ..models import Route
-from ..validators import (
+from conman.routes.models import Route
+from conman.routes.validators import (
     validate_end_in_slash,
     validate_no_dotty_subpaths,
     validate_no_double_slashes,
@@ -12,7 +12,7 @@ from ..validators import (
 )
 
 
-class TestValidateEndInSlash(TestCase):
+class ValidateEndInSlashTest(TestCase):
     """Tests for the validate_end_in_slash validator."""
 
     def test_no_ending_slash(self):
@@ -24,7 +24,7 @@ class TestValidateEndInSlash(TestCase):
             validate_end_in_slash(path)
 
 
-class TestValidateStartInSlash(TestCase):
+class ValidateStartInSlashTest(TestCase):
     """Tests for the validate_start_in_slash validator."""
 
     def test_no_starting_slash(self):
@@ -36,7 +36,7 @@ class TestValidateStartInSlash(TestCase):
             validate_start_in_slash(path)
 
 
-class TestValidateNoDottySubpaths(TestCase):
+class ValidateNoDottySubpathsTest(TestCase):
     """Tests for the validate_no_dotty_subpaths validator."""
     expected = 'Subpaths cannot contain only full stops (AKA "periods", ".").'
 
@@ -61,7 +61,7 @@ class TestValidateNoDottySubpaths(TestCase):
         self.assertIsNone(validate_no_dotty_subpaths(path))
 
 
-class TestValidateNoQuestionmark(TestCase):
+class ValidateNoQuestionmarkTest(TestCase):
     """Tests for the validate_no_questionmark validator."""
 
     def test_has_questionmark(self):
@@ -73,7 +73,7 @@ class TestValidateNoQuestionmark(TestCase):
             validate_no_questionmark(path)
 
 
-class TestValidateNoDoubleSlashes(TestCase):
+class ValidateNoDoubleSlashesTest(TestCase):
     """Tests for the validate_no_double_slashes validator."""
 
     def test_has_double_slashes(self):
@@ -85,7 +85,7 @@ class TestValidateNoDoubleSlashes(TestCase):
             validate_no_double_slashes(path)
 
 
-class TestValidateNoHashSymbol(TestCase):
+class ValidateNoHashSymbolTest(TestCase):
     """Tests for the validate_no_hash_symbol validator."""
 
     def test_has_double_slashes(self):
@@ -97,7 +97,7 @@ class TestValidateNoHashSymbol(TestCase):
             validate_no_hash_symbol(path)
 
 
-class TestAllValidators(TestCase):
+class AllValidatorsTest(TestCase):
     """Tests all validators."""
     validators = [
         validate_end_in_slash,

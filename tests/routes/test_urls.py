@@ -1,10 +1,10 @@
 from django.core.urlresolvers import resolve, Resolver404
 from django.test import TestCase
 
-from .. import views
+from conman.routes import views
 
 
-class TestNavTreeURLRouter(TestCase):
+class RouteRouterViewTest(TestCase):
     """Test the route_router view."""
     def assert_url_uses_router(self, url):
         """Check a url resolves to the route_router view."""

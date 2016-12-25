@@ -17,6 +17,7 @@ settings.configure(
     INSTALLED_APPS=(
         'conman.routes',
         'conman.redirects',
+        'tests',
 
         'polymorphic',
 
@@ -28,7 +29,7 @@ settings.configure(
     ),
     MIDDLEWARE=(),
     PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
-    ROOT_URLCONF='conman.tests.urls',
+    ROOT_URLCONF='tests.urls',
     SITE_ID=1,
     TEMPLATES=[{
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -45,6 +46,6 @@ class TestRunner(ColourRunnerMixin, DiscoverRunner):
 
 
 test_runner = TestRunner(verbosity=1)
-failures = test_runner.run_tests(['conman'])
+failures = test_runner.run_tests(['tests'])
 if failures:
     sys.exit(1)

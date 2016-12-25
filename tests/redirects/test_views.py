@@ -1,12 +1,12 @@
 from django.test import TestCase
 
-from conman.routes.tests.factories import ChildRouteFactory
-from conman.tests.utils import RequestTestCase
+from conman.redirects import views
+from tests.routes.factories import ChildRouteFactory
+from tests.utils import RequestTestCase
 from .factories import ChildRouteRedirectFactory, URLRedirectFactory
-from .. import views
 
 
-class TestRouteRedirectView(RequestTestCase):
+class RouteRedirectViewTest(RequestTestCase):
     """Verify behaviour of RouteRedirectView."""
     view = views.RouteRedirectView
 
@@ -36,7 +36,7 @@ class TestRouteRedirectView(RequestTestCase):
         self.assertEqual(response.status_code, 302)
 
 
-class TestRouteRedirectViewIntegration(TestCase):
+class RouteRedirectViewIntegrationTest(TestCase):
     """Check integration of RouteRedirectView."""
     def test_access_redirect(self):
         """Accessing a RouteRedirect's url redirects to its target's url."""
@@ -47,7 +47,7 @@ class TestRouteRedirectViewIntegration(TestCase):
         self.assertEqual(response['Location'], target.url)
 
 
-class TestURLRedirectView(RequestTestCase):
+class URLRedirectViewTest(RequestTestCase):
     """Verify behaviour of URLRedirectView."""
     view = views.URLRedirectView
 
