@@ -22,6 +22,6 @@ setup(
     author_email='charlie@meshy.co.uk',
     url='https://github.com/meshy/django-conman/',
     install_requires=[
-        'django-polymorphic>=1.0.1,<1.1',
+        'django-polymorphic~=1.2.0',
     ],
 )

@@ -4,7 +4,7 @@ cache: pip
 python:
   - 3.4
   - 3.5
-  - 3.6-dev
+  - 3.6
 script: make test
 notifications:
   email: false
@@ -13,6 +13,14 @@ env:
     - DATABASE_URL='postgres://postgres@localhost/conman'
   matrix:
     - DJANGO='django~=1.10.0'
+    - DJANGO='django~=1.11.0'
+    - DJANGO='https://github.com/django/django/tarball/master'
+
+matrix:
+  allow_failures:
+    - env: DJANGO='https://github.com/django/django/tarball/master'
+  fast_finish: true
+
 install:
   - psql -c 'CREATE DATABASE conman' -U postgres;
   - pip install -U pip setuptools wheel
