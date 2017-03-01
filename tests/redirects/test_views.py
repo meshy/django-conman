@@ -3,6 +3,7 @@ from django.test import TestCase
 from conman.redirects import views
 from tests.routes.factories import ChildRouteFactory
 from tests.utils import RequestTestCase
+
 from .factories import ChildRouteRedirectFactory, URLRedirectFactory
 
 

@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from conman.routes.handlers import BaseHandler, RouteViewHandler, URLConfHandler
 from conman.routes.models import Route
+
 from .urls import dummy_view
 
 
