@@ -1,6 +1,7 @@
 from unittest import mock
 
 from django.db import IntegrityError, transaction
+from django.db.models import Manager
 from django.test import TestCase
 from incuna_test_utils.utils import field_names
 
@@ -27,6 +28,7 @@ class RouteTest(TestCase):
             'urlredirect',
 
             # Incoming foreign keys from subclasses in tests
+            'routesubclass',
             'routewithnoview',
             'routewithview',
             'routewithurlconf',
@@ -49,15 +51,27 @@ class RouteUniquenessTest(TestCase):
 
 class RouteCheckTest(TestCase):
     """Test Route.check()."""
-    def test_defer_to_handler(self):
-        """Route.check returns the result of Route.handler_class().check()."""
-        with mock.patch('conman.routes.models.Route.handler_class') as handler:
-            errors = Route.check()
+    def test_route_subclass(self):
+        """Route.check returns handler_class().check() on subclasses."""
+        class RouteSubclass(Route):
+            # Silence RemovedInDjango20Warning about manager inheritance.
+            base_objects = Manager()
+
+        with mock.patch.object(RouteSubclass, 'handler_class') as handler:
+            errors = RouteSubclass.check()
 
         # Ensure the handler's check method is called...
-        handler.check.assert_called_once_with(Route)
+        handler.check.assert_called_once_with(RouteSubclass)
         # ... and that the return value is passed back through.
-        self.assertEqual(errors, handler.check(Route))
+        self.assertEqual(errors, handler.check(RouteSubclass))
+
+    def test_base_route_class(self):
+        """Route.check doesn't call handler_class().check on Route."""
+        with mock.patch.object(Route, 'handler_class') as handler:
+            errors = Route.check()
+
+        self.assertFalse(handler.check.called)
+        self.assertEqual(errors, [])
 
 
 class RouteGetAncestorsTest(TestCase):

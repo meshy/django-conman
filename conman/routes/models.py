@@ -42,6 +42,9 @@ class Route(PolymorphicModel):
     @classmethod
     def check(cls):
         """Delegate model checks to the handler."""
+        # Skip checks on the base class. They're intended for subclasses.
+        if cls == Route:
+            return []
         return cls.handler_class.check(cls)
 
     def get_ancestors(self):
