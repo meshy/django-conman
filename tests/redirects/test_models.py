@@ -6,6 +6,7 @@ from incuna_test_utils.utils import field_names
 from conman.redirects.models import RouteRedirect, URLRedirect
 from conman.redirects.views import RouteRedirectView
 from tests.routes.test_models import NODE_BASE_FIELDS
+
 from .factories import ChildRouteRedirectFactory
 
 
