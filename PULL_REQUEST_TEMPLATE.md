@@ -1,7 +1,7 @@
 
--[] Tests/styles (flake8 etc)
+- Tests/styles (flake8 etc)
 
--[] Change log
+- Change log
 
--[] Docs
+- Docs
 
