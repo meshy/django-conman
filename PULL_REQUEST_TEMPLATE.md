@@ -1,7 +1,12 @@
+**Please fill in the following help with this PR:**
 
-- Tests/styles (flake8 etc)
+_What was the problem:_
 
-- Change log
+_How this solves the problem:_
 
-- Docs
+_Please ensure you have (if appropriate):_
 
+- [ ] Run the test suite / style guide checkers.
+- [ ] Added tests.
+- [ ] Updated the docs.
+- [ ] Updated the changelog.
