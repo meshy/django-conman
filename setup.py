@@ -1,7 +1,15 @@
+import sys
+
 from setuptools import setup
 
 
+if sys.version_info <= (3, 4):
+    msg = 'Minimum python version requirement not met.'
+    raise EnvironmentError(msg)
+
+
 version = '0.0.1a1'
+
 
 setup(
     name='django-conman',
