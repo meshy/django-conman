@@ -1,7 +1,15 @@
+import sys
+
 from setuptools import setup
 
 
+if sys.version_info <= (3, 4):
+    msg = 'Minimum python version requirement not met.'
+    raise EnvironmentError(msg)
+
+
 version = '0.0.1a1'
+
 
 setup(
     name='django-conman',
@@ -15,13 +23,17 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     author='Charlie Denton',
     author_email='charlie@meshy.co.uk',
     url='https://github.com/meshy/django-conman/',
     install_requires=[
-        'django-polymorphic>=1.0.1,<1.1',
+        'django-polymorphic~=1.2.0',
     ],
 )

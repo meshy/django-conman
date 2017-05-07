@@ -15,10 +15,12 @@
 * Replace `Route.handler` dotted path with `Route.handler_class`.
 * Remove `conman.routes.handlers.BaseHandler.path()`.
 * Remove `conman.routes.utils.import_from_dotted_path()`.
+* Bumped minimum version of `django-polymorphic` to 1.2.
 
 ### Added
 
 * Added support for django 1.10 (thanks to @Ian-Foote).
+* Added support for django 1.11.
 * Added `RouteViewHandler`. A handler that delegates request handling to the
   `view` attribute of the `Route`.
 * Added `URLConfHandler`. A handler that resolves the provided `path` to a view
