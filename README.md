@@ -39,15 +39,37 @@ urlpatterns = [
 ```
 
 ## Basic custom app
+
+In the following example, `MyRoute.trusted_content` contains HTML that is safe
+to be rendered directly into a template. Only use [`|safe`][django-safe] with
+extreme caution in your own projects.
+
 ```python
-# models.py
-class ExampleRoute(conman.routes.models.Route):
-    # Your data/fields here
-    ...
-    view = ExampleRouteDetail.as_view()
+# my_template.html
+{{ route.trusted_content|safe }}
+
 
 # views.py
-class ExampleRouteDetail(django.views.generic.DetailView):
-    def get_object(self):
-        return self.kwargs['route']
+from django.shortcuts import render
+
+def my_view(request, route):
+    return render('my_template.html', {'route': route})
+
+
+# models.py
+from conman.routes.models import Route
+from . import views
+
+class MyRoute(Route):
+    trusted_content = models.TextField()
+
+    view = views.my_view
 ```
+
+A more complex example might use a rich text field such as the `HTMLField` from
+[djagno-tinymce][django-tinymce], and be careful to sanitise the HTML with
+[bleach][bleach].
+
+[django-safe]: https://docs.djangoproject.com/en/1.8/ref/templates/builtins/#safe
+[django-tinymce]: https://github.com/aljosa/django-tinymce
+[bleach]: https://github.com/mozilla/bleach
