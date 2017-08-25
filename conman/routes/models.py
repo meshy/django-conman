@@ -63,9 +63,12 @@ class Route(PolymorphicModel):
         """Get all the descendants of this Route."""
         assert self.pk is not None  # Ensure object has been saved.
 
-        others = Route.objects.exclude(pk=self.pk)
-        descendants = others.filter(url__startswith=self.url)
-        return descendants.order_by('url')
+        return (
+            Route.objects
+            .exclude(pk=self.pk)
+            .filter(url__startswith=self.url)
+            .order_by('url')
+        )
 
     def get_handler(self):
         """
