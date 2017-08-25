@@ -4,6 +4,7 @@ from django.core.checks import Error
 from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.db.models import Manager
 from django.test import TestCase
+from django.test.utils import isolate_apps
 
 from conman.routes.handlers import BaseHandler, RouteViewHandler, URLConfHandler
 from conman.routes.models import Route
@@ -61,12 +62,12 @@ class SubclassHandleTest(TestCase):
         self.assertEqual(TestHandler(None).handle(None, None), expected)
 
 
+@isolate_apps()
 class URLConfHandlerHandleTest(TestCase):
     """Test URLConfHandler.handle()."""
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
         """Create a Handler, route, request and view for use in these tests."""
-        super().setUpClass()
+        super().setUp()
 
         class URLConfRoute(Route):
             handler_class = URLConfHandler
@@ -74,8 +75,8 @@ class URLConfHandlerHandleTest(TestCase):
             # Silence RemovedInDjango20Warning about manager inheritance.
             base_objects = Manager()
 
-        cls.route = URLConfRoute()
-        cls.handler = URLConfHandler(cls.route)
+        self.route = URLConfRoute()
+        self.handler = URLConfHandler(self.route)
 
     def tearDown(self):
         """Stop tests leaking into each other through the url cache."""
@@ -109,6 +110,7 @@ class URLConfHandlerHandleTest(TestCase):
         self.assertFalse(dummy_view.called)
 
 
+@isolate_apps()
 class URLConfHandlerCheckTest(TestCase):
     """Tests for URLConfHandler.check()."""
     def test_no_urlconf(self):
@@ -141,6 +143,7 @@ class URLConfHandlerCheckTest(TestCase):
         self.assertEqual(errors, [])
 
 
+@isolate_apps()
 class RouteViewHandlerCheckTest(TestCase):
     """Tests for RouteViewHandler.check()."""
     def test_no_view(self):

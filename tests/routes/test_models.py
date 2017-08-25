@@ -3,6 +3,7 @@ from unittest import mock
 from django.db import IntegrityError, transaction
 from django.db.models import Manager
 from django.test import TestCase
+from django.test.utils import isolate_apps
 from incuna_test_utils.utils import field_names
 
 from conman.routes import handlers
@@ -25,16 +26,9 @@ class RouteTest(TestCase):
         """Check the Route model has the expected fields."""
         expected = (
             'id',
+            # Incoming foreign keys from subclasses
             'routeredirect',
             'urlredirect',
-
-            # Incoming foreign keys from subclasses in tests
-            'routesubclass',
-            'routewithnoview',
-            'routewithview',
-            'routewithurlconf',
-            'routewithnourlconf',
-            'urlconfroute',
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)
         self.assertCountEqual(fields, expected)
@@ -50,6 +44,7 @@ class RouteUniquenessTest(TestCase):
             Route.objects.create(url='/')
 
 
+@isolate_apps()
 class RouteCheckTest(TestCase):
     """Test Route.check()."""
     def test_route_subclass(self):
