@@ -19,6 +19,8 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 
 INSTALLED_APPS = (
+    'example',
+
     'conman.routes',
     'conman.redirects',
 
