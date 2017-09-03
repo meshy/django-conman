@@ -53,7 +53,7 @@ extreme caution in your own projects.
 from django.shortcuts import render
 
 def my_view(request, route):
-    return render('my_template.html', {'route': route})
+    return render(request, 'my_template.html', {'route': route})
 
 
 # models.py
