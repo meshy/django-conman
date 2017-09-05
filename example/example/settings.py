@@ -4,7 +4,7 @@ import dj_database_url
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-DEBUG = TEMPLATE_DEBUG = True
+DEBUG = True
 
 
 SECRET_KEY = 'example-app!'
@@ -19,6 +19,8 @@ DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 
 INSTALLED_APPS = (
+    'example',
+
     'conman.routes',
     'conman.redirects',
 
@@ -42,3 +44,22 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': [],
+    'APP_DIRS': False,
+    'OPTIONS': {
+        'context_processors': [
+            'django.template.context_processors.debug',
+            'django.template.context_processors.request',
+            'django.contrib.auth.context_processors.auth',
+            'django.contrib.messages.context_processors.messages',
+        ],
+        'debug': DEBUG,
+        'loaders': [
+            'django.template.loaders.app_directories.Loader',
+        ],
+    },
+}]
