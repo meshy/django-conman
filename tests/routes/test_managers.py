@@ -1,6 +1,7 @@
 from django.db import IntegrityError, transaction
 from django.test import TestCase
 
+from conman.routes.exceptions import InvalidURL
 from conman.routes.models import Route
 
 from .factories import ChildRouteFactory, RouteFactory
@@ -108,6 +109,25 @@ class RouteManagerBestMatchForBrokenPathTest(TestCase):
             route = Route.objects.best_match_for_path('/branch/absent-leaf/')
 
         self.assertEqual(route, branch)
+
+
+class RouteManagerCreateTest(TestCase):
+    """Route.objects.create() creates Route objects."""
+    def test_no_url(self):
+        """Without a URL, we see an error."""
+        error = "create() missing 1 required keyword-only argument: 'url'"
+        with self.assertRaisesMessage(TypeError, error):
+            Route.objects.create()
+
+    def test_with_url(self):
+        """We can create a Route with a URL."""
+        route = Route.objects.create(url='/')  # No exception raised
+        self.assertIsInstance(route, Route)
+
+    def test_invalid_url(self):
+        """Validation is applied to the URL."""
+        with self.assertRaises(InvalidURL):
+            Route.objects.create(url='not-a-url')
 
 
 class RouteManagerMoveBranchTest(TestCase):

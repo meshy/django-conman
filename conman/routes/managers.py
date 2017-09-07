@@ -1,7 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.db.models import Value
 from django.db.models.functions import Concat, Length, Substr
 from polymorphic.managers import PolymorphicManager
 
+from .exceptions import InvalidURL
 from .utils import split_path
 
 
@@ -33,6 +35,16 @@ class RouteManager(PolymorphicManager):
         except IndexError:
             msg = 'No matching Route for URL. (Have you made a root Route?)'
             raise self.model.DoesNotExist(msg)
+
+    def create(self, *, url, **kwargs):
+        """Require (and validate) 'url' when creating Routes."""
+        validators = self.model._meta.get_field('url').validators
+        try:
+            for validator in validators:
+                validator(url)
+        except ValidationError as e:
+            raise InvalidURL(e.message)
+        return super().create(url=url, **kwargs)
 
     def move_branch(self, old_url, new_url):
         """

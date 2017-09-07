@@ -16,6 +16,7 @@
 * Remove `conman.routes.handlers.BaseHandler.path()`.
 * Remove `conman.routes.utils.import_from_dotted_path()`.
 * Bumped minimum version of `django-polymorphic` to 1.2.
+* Change `Route.objects.create` to require and verify a `url` parameter.
 
 ### Added
 
