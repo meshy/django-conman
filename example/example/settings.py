@@ -63,3 +63,10 @@ TEMPLATES = [{
         ],
     },
 }]
+
+
+CONMAN_ADMIN_ROUTES = [
+    'example.Page',
+    'redirects.RouteRedirect',
+    'redirects.URLRedirect',
+]

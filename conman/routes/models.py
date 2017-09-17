@@ -21,6 +21,7 @@ class Route(PolymorphicModel):
     """A Route in a tree of url endpoints."""
     url = models.TextField(
         db_index=True,
+        help_text=_('The operative URL for this Route.'),
         validators=[
             validate_end_in_slash,
             validate_start_in_slash,
@@ -29,6 +30,7 @@ class Route(PolymorphicModel):
             validate_no_hash_symbol,
             validate_no_questionmark,
         ],
+        verbose_name='URL',
         unique=True,
     )
 
