@@ -33,6 +33,11 @@ class RouteTest(TestCase):
         fields = field_names(Route)
         self.assertCountEqual(fields, expected)
 
+    def test_get_absolute_url(self):
+        """Route.get_absolute_url returns the url of the Route."""
+        route = RouteFactory.build(url='/testing/')
+        self.assertEqual(route.get_absolute_url(), route.url)
+
 
 class RouteUniquenessTest(TestCase):
     """Check uniqueness conditions on Route are enforced in the DB."""

@@ -47,6 +47,10 @@ class Route(PolymorphicModel):
             return []
         return cls.handler_class.check(cls)
 
+    def get_absolute_url(self):
+        """Return the path element of the URL for this Route."""
+        return self.url
+
     def get_ancestors(self):
         """Get all the ancestors of this Route."""
         assert self.pk is not None  # Ensure object has been saved.

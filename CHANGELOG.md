@@ -36,6 +36,7 @@
   and (optionally) it's descendants to another location.
 * `Route().swap_with(new_url, *, move_children)` can be used to swap a `Route`
   and (optionally) it's descendants with another `Route`.
+* Added `Route().get_absolute_url()`.
 
 ### Changed
 
