@@ -21,6 +21,8 @@ test:
 	@flake8 ${RESULT}
 	@echo -e "\n${PURPLE}Check for unsorted imports:${RESET}"
 	@isort --check ${RESULT}
+	@echo -e "\n${PURPLE}Check for missing migrations:${RESET}"
+	@example/manage.py makemigrations --check --dry-run ${RESULT}
 
 release:
 	python setup.py register sdist bdist_wheel upload
