@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from conman.routes.managers import RouteManager
 from conman.routes.models import Route
 
 from . import views
@@ -18,7 +19,7 @@ class RouteRedirect(Route):
 
     view = views.RouteRedirectView.as_view()
 
-    base_objects = models.Manager()
+    objects = RouteManager()
 
     def clean(self):
         """Forbid setting target equal to self."""
@@ -39,4 +40,4 @@ class URLRedirect(Route):
 
     view = views.URLRedirectView.as_view()
 
-    base_objects = models.Manager()
+    objects = RouteManager()
