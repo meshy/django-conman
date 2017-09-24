@@ -2,6 +2,10 @@ site_name: Django Conman
 theme: 'material'
 pages:
   - Installation: index.md
+  - Routes: routes.md
+  - Handlers: handlers.md
+  - Redirects: redirects.md
+  - Admin integration: admin.md
 markdown_extensions:
   - admonition
   - codehilite(guess_lang=false)
