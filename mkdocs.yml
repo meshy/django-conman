@@ -1,5 +1,7 @@
 site_name: Django Conman
 theme: 'material'
+pages:
+  - Installation: index.md
 markdown_extensions:
   - admonition
   - codehilite(guess_lang=false)
