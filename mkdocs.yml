@@ -6,6 +6,7 @@ pages:
   - Handlers: handlers.md
   - Redirects: redirects.md
   - Admin integration: admin.md
+  - Contribution: contribution.md
 markdown_extensions:
   - admonition
   - codehilite(guess_lang=false)
