@@ -36,9 +36,10 @@ locally:
         mkvirtualenv django-conman -p $(which python3)
         pip install -r requirements.txt
 
-1. The tests assume you're running PostgresQL locally without a password. If you
-   need to override this, you can set the `DATABASE_URL` environment variable
-   as accepted by [dj-database-url][dj-database-url].
+1. The tests assume you're running [PostgresQL locally without a
+   password][postgres-without-passwords]. If you need to override this, you can
+   set the `DATABASE_URL` environment variable as accepted by
+   [dj-database-url][dj-database-url].
 
 1. Finally, you should be able to run the tests with:
 
@@ -108,4 +109,5 @@ There are a couple of tools we recommend to make things easier:
 [github-repo]: https://github.com/meshy/django-conman
 [isort]: https://github.com/timothycrosley/isort
 [pep8]: https://www.python.org/dev/peps/pep-0008/
+[postgres-without-passwords]: http://meshy.co.uk/posts/postgresql-without-passwords
 [virtualenvwrapper]: https://pypi.python.org/pypi/virtualenvwrapper
