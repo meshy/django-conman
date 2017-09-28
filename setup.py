@@ -8,7 +8,7 @@ if sys.version_info <= (3, 4):
     raise EnvironmentError(msg)
 
 
-version = '0.0.1a1'
+version = '0.1.0'
 
 
 setup(
