@@ -26,10 +26,11 @@ pip install django-conman
 pip install -e git+https://github.com/meshy/django-conman.git#egg=conman
 ```
 
-## Configure
+## Minimal configuration
 ```python
 # settings.py
 INSTALLED_APPS += ['conman.routes']
+CONMAN_ADMIN_ROUTES = ['myapp.MyRouteSubclass', ...]
 
 # urls.py
 urlpatterns = [
@@ -64,6 +65,20 @@ class MyRoute(Route):
     trusted_content = models.TextField()
 
     view = views.my_view
+
+
+# admin.py
+from conman.routes.admin import RouteChildAdmin
+from django.contrib import admin
+from .models import MyRoute
+
+@admin.register(MyRoute)
+class MyRouteAdmin(RouteChildAdmin):
+    pass
+
+
+# settings.py
+CONMAN_ADMIN_ROUTES += ['myapp.MyRoute']
 ```
 
 A more complex example might use a rich text field such as the `HTMLField` from

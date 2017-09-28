@@ -14,8 +14,16 @@ class RouteRedirect(Route):
 
     This model holds the data required to make that connection.
     """
-    target = models.ForeignKey('routes.Route', related_name='+', on_delete=models.CASCADE)
-    permanent = models.BooleanField(default=False)
+    target = models.ForeignKey(
+        'routes.Route',
+        help_text=_('Browsers will be redirected to this route.'),
+        on_delete=models.CASCADE,
+        related_name='+',
+    )
+    permanent = models.BooleanField(
+        default=False,
+        help_text=_('If permanent, this redirect will be cached by browsers.'),
+    )
 
     view = views.RouteRedirectView.as_view()
 
@@ -35,9 +43,18 @@ class RouteRedirect(Route):
 
 class URLRedirect(Route):
     """A `Route` that redirects to an arbitrary URL."""
-    target = models.URLField(max_length=2000)
-    permanent = models.BooleanField(default=False)
+    target = models.URLField(
+        max_length=2000,
+        help_text=_('Browsers will be redirected to this URL.'),
+    )
+    permanent = models.BooleanField(
+        default=False,
+        help_text=_('If permanent, this redirect will be cached by browsers.'),
+    )
 
     view = views.URLRedirectView.as_view()
 
     objects = RouteManager()
+
+    class Meta:
+        verbose_name = 'URL redirect'

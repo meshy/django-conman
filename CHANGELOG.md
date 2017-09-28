@@ -22,6 +22,7 @@
 
 * Added support for django 1.10 (thanks to @Ian-Foote).
 * Added support for django 1.11.
+* Added basic django admin integration.
 * Added `RouteViewHandler`. A handler that delegates request handling to the
   `view` attribute of the `Route`.
 * Added `URLConfHandler`. A handler that resolves the provided `path` to a view
@@ -36,6 +37,7 @@
   and (optionally) it's descendants to another location.
 * `Route().swap_with(new_url, *, move_children)` can be used to swap a `Route`
   and (optionally) it's descendants with another `Route`.
+* Added `Route().get_absolute_url()`.
 
 ### Changed
 

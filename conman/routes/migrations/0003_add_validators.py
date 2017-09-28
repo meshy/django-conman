@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='route',
             name='url',
-            field=models.TextField(db_index=True, validators=[conman.routes.validators.validate_end_in_slash, conman.routes.validators.validate_start_in_slash, conman.routes.validators.validate_no_dotty_subpaths, conman.routes.validators.validate_no_double_slashes, conman.routes.validators.validate_no_hash_symbol, conman.routes.validators.validate_no_questionmark], unique=True),
+            field=models.TextField(db_index=True, help_text='The operative URL for this Route.', validators=[conman.routes.validators.validate_end_in_slash, conman.routes.validators.validate_start_in_slash, conman.routes.validators.validate_no_dotty_subpaths, conman.routes.validators.validate_no_double_slashes, conman.routes.validators.validate_no_hash_symbol, conman.routes.validators.validate_no_questionmark], unique=True, verbose_name='URL'),
         ),
     ]

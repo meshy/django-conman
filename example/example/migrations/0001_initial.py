@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             name='Page',
             fields=[
                 ('route_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='routes.Route')),
-                ('raw_html', models.TextField()),
+                ('raw_html', models.TextField(verbose_name='Raw HTML')),
             ],
             options={
                 'abstract': False,
