@@ -25,4 +25,5 @@ test:
 	@example/manage.py makemigrations --check --dry-run ${RESULT}
 
 release:
-	python setup.py register sdist bdist_wheel upload
+	python setup.py sdist bdist_wheel
+	twine release dist/* -s
