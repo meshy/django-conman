@@ -26,4 +26,4 @@ test:
 
 release:
 	python setup.py sdist bdist_wheel
-	twine release dist/* -s
+	twine upload dist/* -s
