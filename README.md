@@ -5,8 +5,6 @@
 
 A CONtent MANagement system for Django. (Get it?)
 
-Sponsored by [Incuna](http://incuna.com/).
-
 ## Requirements
 
 Tested against:

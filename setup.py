@@ -16,7 +16,7 @@ setup(
     packages=['conman'],
     include_package_data=True,
     version=version,
-    description='A modular CMS for django, sponsored by Incuna',
+    description='A lightweight CMS for django',
     classifiers=[
         'Development Status :: 1 - Planning',
         'Framework :: Django',
