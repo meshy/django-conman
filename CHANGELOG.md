@@ -1,5 +1,11 @@
 # django-conman changelog
 
+## 0.1.1 2017-09-29
+
+### Fixed
+- The inevitable initial packaging error.
+
+
 ## 0.1.0 2017-09-28
 
 ### Backwards incompatible

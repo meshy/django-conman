@@ -1,6 +1,6 @@
 import sys
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 if sys.version_info <= (3, 4):
@@ -8,12 +8,12 @@ if sys.version_info <= (3, 4):
     raise EnvironmentError(msg)
 
 
-version = '0.1.0'
+version = '0.1.1'
 
 
 setup(
     name='django-conman',
-    packages=['conman'],
+    packages=find_packages(exclude=['docs', 'tests', 'tests.*']),
     include_package_data=True,
     version=version,
     description='A lightweight CMS for django',
