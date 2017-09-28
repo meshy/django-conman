@@ -11,3 +11,4 @@ incuna-test-utils==6.6.0
 isort==4.2.5
 mkdocs==0.16.0
 psycopg2==2.6.2
+twine==1.9.1
