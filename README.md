@@ -28,7 +28,6 @@ pip install -e git+https://github.com/meshy/django-conman.git#egg=conman
 ```python
 # settings.py
 INSTALLED_APPS += ['conman.routes']
-CONMAN_ADMIN_ROUTES = ['myapp.MyRouteSubclass', ...]
 
 # urls.py
 urlpatterns = [
@@ -73,10 +72,6 @@ from .models import MyRoute
 @admin.register(MyRoute)
 class MyRouteAdmin(RouteChildAdmin):
     pass
-
-
-# settings.py
-CONMAN_ADMIN_ROUTES += ['myapp.MyRoute']
 ```
 
 A more complex example might use a rich text field such as the `HTMLField` from

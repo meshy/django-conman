@@ -1,5 +1,5 @@
-from conman.routes.models import Route
 from conman.routes.managers import RouteManager
+from conman.routes.models import Route
 
 
 class RouteSubclass(Route):

@@ -6,6 +6,12 @@
 
 - Added `Route.get_subclasses()`.
 
+### Backwards incompatible
+
+- `CONMAN_ADMIN_ROUTES` setting has been removed. In future, we'll
+  automatically detect subclasses of `Route` for admin integration.
+
+
 ## 0.1.1 2017-09-29
 
 ### Fixed
