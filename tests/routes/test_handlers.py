@@ -8,6 +8,7 @@ from django.test.utils import isolate_apps
 
 from conman.routes.handlers import BaseHandler, RouteViewHandler, URLConfHandler
 from conman.routes.models import Route
+from tests.models import URLConfRoute
 
 from .urls import dummy_view
 
@@ -68,12 +69,6 @@ class URLConfHandlerHandleTest(TestCase):
     def setUp(self):
         """Create a Handler, route, request and view for use in these tests."""
         super().setUp()
-
-        class URLConfRoute(Route):
-            handler_class = URLConfHandler
-            urlconf = 'tests.routes.urls'
-            # Silence RemovedInDjango20Warning about manager inheritance.
-            base_objects = Manager()
 
         self.route = URLConfRoute()
         self.handler = URLConfHandler(self.route)

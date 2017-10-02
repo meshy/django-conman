@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.contrib import admin
 from django.core.checks import Error
 
 
@@ -32,3 +33,20 @@ def subclasses_available(app_configs, **kwargs):
         errors.append(error)
 
     return errors
+
+
+def subclasses_in_admin(app_configs, **kwargs):
+    """Catch Route subclasses that are not registered in the admin."""
+    if not apps.is_installed('django.contrib.admin'):
+        return []
+
+    Route = apps.get_model('routes.Route')
+    route_subclasses = set(Route.get_subclasses())
+    missing = route_subclasses.difference(admin.site._registry)
+    if missing:
+        return [Error(
+            'Route subclasses missing from admin.',
+            hint='Missing: {}.'.format(missing),
+            id='conman.routes.E003',
+        )]
+    return []

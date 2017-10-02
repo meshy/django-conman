@@ -30,6 +30,7 @@ class RouteTest(TestCase):
             'routeredirect',  # conman.redirects.models.RouteRedirect
             'urlredirect',  # conman.redirects.models.URLRedirect
             'routesubclass',  # tests.models.RouteSubclass
+            'urlconfroute',  # tests.models.URLConfRoute
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)
         self.assertCountEqual(fields, expected)
