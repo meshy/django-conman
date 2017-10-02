@@ -1,5 +1,11 @@
 # django-conman changelog
 
+## Unreleased
+
+### Added
+
+- Added `Route.get_subclasses()`.
+
 ## 0.1.1 2017-09-29
 
 ### Fixed

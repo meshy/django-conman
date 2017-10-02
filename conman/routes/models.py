@@ -89,6 +89,20 @@ class Route(PolymorphicModel):
             self._handler = self.handler_class(self)
             return self._handler
 
+    @classmethod
+    def get_subclasses(cls):
+        """
+        Return every subclass of Route.
+
+        Adapted from https://stackoverflow.com/a/33607093/400691
+        """
+        def subclasses_for(model):
+            for subclass in model.__subclasses__():
+                yield from subclasses_for(subclass)
+                yield subclass
+
+        return subclasses_for(cls)
+
     def handle(self, request, path):
         """
         Delegate handling the request to the handler.
