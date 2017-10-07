@@ -2,13 +2,11 @@ from unittest import mock
 
 from django.core.checks import Error
 from django.core.urlresolvers import clear_url_caches, Resolver404
-from django.db.models import Manager
 from django.test import TestCase
 from django.test.utils import isolate_apps
 
 from conman.routes.handlers import BaseHandler, RouteViewHandler, URLConfHandler
-from conman.routes.models import Route
-from tests.models import URLConfRoute
+from tests.models import RouteSubclass, URLConfRoute
 
 from .urls import dummy_view
 
@@ -110,31 +108,26 @@ class URLConfHandlerCheckTest(TestCase):
     """Tests for URLConfHandler.check()."""
     def test_no_urlconf(self):
         """When the route has no urlconf, return an error."""
-        class RouteWithNoURLConf(Route):
-            handler_class = URLConfHandler
-            # Silence RemovedInDjango20Warning about manager inheritance.
-            base_objects = Manager()
+        removed_urlconf = URLConfRoute.urlconf
+        try:
+            del URLConfRoute.urlconf
+            errors = URLConfHandler.check(URLConfRoute)
+        finally:
+            URLConfRoute.urlconf = removed_urlconf
 
-        errors = URLConfHandler.check(RouteWithNoURLConf)
         expected = Error(
-            'RouteWithNoURLConf must have a `urlconf` attribute.',
+            'URLConfRoute must have a `urlconf` attribute.',
             hint=(
                 'The urlconf must be a dotted path. ' +
                 'This is a requirement of URLConfHandler.'
             ),
-            obj=RouteWithNoURLConf,
+            obj=URLConfRoute,
         )
         self.assertEqual(errors, [expected])
 
     def test_has_urlconf(self):
         """When the Route has a urlconf, all's well."""
-        class RouteWithURLConf(Route):
-            handler_class = URLConfHandler
-            urlconf = 'a.dotted.path'
-            # Silence RemovedInDjango20Warning about manager inheritance.
-            base_objects = Manager()
-
-        errors = URLConfHandler.check(RouteWithURLConf)
+        errors = URLConfHandler.check(URLConfRoute)
         self.assertEqual(errors, [])
 
 
@@ -143,30 +136,23 @@ class RouteViewHandlerCheckTest(TestCase):
     """Tests for RouteViewHandler.check()."""
     def test_no_view(self):
         """When the route has no view, return an error."""
-        class RouteWithNoView(Route):
-            handler_class = RouteViewHandler
-            # Silence RemovedInDjango20Warning about manager inheritance.
-            base_objects = Manager()
+        removed_view = RouteSubclass.view
+        try:
+            del RouteSubclass.view
+            errors = RouteViewHandler.check(RouteSubclass)
+        finally:
+            RouteSubclass.view = removed_view
 
-        errors = RouteViewHandler.check(RouteWithNoView)
         expected = Error(
-            'RouteWithNoView must have a `view` attribute.',
+            'RouteSubclass must have a `view` attribute.',
             hint='This is a requirement of RouteViewHandler.',
-            obj=RouteWithNoView,
+            obj=RouteSubclass,
         )
         self.assertEqual(errors, [expected])
 
     def test_function(self):
         """When the Route has a view function, all's well."""
-        class RouteWithView(Route):
-            handler_class = RouteViewHandler
-            # Silence RemovedInDjango20Warning about manager inheritance.
-            base_objects = Manager()
-
-            def view(request):
-                return
-
-        errors = RouteViewHandler.check(RouteWithView)
+        errors = RouteViewHandler.check(RouteSubclass)
         self.assertEqual(errors, [])
 
 
