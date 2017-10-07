@@ -79,8 +79,8 @@ class SubclassesInAdminTest(SimpleTestCase):
         """When a Route subclass isn't in the admin, show an error."""
         # Store the registered admin class for teardown.
         admin_class = admin.site._registry[NestedRouteSubclass].__class__
+        admin.site.unregister(NestedRouteSubclass)
         try:
-            admin.site.unregister(NestedRouteSubclass)
             result = checks.subclasses_in_admin(app_configs=None)
         finally:
             # Restore the admin to pre-test status.
@@ -98,8 +98,8 @@ class SubclassesInAdminTest(SimpleTestCase):
         admin_class = admin.site._registry[NestedRouteSubclass].__class__
 
         path = 'conman.routes.checks.apps.is_installed'
+        admin.site.unregister(NestedRouteSubclass)
         try:
-            admin.site.unregister(NestedRouteSubclass)
             with mock.patch(path, return_value=False, autospec=True):
                 errors = checks.subclasses_in_admin(app_configs=None)
         finally:
