@@ -97,6 +97,9 @@ class SubclassesInAdminTest(SimpleTestCase):
         """When the admin isn't active, don't force use of it."""
         admin_class = admin.site._registry[NestedRouteSubclass].__class__
 
+        # Override django's "apps" module to fake that django's admin isn't in
+        # INSTALLED_APPS. The path is in `conman` because it must be mocked in
+        # the place where it's imported.
         path = 'conman.routes.checks.apps.is_installed'
         admin.site.unregister(NestedRouteSubclass)
         try:
