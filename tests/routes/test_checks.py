@@ -82,16 +82,16 @@ class SubclassesInAdminTest(SimpleTestCase):
         try:
             admin.site.unregister(NestedRouteSubclass)
             result = checks.subclasses_in_admin(app_configs=None)
-
-            expected = Error(
-                'Route subclasses missing from admin.',
-                hint="Missing: {<class 'tests.models.NestedRouteSubclass'>}.",
-                id='conman.routes.E003',
-            )
-            self.assertEqual(result, [expected])
         finally:
             # Restore the admin to pre-test status.
             admin.site.register(NestedRouteSubclass, admin_class)
+
+        expected = Error(
+            'Route subclasses missing from admin.',
+            hint="Missing: {<class 'tests.models.NestedRouteSubclass'>}.",
+            id='conman.routes.E003',
+        )
+        self.assertEqual(result, [expected])
 
     def test_admin_disabled(self):
         """When the admin isn't active, don't force use of it."""
@@ -99,10 +99,11 @@ class SubclassesInAdminTest(SimpleTestCase):
 
         path = 'conman.routes.checks.apps.is_installed'
         try:
+            admin.site.unregister(NestedRouteSubclass)
             with mock.patch(path, return_value=False, autospec=True):
-                admin.site.unregister(NestedRouteSubclass)
                 errors = checks.subclasses_in_admin(app_configs=None)
-                self.assertEqual(errors, [])
         finally:
             # Restore the admin to pre-test status.
             admin.site.register(NestedRouteSubclass, admin_class)
+
+        self.assertEqual(errors, [])
