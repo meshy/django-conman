@@ -12,3 +12,4 @@ class RouteConfig(AppConfig):
         """Register checks for conman routes."""
         register(checks.polymorphic_installed)
         register(checks.subclasses_available)
+        register(checks.subclasses_in_admin)

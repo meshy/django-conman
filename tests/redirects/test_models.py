@@ -16,7 +16,9 @@ class RouteRedirectTest(TestCase):
         """RouteRedirect has Route's fields and some specific to redirects."""
         expected = (
             'id',
-            'route_ptr',
+            'route_ptr',  # FK to Route, the parent class.
+
+            # Fields from the RouteRedirect class.
             'target',
             'permanent',
         ) + NODE_BASE_FIELDS

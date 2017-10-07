@@ -1,13 +1,13 @@
 from unittest import mock
 
 from django.db import IntegrityError, transaction
-from django.db.models import Manager
 from django.test import TestCase
 from django.test.utils import isolate_apps
 from incuna_test_utils.utils import field_names
 
 from conman.routes import handlers
 from conman.routes.models import Route
+from tests.models import NestedRouteSubclass, RouteSubclass
 
 from .factories import ChildRouteFactory, RouteFactory
 
@@ -27,8 +27,10 @@ class RouteTest(TestCase):
         expected = (
             'id',
             # Incoming foreign keys from subclasses
-            'routeredirect',
-            'urlredirect',
+            'routeredirect',  # conman.redirects.models.RouteRedirect
+            'urlredirect',  # conman.redirects.models.URLRedirect
+            'routesubclass',  # tests.models.RouteSubclass
+            'urlconfroute',  # tests.models.URLConfRoute
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)
         self.assertCountEqual(fields, expected)
@@ -54,10 +56,6 @@ class RouteCheckTest(TestCase):
     """Test Route.check()."""
     def test_route_subclass(self):
         """Route.check returns handler_class().check() on subclasses."""
-        class RouteSubclass(Route):
-            # Silence RemovedInDjango20Warning about manager inheritance.
-            base_objects = Manager()
-
         with mock.patch.object(RouteSubclass, 'handler_class') as handler:
             errors = RouteSubclass.check()
 
@@ -209,6 +207,19 @@ class RouteGetHandlerTest(TestCase):
         second_handler = route.get_handler()
 
         self.assertEqual(first_handler, second_handler)
+
+
+class RouteGetSubclassesTest(TestCase):
+    """Check behaviour of Route.get_subclasses()."""
+    def test_subclasses(self):
+        """Direct subclasses of Route are caught."""
+        subclasses = Route.get_subclasses()
+        self.assertIn(RouteSubclass, subclasses)
+
+    def test_nested_subclasses(self):
+        """Nested subclasses of Route are caught."""
+        subclasses = Route.get_subclasses()
+        self.assertIn(NestedRouteSubclass, subclasses)
 
 
 class RouteHandleTest(TestCase):

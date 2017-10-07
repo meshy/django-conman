@@ -1,19 +1,19 @@
 from django.contrib.admin import site
-from django.test import TestCase
+from django.test import mock, TestCase
 
-from conman.redirects.models import RouteRedirect, URLRedirect
 from conman.routes.admin import RouteParentAdmin
 from conman.routes.models import Route
 
 
 class TestRouteParentAdminChildModels(TestCase):
     """Tests for RouteParentAdmin.get_child_models()."""
-    def test_models_imported(self):
-        """Each path in CONMAN_ADMIN_ROUTES is returned as a model."""
+    def test_delegation(self):
+        """Fetching subclasses is delegated to Route.get_subclasses()."""
         admin = RouteParentAdmin(model=Route, admin_site=site)
 
-        route_paths = ['redirects.RouteRedirect', 'redirects.URLRedirect']
-        with self.settings(CONMAN_ADMIN_ROUTES=route_paths):
-            models = admin.get_child_models()
+        with mock.patch.object(Route, 'get_subclasses') as get_subclasses:
+            get_subclasses.return_value = (c for c in [Route])
+            subclasses = admin.get_child_models()
 
-        self.assertEqual(models, [RouteRedirect, URLRedirect])
+        self.assertIsInstance(subclasses, list)
+        get_subclasses.assert_called_with()

@@ -1,10 +1,12 @@
 from unittest import mock
 
+from django.contrib import admin
 from django.core.checks import Error
 from django.core.checks.registry import registry
 from django.test import SimpleTestCase
 
 from conman.routes import checks
+from tests.models import NestedRouteSubclass
 
 
 class PolymorphicInstalledTest(SimpleTestCase):
@@ -59,3 +61,52 @@ class SubclassesAvailableTest(SimpleTestCase):
             id='conman.routes.E002',
         )
         self.assertEqual(errors, [error])
+
+
+class SubclassesInAdminTest(SimpleTestCase):
+    """Test checks.subclasses_in_admin."""
+    def test_registered(self):
+        """checks.subclasses_in_admin is a registered check."""
+        registered_checks = registry.get_checks()
+        self.assertIn(checks.subclasses_in_admin, registered_checks)
+
+    def test_in_admin(self):
+        """When a Route subclass is in the admin, show no error."""
+        errors = checks.subclasses_in_admin(app_configs=None)
+        self.assertEqual(errors, [])
+
+    def test_not_in_admin(self):
+        """When a Route subclass isn't in the admin, show an error."""
+        # Store the registered admin class for teardown.
+        admin_class = admin.site._registry[NestedRouteSubclass].__class__
+        admin.site.unregister(NestedRouteSubclass)
+        try:
+            result = checks.subclasses_in_admin(app_configs=None)
+        finally:
+            # Restore the admin to pre-test status.
+            admin.site.register(NestedRouteSubclass, admin_class)
+
+        expected = Error(
+            'Route subclasses missing from admin.',
+            hint="Missing: {<class 'tests.models.NestedRouteSubclass'>}.",
+            id='conman.routes.E003',
+        )
+        self.assertEqual(result, [expected])
+
+    def test_admin_disabled(self):
+        """When the admin isn't active, don't force use of it."""
+        admin_class = admin.site._registry[NestedRouteSubclass].__class__
+
+        # Override django's "apps" module to fake that django's admin isn't in
+        # INSTALLED_APPS. The path is in `conman` because it must be mocked in
+        # the place where it's imported.
+        path = 'conman.routes.checks.apps.is_installed'
+        admin.site.unregister(NestedRouteSubclass)
+        try:
+            with mock.patch(path, return_value=False, autospec=True):
+                errors = checks.subclasses_in_admin(app_configs=None)
+        finally:
+            # Restore the admin to pre-test status.
+            admin.site.register(NestedRouteSubclass, admin_class)
+
+        self.assertEqual(errors, [])
