@@ -150,7 +150,7 @@ class RouteViewHandlerCheckTest(TestCase):
         )
         self.assertEqual(errors, [expected])
 
-    def test_function(self):
+    def test_has_view(self):
         """When the Route has a view function, all's well."""
         errors = RouteViewHandler.check(RouteSubclass)
         self.assertEqual(errors, [])
