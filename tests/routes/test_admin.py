@@ -16,3 +16,4 @@ class TestRouteParentAdminChildModels(TestCase):
             subclasses = admin.get_child_models()
 
         self.assertIsInstance(subclasses, list)
+        get_subclasses.assert_called_with()
