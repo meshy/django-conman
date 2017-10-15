@@ -55,11 +55,14 @@ INSTALLED_APPS += (
 )
 ```
 !!! Note
-    You are likely to be adding more apps here, as few `Route` subclasses are
-    provided out of the box.
+    For more information about `'conman.redirects'`, see the [Redirects topic
+    guide](topics/redirects.md).
 
-    To create your own, see [Routes](routes.md), and for more information about
-    `'conman.redirects'`, see [Redirects](redirects.md).
+    You are likely to be adding more apps here, as few `Route` subclasses are
+    provided out of the box. See the [Routes topic guide](topics/routes.md).
+
+    To create your own, see the [Creating custom
+    routes](tutorials/custom_routes.md) tutorial.
 
 
 ### Migrations
@@ -72,7 +75,9 @@ python manage.py migrate
 
 ### Admin integration
 
-If you're using django's admin, see [Admin integration](admin.md).
+If you're using django's admin, see the [Admin integration topic
+guide](topics/admin.md).
+
 
 [content-types]: https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/
 [django]: https://www.djangoproject.com/
