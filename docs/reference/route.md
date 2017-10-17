@@ -52,11 +52,18 @@ would return the queryset equivalent of `[r3, r4]`
 
 ### `get_handler()`
 
-Returns an instance of the `handler_class`.
+Returns an instance of the [`handler_class`](#handler_class).
+
+If this method is called multiple times on the same `Route` instance, the same
+handler will be returned. This call is used by [`handle()`](#handle).
 
 ### `handle(...)`
 
 Signature: `handle(self, request, path)`.
+
+Delegates handling of a request to a handler. Returns the HTTP response from
+[handler's `handle` method](/reference/handlers.md#handle). Called by the
+catch-all view, `route_router`.
 
 ### `move_to(...)`
 
