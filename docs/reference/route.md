@@ -17,7 +17,7 @@ There are some constraints on the value:
 ### `handler_class`
 
 The `handler_class` attribute determines what view is called when someone
-browses to a matching URL. See the [handlers topic guide](topics/handlers.md).
+browses to a matching URL. See the [handlers topic guide](/topics/handlers.md).
 
 ## Methods
 
