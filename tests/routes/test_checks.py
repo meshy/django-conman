@@ -1,7 +1,7 @@
 from unittest import mock
 
 from django.contrib import admin
-from django.core.checks import Error
+from django.core.checks import Error, Warning
 from django.core.checks.registry import registry
 from django.test import SimpleTestCase
 
@@ -53,14 +53,14 @@ class SubclassesAvailableTest(SimpleTestCase):
         """The check fails if no subclass of Route is available."""
         with mock.patch('conman.routes.models.Route.__subclasses__') as subclasses:
             subclasses.return_value = []
-            errors = checks.subclasses_available(app_configs=None)
+            result = checks.subclasses_available(app_configs=None)
 
-        error = Error(
+        expected = Warning(
             'No Route subclasses are available.',
             hint='Add another conman module to INSTALLED_APPS.',
-            id='conman.routes.E002',
+            id='conman.routes.W001',
         )
-        self.assertEqual(errors, [error])
+        self.assertEqual(result, [expected])
 
 
 class SubclassesInAdminTest(SimpleTestCase):
@@ -86,10 +86,10 @@ class SubclassesInAdminTest(SimpleTestCase):
             # Restore the admin to pre-test status.
             admin.site.register(NestedRouteSubclass, admin_class)
 
-        expected = Error(
+        expected = Warning(
             'Route subclasses missing from admin.',
             hint="Missing: {<class 'tests.models.NestedRouteSubclass'>}.",
-            id='conman.routes.E003',
+            id='conman.routes.W002',
         )
         self.assertEqual(result, [expected])
 
@@ -104,9 +104,9 @@ class SubclassesInAdminTest(SimpleTestCase):
         admin.site.unregister(NestedRouteSubclass)
         try:
             with mock.patch(path, return_value=False, autospec=True):
-                errors = checks.subclasses_in_admin(app_configs=None)
+                result = checks.subclasses_in_admin(app_configs=None)
         finally:
             # Restore the admin to pre-test status.
             admin.site.register(NestedRouteSubclass, admin_class)
 
-        self.assertEqual(errors, [])
+        self.assertEqual(result, [])
