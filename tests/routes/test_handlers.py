@@ -3,7 +3,6 @@ from unittest import mock
 from django.core.checks import Error
 from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.test import TestCase
-from django.test.utils import isolate_apps
 
 from conman.routes.handlers import BaseHandler, RouteViewHandler, URLConfHandler
 from tests.models import RouteSubclass, URLConfRoute
@@ -61,7 +60,6 @@ class SubclassHandleTest(TestCase):
         self.assertEqual(TestHandler(None).handle(None, None), expected)
 
 
-@isolate_apps()
 class URLConfHandlerHandleTest(TestCase):
     """Test URLConfHandler.handle()."""
     def setUp(self):
@@ -103,7 +101,6 @@ class URLConfHandlerHandleTest(TestCase):
         self.assertFalse(dummy_view.called)
 
 
-@isolate_apps()
 class URLConfHandlerCheckTest(TestCase):
     """Tests for URLConfHandler.check()."""
     def test_no_urlconf(self):
@@ -131,7 +128,6 @@ class URLConfHandlerCheckTest(TestCase):
         self.assertEqual(errors, [])
 
 
-@isolate_apps()
 class RouteViewHandlerCheckTest(TestCase):
     """Tests for RouteViewHandler.check()."""
     def test_no_view(self):
