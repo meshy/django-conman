@@ -24,7 +24,7 @@ class BaseHandler:
         return []
 
     def handle(self, request, path):
-        """Raise an error if a subclass calls handle without defining how.."""
+        """Raise an error if a subclass calls handle without defining how."""
         msg = 'Subclasses of `BaseHandler` must implement `handle()`.'
         raise NotImplementedError(msg)
 
