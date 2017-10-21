@@ -4,7 +4,7 @@ pages:
   - Installation: index.md
   - Tutorials:
     - Creating custom routes TODO: tutorials/custom_routes.md
-    - Basic HTML TODO: tutorials/basic_html.md
+    - Basic HTML: tutorials/basic_html.md
     - Rich text TODO: tutorials/rich_text.md
     - Application content TODO: tutorials/app_content.md
   - Topics:
