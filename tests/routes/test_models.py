@@ -27,11 +27,11 @@ class RouteTest(TestCase):
             'id',
             # Incoming foreign keys from subclasses
             'routeredirect',  # conman.redirects.models.RouteRedirect
-            'urlredirect',  # conman.redirects.models.URLRedirect
             'routesubclass',  # tests.models.RouteSubclass
-            'viewroute',  # tests.models.ViewRoute
             'templateroute',  # tests.models.TemplateRoute
             'urlconfroute',  # tests.models.URLConfRoute
+            'urlredirect',  # conman.redirects.models.URLRedirect
+            'viewroute',  # tests.models.ViewRoute
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)
         self.assertCountEqual(fields, expected)
