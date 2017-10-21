@@ -103,7 +103,7 @@ class URLConfHandler(BaseHandler):
         return view(request, *args, route=self.route, **kwargs)
 
 
-class RouteViewHandler(BaseHandler):
+class ViewHandler(BaseHandler):
     """
     Delegates handling to the `view` attribute of the assocated Route.
 

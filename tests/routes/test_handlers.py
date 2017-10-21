@@ -7,9 +7,9 @@ from django.test import RequestFactory, TestCase
 
 from conman.routes.handlers import (
     BaseHandler,
-    RouteViewHandler,
     TemplateHandler,
     URLConfHandler,
+    ViewHandler,
 )
 from tests.models import RouteSubclass, TemplateRoute, URLConfRoute
 
@@ -208,39 +208,39 @@ class URLConfHandlerCheckTest(TestCase):
         self.assertEqual(errors, [])
 
 
-class RouteViewHandlerCheckTest(TestCase):
-    """Tests for RouteViewHandler.check()."""
+class ViewHandlerCheckTest(TestCase):
+    """Tests for ViewHandler.check()."""
     def test_no_view(self):
         """When the route has no view, return an error."""
         removed_view = RouteSubclass.view
         try:
             del RouteSubclass.view
-            errors = RouteViewHandler.check(RouteSubclass)
+            errors = ViewHandler.check(RouteSubclass)
         finally:
             RouteSubclass.view = removed_view
 
         expected = Warning(
             'RouteSubclass must have a `view` attribute.',
-            hint='This is a requirement of RouteViewHandler.',
+            hint='This is a requirement of ViewHandler.',
             obj=RouteSubclass,
         )
         self.assertEqual(errors, [expected])
 
     def test_has_view(self):
         """When the Route has a view function, all's well."""
-        errors = RouteViewHandler.check(RouteSubclass)
+        errors = ViewHandler.check(RouteSubclass)
         self.assertEqual(errors, [])
 
 
-class RouteViewHandlerHandleTest(TestCase):
-    """Test RouteViewHandler.handle()."""
+class ViewHandlerHandleTest(TestCase):
+    """Test ViewHandler.handle()."""
     def test_handle_basic(self):
         """Show that Route.view is used to process the request."""
         class MockRoute:
             view = mock.Mock()
 
         route = MockRoute()
-        handler = RouteViewHandler(route)
+        handler = ViewHandler(route)
         request = mock.Mock()
 
         response = handler.handle(request, '/')
@@ -252,7 +252,7 @@ class RouteViewHandlerHandleTest(TestCase):
     def test_handle_slug(self):
         """Show that slugs are not accepted."""
         route = mock.Mock()
-        handler = RouteViewHandler(route)
+        handler = ViewHandler(route)
 
         with self.assertRaises(Resolver404):
             handler.handle(mock.Mock(), '/slug/')
@@ -262,7 +262,7 @@ class RouteViewHandlerHandleTest(TestCase):
     def test_handle_pk(self):
         """Show that pks are not accepted."""
         route = mock.Mock()
-        handler = RouteViewHandler(route)
+        handler = ViewHandler(route)
 
         with self.assertRaises(Resolver404):
             handler.handle(mock.Mock(), '/42/')
