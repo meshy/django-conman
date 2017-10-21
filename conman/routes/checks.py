@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.contrib import admin
-from django.core.checks import Error
+from django.core.checks import Error, Warning
 
 
 def polymorphic_installed(app_configs, **kwargs):
@@ -21,18 +21,15 @@ def polymorphic_installed(app_configs, **kwargs):
 
 def subclasses_available(app_configs, **kwargs):
     """Check that at least one Route subclass is available."""
-    errors = []
     routes = apps.get_app_config('routes')
     Route = routes.get_model('Route')
     if not Route.__subclasses__():
-        error = Error(
+        return [Warning(
             'No Route subclasses are available.',
             hint='Add another conman module to INSTALLED_APPS.',
-            id='conman.routes.E002',
-        )
-        errors.append(error)
-
-    return errors
+            id='conman.routes.W001',
+        )]
+    return []
 
 
 def subclasses_in_admin(app_configs, **kwargs):
@@ -44,9 +41,9 @@ def subclasses_in_admin(app_configs, **kwargs):
     route_subclasses = set(Route.get_subclasses())
     missing = route_subclasses.difference(admin.site._registry)
     if missing:
-        return [Error(
+        return [Warning(
             'Route subclasses missing from admin.',
             hint='Missing: {}.'.format(missing),
-            id='conman.routes.E003',
+            id='conman.routes.W002',
         )]
     return []

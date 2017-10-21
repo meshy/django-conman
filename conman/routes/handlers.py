@@ -42,7 +42,7 @@ class URLConfHandler(BaseHandler):
     def check(cls, route):
         """Ensure route has a sensible urlconf attribute."""
         if not hasattr(route, 'urlconf'):
-            return [checks.Error(
+            return [checks.Warning(
                 '{} must have a `urlconf` attribute.'.format(route.__name__),
                 hint=(
                     'The urlconf must be a dotted path. ' +
@@ -78,7 +78,7 @@ class RouteViewHandler(BaseHandler):
     def check(cls, route):
         """Ensure route has a sensible view attribute."""
         if not hasattr(route, 'view'):
-            return [checks.Error(
+            return [checks.Warning(
                 '{} must have a `view` attribute.'.format(route.__name__),
                 hint='This is a requirement of {}.'.format(cls.__name__),
                 obj=route,

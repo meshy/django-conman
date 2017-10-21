@@ -1,6 +1,6 @@
 from unittest import mock
 
-from django.core.checks import Error
+from django.core.checks import Warning
 from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.test import TestCase
 from django.test.utils import isolate_apps
@@ -115,7 +115,7 @@ class URLConfHandlerCheckTest(TestCase):
         finally:
             URLConfRoute.urlconf = removed_urlconf
 
-        expected = Error(
+        expected = Warning(
             'URLConfRoute must have a `urlconf` attribute.',
             hint=(
                 'The urlconf must be a dotted path. ' +
@@ -143,7 +143,7 @@ class RouteViewHandlerCheckTest(TestCase):
         finally:
             RouteSubclass.view = removed_view
 
-        expected = Error(
+        expected = Warning(
             'RouteSubclass must have a `view` attribute.',
             hint='This is a requirement of RouteViewHandler.',
             obj=RouteSubclass,

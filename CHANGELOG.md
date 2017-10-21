@@ -11,6 +11,13 @@
 - `CONMAN_ADMIN_ROUTES` setting has been removed. In future, we'll
   automatically detect subclasses of `Route` for admin integration.
 
+### Changed
+
+- Reduced severity of `subclasses_available` and `subclasses_in_admin` checks,
+  as well as checks for `urlconf` and `view` on handlers that need it. They
+  were previously `Error`, and are now `Warning`. `E002` and `E003` are changed
+  to `W001` and `W002`.
+
 
 ## 0.1.1 2017-09-29
 
