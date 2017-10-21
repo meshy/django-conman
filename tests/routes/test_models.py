@@ -208,6 +208,12 @@ class RouteGetHandlerTest(TestCase):
 
         self.assertEqual(first_handler, second_handler)
 
+    def test_default_handler(self):
+        """Ensure the default handler is TemplateHandler."""
+        route = RouteFactory.build()
+        handler = route.get_handler()
+        self.assertIsInstance(handler, handlers.TemplateHandler)
+
 
 class RouteGetSubclassesTest(TestCase):
     """Check behaviour of Route.get_subclasses()."""

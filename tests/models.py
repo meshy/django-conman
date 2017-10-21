@@ -7,13 +7,9 @@ from conman.routes.models import Route
 
 class RouteSubclass(Route):
     """A Route for testing direct subclasses of Route."""
+    template_name = 'ignored.html'  # Added to keep checks happy.
     # Silence RemovedInDjango20Warning about manager inheritance.
     objects = RouteManager()
-
-    @staticmethod
-    def view(request, route):
-        """A dummy view to keep the checks happy."""
-        return ''
 
 
 class ViewRoute(Route):

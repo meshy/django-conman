@@ -6,12 +6,14 @@
 
 - Added `Route.get_subclasses()`.
 - Added `TemplateHandler`. A simpler handler that requires only a template.
+  This is the new default for `Route.handler_class`.
 
 ### Backwards incompatible
 
 - `CONMAN_ADMIN_ROUTES` setting has been removed. In future, we'll
   automatically detect subclasses of `Route` for admin integration.
 - Renamed `RouteViewHandler` to `ViewHandler`.
+- Changed the default `Route.handler_class` to `TemplateHandler`.
 
 ### Changed
 
