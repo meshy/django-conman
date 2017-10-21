@@ -29,6 +29,7 @@ class RouteTest(TestCase):
             'routeredirect',  # conman.redirects.models.RouteRedirect
             'urlredirect',  # conman.redirects.models.URLRedirect
             'routesubclass',  # tests.models.RouteSubclass
+            'viewroute',  # tests.models.ViewRoute
             'templateroute',  # tests.models.TemplateRoute
             'urlconfroute',  # tests.models.URLConfRoute
         ) + NODE_BASE_FIELDS

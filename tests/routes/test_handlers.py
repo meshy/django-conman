@@ -11,7 +11,7 @@ from conman.routes.handlers import (
     URLConfHandler,
     ViewHandler,
 )
-from tests.models import RouteSubclass, TemplateRoute, URLConfRoute
+from tests.models import TemplateRoute, URLConfRoute, ViewRoute
 
 from .urls import dummy_view
 
@@ -212,23 +212,23 @@ class ViewHandlerCheckTest(TestCase):
     """Tests for ViewHandler.check()."""
     def test_no_view(self):
         """When the route has no view, return an error."""
-        removed_view = RouteSubclass.view
+        removed_view = ViewRoute.view
         try:
-            del RouteSubclass.view
-            errors = ViewHandler.check(RouteSubclass)
+            del ViewRoute.view
+            errors = ViewHandler.check(ViewRoute)
         finally:
-            RouteSubclass.view = removed_view
+            ViewRoute.view = removed_view
 
         expected = Warning(
-            'RouteSubclass must have a `view` attribute.',
+            'ViewRoute must have a `view` attribute.',
             hint='This is a requirement of ViewHandler.',
-            obj=RouteSubclass,
+            obj=ViewRoute,
         )
         self.assertEqual(errors, [expected])
 
     def test_has_view(self):
         """When the Route has a view function, all's well."""
-        errors = ViewHandler.check(RouteSubclass)
+        errors = ViewHandler.check(ViewRoute)
         self.assertEqual(errors, [])
 
 
