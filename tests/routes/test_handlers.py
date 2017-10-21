@@ -2,10 +2,16 @@ from unittest import mock
 
 from django.core.checks import Warning
 from django.core.urlresolvers import clear_url_caches, Resolver404
-from django.test import TestCase
+from django.http import HttpResponse
+from django.test import RequestFactory, TestCase
 
-from conman.routes.handlers import BaseHandler, RouteViewHandler, URLConfHandler
-from tests.models import RouteSubclass, URLConfRoute
+from conman.routes.handlers import (
+    BaseHandler,
+    RouteViewHandler,
+    TemplateHandler,
+    URLConfHandler,
+)
+from tests.models import RouteSubclass, TemplateRoute, URLConfRoute
 
 from .urls import dummy_view
 
@@ -34,6 +40,80 @@ class BaseHandlerCheckTest(TestCase):
         # None passed in place of a `Route` because it should be unused here.
         errors = BaseHandler.check(None)
         self.assertEqual(errors, [])
+
+
+class TemplateHandlerCheckTest(TestCase):
+    """Tests for TemplateHandler.check()."""
+    def test_no_template_name(self):
+        """When the route has no template_name, return an error."""
+        removed_template = TemplateRoute.template_name
+        try:
+            del TemplateRoute.template_name
+            errors = TemplateHandler.check(TemplateRoute)
+        finally:
+            TemplateRoute.template_name = removed_template
+
+        expected = Warning(
+            'TemplateRoute must have a `template_name` attribute.',
+            hint='This is a requirement of TemplateHandler.',
+            obj=TemplateRoute,
+        )
+        self.assertEqual(errors, [expected])
+
+    def test_has_view(self):
+        """When the Route has a view function, all's well."""
+        errors = TemplateHandler.check(TemplateRoute)
+        self.assertEqual(errors, [])
+
+
+class TemplateHandlerHandleTest(TestCase):
+    """Test TemplateHandler.handle()."""
+    def test_handle_basic(self):
+        """Show that django.shortcuts.render is used to render the response."""
+        route = TemplateRoute(url='/')
+        request = mock.Mock()
+
+        path = 'conman.routes.handlers.render'
+        handler = route.get_handler()
+        with mock.patch(path) as render:
+            handler.handle(request, '/')
+
+        render.assert_called_with(
+            request,
+            template_name=TemplateRoute.template_name,
+            context={'route': route},
+        )
+
+    def test_render_result(self):
+        """Ensure response is a HttpResponse."""
+        content = 'This is the expected content.'
+        route = TemplateRoute(url='/', content=content)
+        request = RequestFactory().get('/')
+
+        response = route.handle(request, '/')
+
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.content.strip().decode(), content)
+
+    def test_handle_slug(self):
+        """Show that slugs are not accepted."""
+        route = mock.Mock()
+        handler = TemplateHandler(route)
+
+        with self.assertRaises(Resolver404):
+            handler.handle(mock.Mock(), '/slug/')
+
+        self.assertFalse(route.view.called)
+
+    def test_handle_pk(self):
+        """Show that pks are not accepted."""
+        route = mock.Mock()
+        handler = TemplateHandler(route)
+
+        with self.assertRaises(Resolver404):
+            handler.handle(mock.Mock(), '/42/')
+
+        self.assertFalse(route.view.called)
 
 
 class SubclassHandleTest(TestCase):

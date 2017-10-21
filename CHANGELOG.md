@@ -5,6 +5,7 @@
 ### Added
 
 - Added `Route.get_subclasses()`.
+- Added `TemplateHandler`. A simpler handler that requires only a template.
 
 ### Backwards incompatible
 

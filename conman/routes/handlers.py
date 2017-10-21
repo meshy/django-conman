@@ -1,4 +1,5 @@
 from django.core import checks
+from django.shortcuts import render
 from django.urls import resolve, Resolver404
 
 
@@ -26,6 +27,43 @@ class BaseHandler:
         """Raise an error if a subclass calls handle without defining how.."""
         msg = 'Subclasses of `BaseHandler` must implement `handle()`.'
         raise NotImplementedError(msg)
+
+
+class TemplateHandler(BaseHandler):
+    """
+    A handler that renders a template.
+
+    Routes using this handler must define `template_name`, which can either
+    be a string or list, as accepted by `django.shortcuts.render`.
+
+    Renders the `template_name` of the related Route into an
+    `HttpResponse`.
+    """
+    @classmethod
+    def check(cls, route):
+        """Ensure route has a template_name attribute."""
+        if not hasattr(route, 'template_name'):
+            return [checks.Warning(
+                '{} must have a `template_name` attribute.'.format(route.__name__),
+                hint=('This is a requirement of {}.'.format(cls.__name__)),
+                obj=route,
+            )]
+
+        return []
+
+    def handle(self, request, path):
+        """
+        Render a template and return the `HttpResponse` returned.
+
+        Raises `django.core.urlresolvers.Resolver404` if `path` isn't found.
+        """
+        if path != '/':
+            raise Resolver404
+        return render(
+            request,
+            template_name=self.route.template_name,
+            context={'route': self.route},
+        )
 
 
 class URLConfHandler(BaseHandler):
