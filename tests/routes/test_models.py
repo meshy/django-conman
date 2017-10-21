@@ -2,7 +2,6 @@ from unittest import mock
 
 from django.db import IntegrityError, transaction
 from django.test import TestCase
-from django.test.utils import isolate_apps
 from incuna_test_utils.utils import field_names
 
 from conman.routes import handlers
@@ -51,7 +50,6 @@ class RouteUniquenessTest(TestCase):
             Route.objects.create(url='/')
 
 
-@isolate_apps()
 class RouteCheckTest(TestCase):
     """Test Route.check()."""
     def test_route_subclass(self):
