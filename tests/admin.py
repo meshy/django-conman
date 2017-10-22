@@ -2,9 +2,17 @@ from django.contrib import admin
 
 from conman.routes.admin import RouteChildAdmin
 
-from .models import NestedRouteSubclass, RouteSubclass, URLConfRoute
+from . import models
 
 
-models = (NestedRouteSubclass, RouteSubclass, URLConfRoute)
-for model in models:
-    admin.site.register(model, RouteChildAdmin)
+route_classes = (
+    models.NestedRouteSubclass,
+    models.RouteSubclass,
+    models.TemplateRoute,
+    models.URLConfRoute,
+    models.ViewRoute,
+)
+
+
+for route_class in route_classes:
+    admin.site.register(route_class, RouteChildAdmin)

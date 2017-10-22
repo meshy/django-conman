@@ -4,7 +4,7 @@ from django.db import IntegrityError, models
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
-from .handlers import RouteViewHandler
+from .handlers import TemplateHandler
 from .managers import RouteManager
 from .utils import split_path
 from .validators import (
@@ -35,7 +35,7 @@ class Route(PolymorphicModel):
     )
 
     objects = RouteManager()
-    handler_class = RouteViewHandler
+    handler_class = TemplateHandler
 
     def __str__(self):
         """Display a Route's class and url."""

@@ -27,9 +27,11 @@ class RouteTest(TestCase):
             'id',
             # Incoming foreign keys from subclasses
             'routeredirect',  # conman.redirects.models.RouteRedirect
-            'urlredirect',  # conman.redirects.models.URLRedirect
             'routesubclass',  # tests.models.RouteSubclass
+            'templateroute',  # tests.models.TemplateRoute
             'urlconfroute',  # tests.models.URLConfRoute
+            'urlredirect',  # conman.redirects.models.URLRedirect
+            'viewroute',  # tests.models.ViewRoute
         ) + NODE_BASE_FIELDS
         fields = field_names(Route)
         self.assertCountEqual(fields, expected)
@@ -205,6 +207,12 @@ class RouteGetHandlerTest(TestCase):
         second_handler = route.get_handler()
 
         self.assertEqual(first_handler, second_handler)
+
+    def test_default_handler(self):
+        """Ensure the default handler is TemplateHandler."""
+        route = RouteFactory.build()
+        handler = route.get_handler()
+        self.assertIsInstance(handler, handlers.TemplateHandler)
 
 
 class RouteGetSubclassesTest(TestCase):

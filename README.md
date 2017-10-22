@@ -47,13 +47,6 @@ extreme caution in your own projects.
 {{ route.trusted_content|safe }}
 
 
-# views.py
-from django.shortcuts import render
-
-def my_view(request, route):
-    return render(request, 'my_template.html', {'route': route})
-
-
 # models.py
 from conman.routes.models import Route
 from . import views
@@ -61,7 +54,7 @@ from . import views
 class MyRoute(Route):
     trusted_content = models.TextField()
 
-    view = views.my_view
+    template_name = 'my_template.html'
 
 
 # admin.py

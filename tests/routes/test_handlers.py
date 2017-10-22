@@ -2,10 +2,16 @@ from unittest import mock
 
 from django.core.checks import Warning
 from django.core.urlresolvers import clear_url_caches, Resolver404
-from django.test import TestCase
+from django.http import HttpResponse
+from django.test import RequestFactory, TestCase
 
-from conman.routes.handlers import BaseHandler, RouteViewHandler, URLConfHandler
-from tests.models import RouteSubclass, URLConfRoute
+from conman.routes.handlers import (
+    BaseHandler,
+    TemplateHandler,
+    URLConfHandler,
+    ViewHandler,
+)
+from tests.models import TemplateRoute, URLConfRoute, ViewRoute
 
 from .urls import dummy_view
 
@@ -34,6 +40,80 @@ class BaseHandlerCheckTest(TestCase):
         # None passed in place of a `Route` because it should be unused here.
         errors = BaseHandler.check(None)
         self.assertEqual(errors, [])
+
+
+class TemplateHandlerCheckTest(TestCase):
+    """Tests for TemplateHandler.check()."""
+    def test_no_template_name(self):
+        """When the route has no template_name, return an error."""
+        removed_template = TemplateRoute.template_name
+        try:
+            del TemplateRoute.template_name
+            errors = TemplateHandler.check(TemplateRoute)
+        finally:
+            TemplateRoute.template_name = removed_template
+
+        expected = Warning(
+            'TemplateRoute must have a `template_name` attribute.',
+            hint='This is a requirement of TemplateHandler.',
+            obj=TemplateRoute,
+        )
+        self.assertEqual(errors, [expected])
+
+    def test_has_view(self):
+        """When the Route has a view function, all's well."""
+        errors = TemplateHandler.check(TemplateRoute)
+        self.assertEqual(errors, [])
+
+
+class TemplateHandlerHandleTest(TestCase):
+    """Test TemplateHandler.handle()."""
+    def test_handle_basic(self):
+        """Show that django.shortcuts.render is used to render the response."""
+        route = TemplateRoute(url='/')
+        request = mock.Mock()
+
+        path = 'conman.routes.handlers.render'
+        handler = route.get_handler()
+        with mock.patch(path) as render:
+            handler.handle(request, '/')
+
+        render.assert_called_with(
+            request,
+            template_name=TemplateRoute.template_name,
+            context={'route': route},
+        )
+
+    def test_render_result(self):
+        """Ensure response is a HttpResponse."""
+        content = 'This is the expected content.'
+        route = TemplateRoute(url='/', content=content)
+        request = RequestFactory().get('/')
+
+        response = route.handle(request, '/')
+
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.content.strip().decode(), content)
+
+    def test_handle_slug(self):
+        """Show that slugs are not accepted."""
+        route = mock.Mock()
+        handler = TemplateHandler(route)
+
+        with self.assertRaises(Resolver404):
+            handler.handle(mock.Mock(), '/slug/')
+
+        self.assertFalse(route.view.called)
+
+    def test_handle_pk(self):
+        """Show that pks are not accepted."""
+        route = mock.Mock()
+        handler = TemplateHandler(route)
+
+        with self.assertRaises(Resolver404):
+            handler.handle(mock.Mock(), '/42/')
+
+        self.assertFalse(route.view.called)
 
 
 class SubclassHandleTest(TestCase):
@@ -128,39 +208,39 @@ class URLConfHandlerCheckTest(TestCase):
         self.assertEqual(errors, [])
 
 
-class RouteViewHandlerCheckTest(TestCase):
-    """Tests for RouteViewHandler.check()."""
+class ViewHandlerCheckTest(TestCase):
+    """Tests for ViewHandler.check()."""
     def test_no_view(self):
         """When the route has no view, return an error."""
-        removed_view = RouteSubclass.view
+        removed_view = ViewRoute.view
         try:
-            del RouteSubclass.view
-            errors = RouteViewHandler.check(RouteSubclass)
+            del ViewRoute.view
+            errors = ViewHandler.check(ViewRoute)
         finally:
-            RouteSubclass.view = removed_view
+            ViewRoute.view = removed_view
 
         expected = Warning(
-            'RouteSubclass must have a `view` attribute.',
-            hint='This is a requirement of RouteViewHandler.',
-            obj=RouteSubclass,
+            'ViewRoute must have a `view` attribute.',
+            hint='This is a requirement of ViewHandler.',
+            obj=ViewRoute,
         )
         self.assertEqual(errors, [expected])
 
     def test_has_view(self):
         """When the Route has a view function, all's well."""
-        errors = RouteViewHandler.check(RouteSubclass)
+        errors = ViewHandler.check(ViewRoute)
         self.assertEqual(errors, [])
 
 
-class RouteViewHandlerHandleTest(TestCase):
-    """Test RouteViewHandler.handle()."""
+class ViewHandlerHandleTest(TestCase):
+    """Test ViewHandler.handle()."""
     def test_handle_basic(self):
         """Show that Route.view is used to process the request."""
         class MockRoute:
             view = mock.Mock()
 
         route = MockRoute()
-        handler = RouteViewHandler(route)
+        handler = ViewHandler(route)
         request = mock.Mock()
 
         response = handler.handle(request, '/')
@@ -172,7 +252,7 @@ class RouteViewHandlerHandleTest(TestCase):
     def test_handle_slug(self):
         """Show that slugs are not accepted."""
         route = mock.Mock()
-        handler = RouteViewHandler(route)
+        handler = ViewHandler(route)
 
         with self.assertRaises(Resolver404):
             handler.handle(mock.Mock(), '/slug/')
@@ -182,7 +262,7 @@ class RouteViewHandlerHandleTest(TestCase):
     def test_handle_pk(self):
         """Show that pks are not accepted."""
         route = mock.Mock()
-        handler = RouteViewHandler(route)
+        handler = ViewHandler(route)
 
         with self.assertRaises(Resolver404):
             handler.handle(mock.Mock(), '/42/')

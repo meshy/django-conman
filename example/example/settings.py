@@ -63,3 +63,6 @@ TEMPLATES = [{
         ],
     },
 }]
+
+
+TIME_ZONE = 'Europe/London'

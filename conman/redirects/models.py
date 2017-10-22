@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from conman.routes.handlers import ViewHandler
 from conman.routes.managers import RouteManager
 from conman.routes.models import Route
 
@@ -25,6 +26,7 @@ class RouteRedirect(Route):
         help_text=_('If permanent, this redirect will be cached by browsers.'),
     )
 
+    handler_class = ViewHandler
     view = views.RouteRedirectView.as_view()
 
     objects = RouteManager()
@@ -52,6 +54,7 @@ class URLRedirect(Route):
         help_text=_('If permanent, this redirect will be cached by browsers.'),
     )
 
+    handler_class = ViewHandler
     view = views.URLRedirectView.as_view()
 
     objects = RouteManager()
