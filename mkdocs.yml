@@ -14,7 +14,7 @@ pages:
     - Routes TODO: topics/routes.md
   - API Reference:
     - Route: reference/route.md
-    - Handlers TODO: reference/handlers.md
+    - Handlers: reference/handlers.md
   - Contribution: contribution.md
 markdown_extensions:
   - admonition
