@@ -1,5 +1,6 @@
 from django.contrib.admin import site
-from django.test import mock, TestCase
+from django.contrib.admin.widgets import AdminTextInputWidget
+from django.test import mock, SimpleTestCase, TestCase
 
 from conman.routes.admin import RouteParentAdmin
 from conman.routes.models import Route
@@ -17,3 +18,13 @@ class TestRouteParentAdminChildModels(TestCase):
 
         self.assertIsInstance(subclasses, list)
         get_subclasses.assert_called_with()
+
+
+class TestRouteURLWidget(SimpleTestCase):
+    """Test the widget used for Route.url in the admin."""
+    def test_widget(self):
+        """Route.url uses a single-line widget in the admin."""
+        admin = RouteParentAdmin(model=Route, admin_site=site)
+        db_field = Route._meta.get_field('url')
+        form_field = admin.formfield_for_dbfield(db_field, request=mock.Mock())
+        self.assertIsInstance(form_field.widget, AdminTextInputWidget)

@@ -8,12 +8,18 @@ https://django-polymorphic.readthedocs.io/en/stable/admin.html
 """
 
 from django.contrib import admin
+from django.contrib.admin.options import FORMFIELD_FOR_DBFIELD_DEFAULTS
+from django.contrib.admin.widgets import AdminTextInputWidget
 from polymorphic.admin import (
     PolymorphicChildModelAdmin,
     PolymorphicParentModelAdmin,
 )
 
-from .models import Route
+from .models import Route, URLPathField
+
+
+# Have mercy, I can't see an easier way to do this across the whole admin.
+FORMFIELD_FOR_DBFIELD_DEFAULTS[URLPathField] = {'widget': AdminTextInputWidget}
 
 
 class RouteChildAdmin(PolymorphicChildModelAdmin):

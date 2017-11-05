@@ -22,6 +22,11 @@
   were previously `Error`, and are now `Warning`. `E002` and `E003` are changed
   to `W001` and `W002`.
 
+### Fixed
+
+- Removed multi-line input widget for `Route.url` field. Replaced with
+  single-line input.
+
 
 ## 0.1.1 2017-09-29
 
