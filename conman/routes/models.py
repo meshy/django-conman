@@ -1,5 +1,6 @@
 import uuid
 
+from django import forms
 from django.db import IntegrityError, models
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
@@ -17,19 +18,37 @@ from .validators import (
 )
 
 
+class URLPathField(models.TextField):
+    """
+    A field to store path components of URLs.
+
+    Slightly different from a normal path, as here we insist that the path ends
+    in a forward-slash.
+
+    We use a TextField to avoid setting an arbirary maximum length, but
+    override `formfield` to ensure a single-line input in forms.
+    """
+    default_validators = [
+        validate_end_in_slash,
+        validate_start_in_slash,
+        validate_no_dotty_subpaths,
+        validate_no_double_slashes,
+        validate_no_hash_symbol,
+        validate_no_questionmark,
+    ]
+
+    def formfield(self, **kwargs):
+        """Default to a single-line form widget."""
+        defaults = {'widget': forms.TextInput}
+        defaults.update(kwargs)
+        return super().formfield(**defaults)
+
+
 class Route(PolymorphicModel):
     """A Route in a tree of url endpoints."""
-    url = models.TextField(
+    url = URLPathField(
         db_index=True,
         help_text=_('The operative URL for this Route.'),
-        validators=[
-            validate_end_in_slash,
-            validate_start_in_slash,
-            validate_no_dotty_subpaths,
-            validate_no_double_slashes,
-            validate_no_hash_symbol,
-            validate_no_questionmark,
-        ],
         verbose_name='URL',
         unique=True,
     )

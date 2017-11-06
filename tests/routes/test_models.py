@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django import forms
 from django.db import IntegrityError, transaction
 from django.test import TestCase
 from incuna_test_utils.utils import field_names
@@ -40,6 +41,11 @@ class RouteTest(TestCase):
         """Route.get_absolute_url returns the url of the Route."""
         route = RouteFactory.build(url='/testing/')
         self.assertEqual(route.get_absolute_url(), route.url)
+
+    def test_url_form_widget(self):
+        """Route.url uses the single-line TextInput widget."""
+        widget = Route._meta.get_field('url').formfield().widget
+        self.assertIsInstance(widget, forms.TextInput)
 
 
 class RouteUniquenessTest(TestCase):
