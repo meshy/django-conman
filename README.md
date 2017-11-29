@@ -49,7 +49,6 @@ extreme caution in your own projects.
 
 # models.py
 from conman.routes.models import Route
-from . import views
 
 class MyRoute(Route):
     trusted_content = models.TextField()
