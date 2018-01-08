@@ -15,6 +15,8 @@ pages:
   - API Reference:
     - Route: reference/route.md
     - Handlers: reference/handlers.md
+  - Common Recipes:
+    - Breadcrumbs: recipes/breadcrumbs.md
   - Contribution: contribution.md
 markdown_extensions:
   - admonition
