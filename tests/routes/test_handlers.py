@@ -1,9 +1,9 @@
 from unittest import mock
 
 from django.core.checks import Warning
-from django.core.urlresolvers import clear_url_caches, Resolver404
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
+from django.urls import clear_url_caches, Resolver404
 
 from conman.routes.handlers import (
     BaseHandler,

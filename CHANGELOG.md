@@ -4,12 +4,14 @@
 
 ### Added
 
+- Added support for Django 2.0.
 - Added `Route.get_subclasses()`.
 - Added `TemplateHandler`. A simpler handler that requires only a template.
   This is the new default for `Route.handler_class`.
 
 ### Backwards incompatible
 
+- Dropped support for Django 1.10.
 - `CONMAN_ADMIN_ROUTES` setting has been removed. In future, we'll
   automatically detect subclasses of `Route` for admin integration.
 - Renamed `RouteViewHandler` to `ViewHandler`.

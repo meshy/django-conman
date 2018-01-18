@@ -1,5 +1,5 @@
-from django.core.urlresolvers import resolve, Resolver404
 from django.test import TestCase
+from django.urls import resolve, Resolver404
 
 from conman.routes import views
 
