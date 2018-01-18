@@ -1,6 +1,8 @@
+from unittest import mock
+
 from django.contrib.admin import site
 from django.contrib.admin.widgets import AdminTextInputWidget
-from django.test import mock, SimpleTestCase, TestCase
+from django.test import SimpleTestCase, TestCase
 
 from conman.routes.admin import RouteParentAdmin
 from conman.routes.models import Route
