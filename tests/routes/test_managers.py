@@ -198,3 +198,27 @@ class RouteManagerMoveBranchTest(TestCase):
         self.assertEqual(route.url, original_url)
         child.refresh_from_db()
         self.assertEqual(child.url, original_url + 'child/')
+
+
+class RouteManagerWithPathTest(TestCase):
+    """Test Route.objects.with_level."""
+    def test_no_level_passed(self):
+        """No level passed, so items are annotated, but no filter is applied."""
+        RouteFactory.create(url='/')
+        RouteFactory.create(url='/branch/')
+        RouteFactory.create(url='/branch/leaf/')
+        result = Route.objects.with_level().values_list('level', 'url')
+        expected = (
+            (1, '/'),
+            (2, '/branch/'),
+            (3, '/branch/leaf/'),
+        )
+        self.assertCountEqual(result, expected)
+
+    def test_level_passed(self):
+        """When passing a level, the filter is automatically applied."""
+        RouteFactory.create(url='/')  # Not in QS.
+        branch = RouteFactory.create(url='/branch/')
+        RouteFactory.create(url='/branch/leaf/')  # Not in QS.
+        result = Route.objects.with_level(2)
+        self.assertCountEqual(result, [branch])
