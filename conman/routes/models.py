@@ -138,8 +138,8 @@ class Route(PolymorphicModel):
 
     @property
     def level(self):
-        """Fetch the one-indexed 'level' of this item in the URL tree."""
-        return self.url.count('/')
+        """Fetch the 'level' of this item in the URL tree."""
+        return self.url.count('/') - 1  # 0-indexed.
 
     @level.setter
     def level(self, new_value):

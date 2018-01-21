@@ -209,9 +209,9 @@ class RouteManagerWithPathTest(TestCase):
         RouteFactory.create(url='/branch/leaf/')
         result = Route.objects.with_level().values_list('level', 'url')
         expected = (
-            (1, '/'),
-            (2, '/branch/'),
-            (3, '/branch/leaf/'),
+            (0, '/'),
+            (1, '/branch/'),
+            (2, '/branch/leaf/'),
         )
         self.assertCountEqual(result, expected)
 
@@ -220,5 +220,5 @@ class RouteManagerWithPathTest(TestCase):
         RouteFactory.create(url='/')  # Not in QS.
         branch = RouteFactory.create(url='/branch/')
         RouteFactory.create(url='/branch/leaf/')  # Not in QS.
-        result = Route.objects.with_level(2)
+        result = Route.objects.with_level(1)
         self.assertCountEqual(result, [branch])

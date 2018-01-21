@@ -48,11 +48,11 @@ class RouteTest(TestCase):
         self.assertIsInstance(widget, forms.TextInput)
 
     def test_level(self):
-        """Route.level is based on the url field."""
+        """Route.level is based on the url field, and is zero-indexed."""
         urls = (
-            (1, '/'),
-            (2, '/branch/'),
-            (3, '/branch/leaf/'),
+            (0, '/'),
+            (1, '/branch/'),
+            (2, '/branch/leaf/'),
         )
         for level, url in urls:
             with self.subTest(url=url):

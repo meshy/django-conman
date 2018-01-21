@@ -27,9 +27,10 @@ class TestCharCount(TestCase):
 
     def test_annotation(self):
         """Test the expression can be used for annotation."""
-        RouteFactory.create(url='/sixth/level/path/including/root/')
+        RouteFactory.create(url='/fifth/level/zero/indexed/path/')
         route = Route.objects.annotate(level=CharCount('url', char='/')).get()
-        self.assertEqual(route.level, 6)  # The number of "/" in the path.
+        # The number of "/" in the path minus one for zero-indexing.
+        self.assertEqual(route.level, 5)
 
     def test_calling_format(self):
         """Ensure the 'char' argument is always a keyword-arg."""

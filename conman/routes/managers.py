@@ -76,13 +76,13 @@ class RouteManager(PolymorphicManager):
 
     def with_level(self, level=None):
         """
-        Annotate the queryset with the (1-indexed) level of each item.
+        Annotate the queryset with the (0-indexed) level of each item.
 
         The level reflects the number of forward slashes in the path.
 
         If "level" is passed in, the queryset will be filtered by the level.
         """
-        qs = self.annotate(level=CharCount('url', char='/'))
+        qs = self.annotate(level=CharCount('url', char='/') - 1)
         if level is None:
             return qs
         return qs.filter(level=level)
