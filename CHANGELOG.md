@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added `Route.level` property.
 - Added `Route.objects.with_level()` to allow access to `level` in querysets.
 - Added `Route.get_subclasses()`.
 - Added `TemplateHandler`. A simpler handler that requires only a template.
