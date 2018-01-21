@@ -136,6 +136,16 @@ class Route(PolymorphicModel):
         # Deal with the request
         return handler.handle(request, path)
 
+    @property
+    def level(self):
+        """Fetch the 'level' of this item in the URL tree."""
+        return self.url.count('/') - 1  # 0-indexed.
+
+    @level.setter
+    def level(self, new_value):
+        """Silently fails to allow queryset annotation to work."""
+        pass
+
     def move_to(self, new_url, *, move_children):
         """
         Move this Route to a new url.

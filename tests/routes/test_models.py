@@ -47,6 +47,18 @@ class RouteTest(TestCase):
         widget = Route._meta.get_field('url').formfield().widget
         self.assertIsInstance(widget, forms.TextInput)
 
+    def test_level(self):
+        """Route.level is based on the url field, and is zero-indexed."""
+        urls = (
+            (0, '/'),
+            (1, '/branch/'),
+            (2, '/branch/leaf/'),
+        )
+        for level, url in urls:
+            with self.subTest(url=url):
+                route = RouteFactory.build(url=url)
+                self.assertEqual(route.level, level)
+
 
 class RouteUniquenessTest(TestCase):
     """Check uniqueness conditions on Route are enforced in the DB."""

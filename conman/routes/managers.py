@@ -4,6 +4,7 @@ from django.db.models.functions import Concat, Length, Substr
 from polymorphic.managers import PolymorphicManager
 
 from .exceptions import InvalidURL
+from .expressions import CharCount
 from .utils import split_path
 
 
@@ -72,3 +73,16 @@ class RouteManager(PolymorphicManager):
             Value(new_url),
             Substr('url', len(old_url) + 1),  # 1 indexed
         ))
+
+    def with_level(self, level=None):
+        """
+        Annotate the queryset with the (0-indexed) level of each item.
+
+        The level reflects the number of forward slashes in the path.
+
+        If "level" is passed in, the queryset will be filtered by the level.
+        """
+        qs = self.annotate(level=CharCount('url', char='/') - 1)
+        if level is None:
+            return qs
+        return qs.filter(level=level)
