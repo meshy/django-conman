@@ -2,7 +2,7 @@
 
 In this example, we will create a `Route` subclass with a field containing HTML
 content. We're not going to introduce a [rich-text
-editor](/tutorials/rich-text.md) yet, but we will show you how to edit the item
+editor](/tutorials/rich_text.md) yet, but we will show you how to edit the item
 in the admin, and render the content when someone browses to the Route's URL.
 
 
