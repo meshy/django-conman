@@ -23,6 +23,8 @@ test:
 	@isort --check ${RESULT}
 	@echo -e "\n${PURPLE}Check for missing migrations:${RESET}"
 	@example/manage.py makemigrations --check --dry-run ${RESULT}
+	@echo -e "\n${PURPLE}Check docs build:${RESET}"
+	@mkdocs build --strict ${RESULT}
 
 release:
 	python setup.py sdist bdist_wheel
