@@ -130,7 +130,7 @@ Signature: `best_match_for_path(self, path)`.
 Compares to all `Route` urls, and returns the longest matching subpath.
 
 For example, `Route.objects.best_match_for_path('/photos/album/2008/09')` would
-return the `Route` with url '/photos/album/' if it was the closest match.
+return the `Route` with `url='/photos/album/'` if it was the closest match.
 
 If there is no match, `DoesNotExist` will be raised.
 
