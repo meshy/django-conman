@@ -1,6 +1,6 @@
 # Route
 
-## Fields & attributes
+## Fields, attributes, and properties
 
 ### `url`
 
@@ -18,6 +18,28 @@ There are some constraints on the value:
 
 The `handler_class` attribute determines what view is called when someone
 browses to a matching URL. See the [handlers topic guide](/topics/handlers.md).
+
+### `level`
+
+The `level` property returns the hierarchy level of a `Route` (zero-indexed). Eg:
+
+```python
+>>> Route(url='/').level
+0
+>>> Route(url='/branch/').level
+1
+>>> Route(url='/branch/leaf/').level
+2
+```
+
+!!! Note:
+    This property cannot be used to set a new level on an object. Attempting to
+    do so will silently fail. This is a side-effect of the
+    [`with_level()`](#with_level) manager method. To change the level of an
+    object, change its `url`.
+
+    To access this attribute in a queryset, use the
+    [`with_level()`](#with_level) manager method.
 
 
 ## Methods
@@ -145,6 +167,21 @@ Route(url='/articles/conman/')
 
 They will be moved in one commit. If the move causes a clash with existing
 `Route` objects, then an `IntegrityError` will be raised.
+
+### `with_level(...)`
+
+Signature: `with_level(self, level=None)`.
+
+Annotates the queryset with `level`, being the number of slugs in the `url`
+(or, the number of `/` characters, minus one). This can be used for further
+filtering.
+
+When passed `level` (an integer), the resulting queryset will be filtered down
+to objects of that level.
+
+!!! Note:
+    If you're not using this within a queryset, there's no need to call this
+    because `Route` objects have a [`level`](#level) property.
 
 
 [django-integrityerror]: https://docs.djangoproject.com/en/stable/ref/exceptions/#django.db.IntegrityError

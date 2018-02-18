@@ -17,6 +17,7 @@ pages:
     - Handlers: reference/handlers.md
   - Common Recipes:
     - Breadcrumbs: recipes/breadcrumbs.md
+    - Navigation: recipes/navigation.md
   - Contribution: contribution.md
 markdown_extensions:
   - admonition
