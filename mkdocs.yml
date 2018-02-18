@@ -1,1 +1,31 @@
 site_name: Django Conman
+theme: 'material'
+pages:
+  - Installation: index.md
+  - Tutorials:
+    - Creating custom routes TODO: tutorials/custom_routes.md
+    - Basic HTML: tutorials/basic_html.md
+    - Rich text TODO: tutorials/rich_text.md
+    - Application content TODO: tutorials/app_content.md
+  - Topics:
+    - Admin integration: topics/admin.md
+    - Handlers: topics/handlers.md
+    - Redirects TODO: topics/redirects.md
+    - Routes TODO: topics/routes.md
+  - API Reference:
+    - Route: reference/route.md
+    - Handlers: reference/handlers.md
+  - Common Recipes:
+    - Breadcrumbs: recipes/breadcrumbs.md
+    - Navigation: recipes/navigation.md
+  - Contribution: contribution.md
+markdown_extensions:
+  - admonition
+  - codehilite(guess_lang=false)
+  - toc(permalink=true)
+repo_name: 'meshy/django-conman'
+repo_url: 'https://github.com/meshy/django-conman'
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/meshy/django-conman'

@@ -1,6 +1,6 @@
 # Redirects
 
-Redirects allow you to add temporary or permanent redirects to other ConMan Routes.
+Redirects allow you to add temporary or permanent redirects to other Conman Routes.
 
 ## Configuration
 
