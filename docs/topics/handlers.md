@@ -75,7 +75,6 @@ urlpatterns = [
 # models.py
 from conman.routes.handlers import URLConfHandler
 from conman.routes.models import Route
-from .views import my_view
 
 class ExampleRoute(Route):
     handler_class = URLConfHandler
